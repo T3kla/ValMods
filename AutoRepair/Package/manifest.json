@@ -1,0 +1,9 @@
+{
+    "name": "AutoRepair",
+    "version_number": "5.4.800",
+    "website_url": "",
+    "description": "Workbenches will automatically repair all items they can from your inventory.",
+    "dependencies": [
+        "denikson-BepInExPack_Valheim-5.4.800"
+    ]
+}

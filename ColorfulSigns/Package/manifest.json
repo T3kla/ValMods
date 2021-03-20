@@ -1,0 +1,9 @@
+{
+  "name": "ColorfulSigns",
+  "description": "Enable enriched text in signs.",
+  "version_number": "5.4.801",
+  "website_url": "",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.800"
+  ]
+}

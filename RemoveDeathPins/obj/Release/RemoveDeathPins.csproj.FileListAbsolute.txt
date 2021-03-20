@@ -1,0 +1,9 @@
+C:\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\plugins\RemoveDeathPins\RemoveDeathPins.dll
+C:\Repos\RemoveDeathPins\RemoveDeathPins\obj\Release\RemoveDeathPins.csprojAssemblyReference.cache
+C:\Repos\RemoveDeathPins\RemoveDeathPins\obj\Release\RemoveDeathPins.csproj.CoreCompileInputs.cache
+C:\Repos\RemoveDeathPins\RemoveDeathPins\obj\Release\RemoveDeathPins.csproj.CopyComplete
+C:\Repos\RemoveDeathPins\RemoveDeathPins\obj\Release\RemoveDeathPins.dll
+C:\Repos\VALHEIM-MODS\RemoveDeathPins\RemoveDeathPins\obj\Release\RemoveDeathPins.csprojAssemblyReference.cache
+C:\Repos\VALHEIM-MODS\RemoveDeathPins\RemoveDeathPins\obj\Release\RemoveDeathPins.csproj.CoreCompileInputs.cache
+C:\Repos\VALHEIM-MODS\RemoveDeathPins\RemoveDeathPins\obj\Release\RemoveDeathPins.csproj.CopyComplete
+C:\Repos\VALHEIM-MODS\RemoveDeathPins\RemoveDeathPins\obj\Release\RemoveDeathPins.dll

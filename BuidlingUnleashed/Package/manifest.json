@@ -1,0 +1,9 @@
+{
+  "name": "BuildingUnleashed",
+  "description": "Remove item wear and stamina requirements from building.",
+  "version_number": "5.4.800",
+  "website_url": "",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.800"
+  ]
+}

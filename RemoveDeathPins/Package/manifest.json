@@ -1,0 +1,9 @@
+{
+    "name": "RemoveDeathPins",
+    "version_number": "5.4.800",
+    "website_url": "",
+    "description": "Make death pins removable.",
+    "dependencies": [
+        "denikson-BepInExPack_Valheim-5.4.800"
+    ]
+}
