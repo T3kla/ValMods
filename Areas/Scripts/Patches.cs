@@ -23,7 +23,7 @@ namespace DifficultyAreas.Patches
 
             if (AreaHandler.PlayerZoneLookupCorou == null)
             {
-                Debug.Log($"[DifficultyAreas] ZoneLookup start coroutine");
+                Debug.Log($"[Areas] ZoneLookup start coroutine");
                 AreaHandler.PlayerZoneLookupCorou = Main.Instance.StartCoroutine(AreaHandler.ZoneLookup(__instance));
             }
 
@@ -36,7 +36,7 @@ namespace DifficultyAreas.Patches
 
             if (AreaHandler.PlayerZoneLookupCorou == null)
             {
-                Debug.Log($"[DifficultyAreas] ZoneLookup start coroutine");
+                Debug.Log($"[Areas] ZoneLookup start coroutine");
                 AreaHandler.PlayerZoneLookupCorou = Main.Instance.StartCoroutine(AreaHandler.ZoneLookup(__instance));
             }
 
@@ -49,7 +49,7 @@ namespace DifficultyAreas.Patches
 
             if (AreaHandler.PlayerZoneLookupCorou != null)
             {
-                Debug.Log($"[DifficultyAreas] ZoneLookup stop coroutine");
+                Debug.Log($"[Areas] ZoneLookup stop coroutine");
                 Main.Instance.StopCoroutine(AreaHandler.PlayerZoneLookupCorou);
                 AreaHandler.PlayerZoneLookupCorou = null;
             }

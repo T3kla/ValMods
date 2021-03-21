@@ -25,11 +25,11 @@ namespace DifficultyAreas.TJson
                 sr.WriteLine(str);
                 sr.Close();
 
-                Debug.Log($"[DifficultyAreas.TJson] Serialized object with name \"{fileName}\" into \"{path}\"");
+                Debug.Log($"[Areas.TJson] Serialized object with name \"{fileName}\" into \"{path}\"");
             }
             catch (Exception e)
             {
-                Debug.LogError($"[DifficultyAreas.TJson] Couldn't serialize object \"{fileName}\"\n{e.Message}\n{e.StackTrace}");
+                Debug.LogError($"[Areas.TJson] Couldn't serialize object \"{fileName}\"\n{e.Message}\n{e.StackTrace}");
             }
         }
 
@@ -40,12 +40,12 @@ namespace DifficultyAreas.TJson
             {
                 string str = File.ReadAllText(path);
                 T obj = JsonConvert.DeserializeObject<T>(str, new JsonSerializerSettings { Error = (se, ev) => { ev.ErrorContext.Handled = true; } });
-                Debug.Log($"[DifficultyAreas.TJson] Deserialized object \"{Path.GetFileName(path)}\" of type \"{nameof(T)}\" from \"{path}\"");
+                Debug.Log($"[Areas.TJson] Deserialized object \"{Path.GetFileName(path)}\" of type \"{nameof(T)}\" from \"{path}\"");
                 return obj;
             }
             catch (Exception e)
             {
-                Debug.LogError($"[DifficultyAreas.TJson] Couldn't deserialize object \"{Path.GetFileName(path)}\" of type \"{nameof(T)}\" from \"{path}\"\n{e.Message}\n{e.StackTrace}");
+                Debug.LogError($"[Areas.TJson] Couldn't deserialize object \"{Path.GetFileName(path)}\" of type \"{nameof(T)}\" from \"{path}\"\n{e.Message}\n{e.StackTrace}");
                 return default(T);
             }
         }
@@ -61,12 +61,12 @@ namespace DifficultyAreas.TJson
                     Formatting.None,
                     new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore, NullValueHandling = NullValueHandling.Ignore });
 
-                Debug.Log($"[DifficultyAreas.TJson] Serialized object with name \"{obj.ToString()}\"");
+                Debug.Log($"[Areas.TJson] Serialized object with name \"{obj.ToString()}\"");
                 return str;
             }
             catch (Exception e)
             {
-                Debug.LogError($"[DifficultyAreas.TJson] Couldn't serialize object \"{obj.ToString()}\"\n{e.Message}\n{e.StackTrace}");
+                Debug.LogError($"[Areas.TJson] Couldn't serialize object \"{obj.ToString()}\"\n{e.Message}\n{e.StackTrace}");
                 return "";
             }
         }
@@ -79,12 +79,12 @@ namespace DifficultyAreas.TJson
             {
                 string str = obj;
                 T newObj = JsonConvert.DeserializeObject<T>(str);
-                Debug.Log($"[DifficultyAreas.TJson] Deserialized object of type \"{nameof(T)}\"");
+                Debug.Log($"[Areas.TJson] Deserialized object of type \"{nameof(T)}\"");
                 return newObj;
             }
             catch (Exception e)
             {
-                Debug.LogError($"[DifficultyAreas.TJson] Couldn't deserialize object of type \"{nameof(T)}\"\n{e.Message}\n{e.StackTrace}");
+                Debug.LogError($"[Areas.TJson] Couldn't deserialize object of type \"{nameof(T)}\"\n{e.Message}\n{e.StackTrace}");
                 return default(T);
             }
         }

@@ -8,7 +8,7 @@ using DifficultyAreas.Containers;
 namespace DifficultyAreas
 {
 
-    public class AreaHandler
+    public static class AreaHandler
     {
 
         public static Area PlayerCurrentArea;
@@ -36,7 +36,7 @@ namespace DifficultyAreas
                     Player.m_localPlayer.Message(MessageHud.MessageType.Center, msg, 0, null);
                     PlayerCurrentArea = newArea;
 
-                    Debug.Log($"[DifficultyAreas] ZoneLookup newArea: {(PlayerCurrentArea != null ? newArea.display_name : "None")}");
+                    Debug.Log($"[Areas] ZoneLookup newArea: {(PlayerCurrentArea != null ? newArea.display_name : "None")}");
                 }
 
                 yield return new WaitForSecondsRealtime(4f);
