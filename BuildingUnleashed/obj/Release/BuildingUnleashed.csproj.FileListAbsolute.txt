@@ -1,0 +1,6 @@
+C:\Repos\Tekla.Mods\BuildingUnleashed\Tekla-BuildingUnleashed\plugins\BuildingUnleashed.dll
+C:\Repos\Tekla.Mods\BuildingUnleashed\Tekla-BuildingUnleashed\plugins\BuildingUnleashed.pdb
+C:\Repos\Tekla.Mods\BuildingUnleashed\obj\Release\BuildingUnleashed.csprojAssemblyReference.cache
+C:\Repos\Tekla.Mods\BuildingUnleashed\obj\Release\BuildingUnleashed.csproj.CoreCompileInputs.cache
+C:\Repos\Tekla.Mods\BuildingUnleashed\obj\Release\BuildingUnleashed.dll
+C:\Repos\Tekla.Mods\BuildingUnleashed\obj\Release\BuildingUnleashed.pdb

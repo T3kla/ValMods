@@ -16,6 +16,7 @@ namespace DifficultyAreas
 
         public static void Initialize()
         {
+            PlayerCurrentArea = new Area() { id = "" };
             Global.Areas = Serialization.DeserializeFile<List<Area>>(Global.Path.AreaMap);
             Global.AreaCfgs = Serialization.DeserializeFile<List<AreaCfg>>(Global.Path.AreaCfgs);
             foreach (var item in Global.Areas)
@@ -30,12 +31,7 @@ namespace DifficultyAreas
 
                 if (newArea.id != PlayerCurrentArea.id)
                 {
-                    string msg = "";
-
-                    if (newArea == null)
-                        msg = $"Exiting {PlayerCurrentArea.display_name} ";
-                    else
-                        msg = $"Entering {newArea.display_name} ";
+                    string msg = newArea.id == "" ? $"Exiting {PlayerCurrentArea.display_name}" : $"Entering {newArea.display_name}";
 
                     Player.m_localPlayer.Message(MessageHud.MessageType.Center, msg, 0, null);
                     PlayerCurrentArea = newArea;
@@ -66,7 +62,7 @@ namespace DifficultyAreas
                 }
             }
 
-            return areaIndex > -1 ? Global.Areas[areaIndex] : new Area();
+            return areaIndex > -1 ? Global.Areas[areaIndex] : new Area() { id = "" };
         }
 
         private static AreaCfg GetAreaCfg(string configId)

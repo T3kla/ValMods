@@ -2,6 +2,14 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Areas", "Areas\Areas.csproj", "{45BA58B0-1778-41D8-8E57-AC931A2A0009}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoRepair", "AutoRepair\AutoRepair.csproj", "{9C03D122-CA5F-446A-AEFF-1D08D6698593}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingUnleashed", "BuildingUnleashed\BuildingUnleashed.csproj", "{5FB5B223-BB70-4F2C-9792-999A734E7F5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoveDeathPins", "RemoveDeathPins\RemoveDeathPins.csproj", "{025E211A-86B6-4449-9F94-FA7C24A8A3D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorfulSigns", "ColorfulSigns\ColorfulSigns.csproj", "{BC7EA33E-FD75-4825-BFA4-9A92900617F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|Any CPU = Release|Any CPU
@@ -9,5 +17,13 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{45BA58B0-1778-41D8-8E57-AC931A2A0009}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45BA58B0-1778-41D8-8E57-AC931A2A0009}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C03D122-CA5F-446A-AEFF-1D08D6698593}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C03D122-CA5F-446A-AEFF-1D08D6698593}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FB5B223-BB70-4F2C-9792-999A734E7F5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FB5B223-BB70-4F2C-9792-999A734E7F5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{025E211A-86B6-4449-9F94-FA7C24A8A3D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{025E211A-86B6-4449-9F94-FA7C24A8A3D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC7EA33E-FD75-4825-BFA4-9A92900617F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC7EA33E-FD75-4825-BFA4-9A92900617F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
