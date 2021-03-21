@@ -1,0 +1,8 @@
+C:\Repos\Tekla.Mods\Areas\Areas\plugins\Areas.dll
+C:\Repos\Tekla.Mods\Areas\Areas\plugins\Areas.pdb
+C:\Repos\Tekla.Mods\Areas\obj\Release\Areas.csprojAssemblyReference.cache
+C:\Repos\Tekla.Mods\Areas\obj\Release\Areas.csproj.CoreCompileInputs.cache
+C:\Repos\Tekla.Mods\Areas\obj\Release\Areas.dll
+C:\Repos\Tekla.Mods\Areas\Tekla-Areas\plugins\Areas.dll
+C:\Repos\Tekla.Mods\Areas\Tekla-Areas\plugins\Areas.pdb
+C:\Repos\Tekla.Mods\Areas\obj\Release\Areas.pdb
