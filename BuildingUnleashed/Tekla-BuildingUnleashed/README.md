@@ -1,26 +1,27 @@
 # BuidlingUnleashed
-
-Removes stamina requirements and item-wear from building. Basically free placing, removing or repairing stuff.
+Removes stamina requirements and item-wear from building and farming. Basically free placing, removing, repairing or planting stuff.
 
 ## Short story long
+In videogames there is a thing called "pacing".This concept revolves around the idea that the game should not only offer different types of gameplay, but it also should bounce the player between them from time to time.
 
-In videogames there is a thing called "pacing". This concept revolves around the idea that the game should >not only<
-offer different types of gameplay, but it also should bounce the player between them from time to time. The idea
-of taxing building mechanics with item wear and stamina consuption is, suposedly, a method to force the player to stop
-from building, but given that the solution to this is extremely easy to solve, it becomes just a nuisance.
+Valheim's mechanics of taxing building and farming with item wear and stamina consumption is, supposedly, a method to enforce pacing. The problem is that these mechanics are very easily solvable and don't require you to stop this tasks, unnecessarily making them a tiny bit more annoying.
 
-In constrast, a good pacing example would be "resource gathering" because the player has to stop building to restore
-building supplies.
+In contrast, a good pacing example would be "resource gathering" because the player has to stop building to restore building supplies.
 
-Basically, this mod exists because I have studied videogame design and happen to know kinda how to mod. With help. From:
+Good game design is very important. Please hire game designers!
 
-@Mixone
-@Seb
+## Issues & Suggestions
+Please report issues and suggestions [here](https://github.com/T3kla/ValMods/issues) or tag me as `@Tekla` in [Valheim Modding](https://discord.gg/RBq2mzeu4z) Discord server. (use the correct channel or Jessica will get mad)
 
 ## Installation (manual)
-
 If you are installing this manually, do the following
 
 1. Extract the archive into a folder. **Do not extract into the game folder.**
 2. Move the contents of `plugins` folder into `<GameDirectory>\Bepinex\plugins`.
 3. Run the game.
+
+<span style="display:block;text-align:center"> [![Logo64](https://user-images.githubusercontent.com/23636548/112306898-a1ac1f00-8ca0-11eb-8b3e-90e73dc7bad2.png "Tekla's Valheim Mods Repo")](https://github.com/T3kla/ValMods) </span>
+
+## Changelog
+#### 5.4.900
+- Updated Bepinex version

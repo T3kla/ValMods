@@ -24,9 +24,12 @@
         <DebugSymbols>true</DebugSymbols>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="0Harmony, Version=2.3.0.0, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\0Harmony.dll</HintPath>
-          <Private>False</Private>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Xml" />
+        <Reference Include="0Harmony, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\..\..\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Default\BepInEx\core\0Harmony.dll</HintPath>
+            <Private>False</Private>
         </Reference>
         <Reference Include="assembly_googleanalytics, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
           <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_googleanalytics_publicized.dll</HintPath>
@@ -64,36 +67,36 @@
           <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll</HintPath>
           <Private>False</Private>
         </Reference>
-        <Reference Include="BepInEx, Version=5.4.6.0, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\BepInEx.dll</HintPath>
-          <Private>False</Private>
+        <Reference Include="BepInEx, Version=5.4.9.0, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\..\..\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Default\BepInEx\core\BepInEx.dll</HintPath>
+            <Private>False</Private>
         </Reference>
         <Reference Include="BepInEx.Harmony, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\BepInEx.Harmony.dll</HintPath>
-          <Private>False</Private>
+          <HintPath>..\..\..\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Default\BepInEx\core\BepInEx.Harmony.dll</HintPath>
+            <Private>False</Private>
         </Reference>
-        <Reference Include="BepInEx.Preloader, Version=5.4.6.0, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\BepInEx.Preloader.dll</HintPath>
-          <Private>False</Private>
+        <Reference Include="BepInEx.Preloader, Version=5.4.9.0, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\..\..\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Default\BepInEx\core\BepInEx.Preloader.dll</HintPath>
+            <Private>False</Private>
         </Reference>
         <Reference Include="HarmonyXInterop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\HarmonyXInterop.dll</HintPath>
-          <Private>False</Private>
+          <HintPath>..\..\..\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Default\BepInEx\core\HarmonyXInterop.dll</HintPath>
+            <Private>False</Private>
         </Reference>
         <Reference Include="Mono.Cecil, Version=0.10.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e">
-          <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\Mono.Cecil.dll</HintPath>
-          <Private>False</Private>
+          <HintPath>..\..\..\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Default\BepInEx\core\Mono.Cecil.dll</HintPath>
+            <Private>False</Private>
         </Reference>
         <Reference Include="Mono.Cecil.Mdb, Version=0.10.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e">
-          <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\Mono.Cecil.Mdb.dll</HintPath>
-          <Private>False</Private>
+          <HintPath>..\..\..\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Default\BepInEx\core\Mono.Cecil.Mdb.dll</HintPath>
+            <Private>False</Private>
         </Reference>
         <Reference Include="Mono.Cecil.Pdb, Version=0.10.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e">
-          <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\Mono.Cecil.Pdb.dll</HintPath>
+          <HintPath>..\..\..\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Default\BepInEx\core\Mono.Cecil.Pdb.dll</HintPath>
           <Private>False</Private>
         </Reference>
         <Reference Include="Mono.Cecil.Rocks, Version=0.10.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e">
-          <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\Mono.Cecil.Rocks.dll</HintPath>
+          <HintPath>..\..\..\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Default\BepInEx\core\Mono.Cecil.Rocks.dll</HintPath>
           <Private>False</Private>
         </Reference>
         <Reference Include="Mono.Posix, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
@@ -104,54 +107,28 @@
           <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\Mono.Security.dll</HintPath>
           <Private>False</Private>
         </Reference>
-        <Reference Include="MonoMod.RuntimeDetour, Version=20.11.26.2, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\MonoMod.RuntimeDetour.dll</HintPath>
-          <Private>False</Private>
+        <Reference Include="MonoMod.RuntimeDetour, Version=21.1.11.1, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\..\..\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Default\BepInEx\core\MonoMod.RuntimeDetour.dll</HintPath>
+            <Private>False</Private>
         </Reference>
-        <Reference Include="MonoMod.Utils, Version=20.11.26.2, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\BepInEx\core\MonoMod.Utils.dll</HintPath>
-          <Private>False</Private>
+        <Reference Include="MonoMod.Utils, Version=21.1.11.1, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\..\..\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Default\BepInEx\core\MonoMod.Utils.dll</HintPath>
+            <Private>False</Private>
         </Reference>
         <Reference Include="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\mscorlib.dll</HintPath>
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
-          <HintPath>..\__Common Dependencies\Newtonsoft.Json.dll</HintPath>
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="System" />
-        <Reference Include="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\System.dll</HintPath>
           <Private>False</Private>
         </Reference>
         <Reference Include="System.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
           <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\System.Configuration.dll</HintPath>
           <Private>False</Private>
         </Reference>
-        <Reference Include="System.Core" />
-        <Reference Include="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\System.Core.dll</HintPath>
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="System.Data" />
-        <Reference Include="System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <HintPath>..\__Common Dependencies\System.Data.dll</HintPath>
-        </Reference>
         <Reference Include="System.Numerics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\System.Numerics.dll</HintPath>
           <Private>False</Private>
         </Reference>
-        <Reference Include="System.Runtime.Serialization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <HintPath>..\__Common Dependencies\System.Runtime.Serialization.dll</HintPath>
-        </Reference>
         <Reference Include="System.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
           <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\System.Security.dll</HintPath>
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="System.Xml" />
-        <Reference Include="System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\System.Xml.dll</HintPath>
           <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
@@ -397,6 +374,18 @@
         <Reference Include="UnityEngine.XRModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
           <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.XRModule.dll</HintPath>
           <Private>False</Private>
+        </Reference>
+        <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+            <HintPath>..\__Common Dependencies\Newtonsoft.Json.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <HintPath>..\__Common Dependencies\System.Data.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Runtime.Serialization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <HintPath>..\__Common Dependencies\System.Runtime.Serialization.dll</HintPath>
+            <Private>False</Private>
         </Reference>
     </ItemGroup>
     <ItemGroup>

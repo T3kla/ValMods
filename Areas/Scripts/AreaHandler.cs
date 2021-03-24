@@ -27,6 +27,8 @@ namespace DifficultyAreas
         {
             while (true)
             {
+                if (player == null) break;
+                
                 Area newArea = GetArea(player.transform.position);
 
                 if (newArea.id != PlayerCurrentArea.id)
