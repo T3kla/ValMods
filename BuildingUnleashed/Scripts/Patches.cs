@@ -10,10 +10,22 @@ namespace BuildingUnleashed.Patches
     [HarmonyPatch]
     public static class Patches
     {
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Player), nameof(Player.Start))]
+        public static void Player_Awake(Player __instance)
+        {
+
+            if (Player.m_localPlayer != null)
+                Player.m_localPlayer.m_toolUseDelay = 0f;
+
+        }
+
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(Player), nameof(Player.UpdatePlacement))]
         static IEnumerable<CodeInstruction> UpdatePlacementTranspiler(IEnumerable<CodeInstruction> instructions)
         {
+
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             List<Vector2Int> brackets = new List<Vector2Int>();
 
@@ -55,12 +67,14 @@ namespace BuildingUnleashed.Patches
             }
 
             return RemoveBrackets(codes, brackets).AsEnumerable();
+
         }
 
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(Player), nameof(Player.Repair))]
         static IEnumerable<CodeInstruction> RepairTranspiler(IEnumerable<CodeInstruction> instructions)
         {
+
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             List<Vector2Int> brackets = new List<Vector2Int>();
 
@@ -78,16 +92,19 @@ namespace BuildingUnleashed.Patches
             }
 
             return RemoveBrackets(codes, brackets).AsEnumerable();
+
         }
 
         static List<CodeInstruction> RemoveBrackets(List<CodeInstruction> instructions, List<Vector2Int> brackets)
         {
+
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
 
             for (int i = brackets.Count - 1; i >= 0; i--)
                 codes.RemoveRange(brackets[i].x, brackets[i].y - brackets[i].x + 1);
 
             return codes;
+
         }
     }
 
