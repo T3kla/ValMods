@@ -1,5 +1,5 @@
 # BuidlingUnleashed
-Removes stamina requirements and item-wear from building and farming. Basically free placing, removing, repairing or planting stuff.
+Remove item wear, stamina requirements and delay from building and farming.
 
 ## Short story long
 In videogames there is a thing called "pacing".This concept revolves around the idea that the game should not only offer different types of gameplay, but it also should bounce the player between them from time to time.
@@ -20,8 +20,10 @@ If you are installing this manually, do the following
 2. Move the contents of `plugins` folder into `<GameDirectory>\Bepinex\plugins`.
 3. Run the game.
 
-<span style="display:block;text-align:center"> [![Logo64](https://user-images.githubusercontent.com/23636548/112306898-a1ac1f00-8ca0-11eb-8b3e-90e73dc7bad2.png "Tekla's Valheim Mods Repo")](https://github.com/T3kla/ValMods) </span>
+![Logo64](https://user-images.githubusercontent.com/23636548/112306898-a1ac1f00-8ca0-11eb-8b3e-90e73dc7bad2.png )
 
 ## Changelog
+#### 5.4.901
+- Removed tool (hoe, hammer, cultivator) delay
 #### 5.4.900
 - Updated Bepinex version

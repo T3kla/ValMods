@@ -406,12 +406,17 @@
   <Target Name="AfterBuild">
     <Exec Command="$(SolutionDir)pdb2mdb.exe $(ProjectDir)Tekla-ColorfulSigns\plugins\ColorfulSigns.dll" />
     <ItemGroup>
-      <MyFile Include="$(ProjectDir)Tekla-ColorfulSigns\**\*.*" />
+      <ModFolder Include="$(ProjectDir)Tekla-ColorfulSigns\**\*.*"/>
     </ItemGroup>
-    <Copy SourceFiles="@(MyFile)" DestinationFolder="$(GameDir)\Bepinex\plugins\$(ProjectName)\%(RecursiveDir)" />
+    <Copy SourceFiles="@(ModFolder)" DestinationFolder="$(GameDir)\Bepinex\plugins\$(ProjectName)\%(RecursiveDir)" />
     <Delete Files="$(ProjectDir)Tekla-ColorfulSigns\plugins\ColorfulSigns.pdb" />
     <Delete Files="$(ProjectDir)Tekla-ColorfulSigns\plugins\ColorfulSigns.dll.mdb" />
     <Exec Command="powershell Compress-Archive -Path $(ProjectDir)Tekla-ColorfulSigns\**\ $(SolutionDir)__Releases\Tekla-ColorfulSigns.zip -Force" />
+    <ItemGroup>
+      <PluginsFolder Include="$(ProjectDir)Tekla-ColorfulSigns\plugins\"/>
+    </ItemGroup>
+    <Delete Files="$(SolutionDir)__Releases\Tekla-ColorfulSigns.7z"/>
+    <Exec Command="7z a -t7z $(SolutionDir)__Releases\Tekla-ColorfulSigns.7z @(PluginsFolder)" />
   </Target>
   
 </Project>

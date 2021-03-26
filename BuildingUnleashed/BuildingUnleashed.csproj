@@ -390,12 +390,17 @@
   <Target Name="AfterBuild">
     <Exec Command="$(SolutionDir)pdb2mdb.exe $(ProjectDir)Tekla-BuildingUnleashed\plugins\BuildingUnleashed.dll" />
     <ItemGroup>
-      <MyFile Include="$(ProjectDir)Tekla-BuildingUnleashed\**\*.*" />
+      <ModFolder Include="$(ProjectDir)Tekla-BuildingUnleashed\**\*.*"/>
     </ItemGroup>
-    <Copy SourceFiles="@(MyFile)" DestinationFolder="$(GameDir)\Bepinex\plugins\$(ProjectName)\%(RecursiveDir)" />
+    <Copy SourceFiles="@(ModFolder)" DestinationFolder="$(GameDir)\Bepinex\plugins\$(ProjectName)\%(RecursiveDir)" />
     <Delete Files="$(ProjectDir)Tekla-BuildingUnleashed\plugins\BuildingUnleashed.pdb" />
     <Delete Files="$(ProjectDir)Tekla-BuildingUnleashed\plugins\BuildingUnleashed.dll.mdb" />
     <Exec Command="powershell Compress-Archive -Path $(ProjectDir)Tekla-BuildingUnleashed\**\ -DestinationPath $(SolutionDir)__Releases\Tekla-BuildingUnleashed.zip -Force" />
+    <ItemGroup>
+      <PluginsFolder Include="$(ProjectDir)Tekla-BuildingUnleashed\plugins\"/>
+    </ItemGroup>
+    <Delete Files="$(SolutionDir)__Releases\Tekla-BuildingUnleashed.7z"/>
+    <Exec Command="7z a -t7z $(SolutionDir)__Releases\Tekla-BuildingUnleashed.7z @(PluginsFolder)" />
   </Target>
   
 </Project>

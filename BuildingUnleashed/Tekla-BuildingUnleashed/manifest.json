@@ -1,7 +1,7 @@
 {
   "name": "BuildingUnleashed",
-  "description": "Remove item wear and stamina requirements from building and farming.",
-  "version_number": "5.4.900",
+  "description": "Remove item wear, stamina requirements and delay from building and farming.",
+  "version_number": "5.4.901",
   "website_url": "https://github.com/T3kla/ValMods",
   "dependencies": [
     "denikson-BepInExPack_Valheim-5.4.900"

@@ -392,6 +392,7 @@
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="Scripts\AreaHandler.cs" />
         <Compile Include="Scripts\Containers.cs" />
+        <Compile Include="Scripts\CritterHandler.cs" />
         <Compile Include="Scripts\Globals.cs" />
         <Compile Include="Scripts\Main.cs" />
         <Compile Include="Scripts\Patches.cs" />
@@ -409,13 +410,18 @@
 
     <Target Name="AfterBuild">
       <Exec Command="$(SolutionDir)pdb2mdb.exe $(ProjectDir)Tekla-Areas\plugins\Areas.dll" />
-      <ItemGroup>
-          <MyFile Include="$(ProjectDir)Tekla-Areas\**\*.*" />
-      </ItemGroup>
-      <Copy SourceFiles="@(MyFile)" DestinationFolder="$(GameDir)\Bepinex\plugins\$(ProjectName)\%(RecursiveDir)" />
+        <ItemGroup>
+            <ModFolder Include="$(ProjectDir)Tekla-Areas\**\*.*"/>
+        </ItemGroup>
+      <Copy SourceFiles="@(ModFolder)" DestinationFolder="$(GameDir)\Bepinex\plugins\$(ProjectName)\%(RecursiveDir)" />
       <Delete Files="$(ProjectDir)Tekla-Areas\plugins\Areas.pdb" />
       <Delete Files="$(ProjectDir)Tekla-Areas\plugins\Areas.dll.mdb" />
       <Exec Command="powershell Compress-Archive -Path $(ProjectDir)Tekla-Areas\**\ $(SolutionDir)__Releases\Tekla-Areas.zip -Force" />
+        <ItemGroup>
+            <PluginsFolder Include="$(ProjectDir)Tekla-Areas\plugins\"/>
+        </ItemGroup>
+      <Delete Files="$(SolutionDir)__Releases\Tekla-Areas.7z"/>
+      <Exec Command="7z a -t7z $(SolutionDir)__Releases\Tekla-Areas.7z @(PluginsFolder)" />
     </Target>
 
 </Project>

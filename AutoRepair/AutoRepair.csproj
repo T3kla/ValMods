@@ -390,12 +390,17 @@
   <Target Name="AfterBuild">
     <Exec Command="$(SolutionDir)pdb2mdb.exe $(ProjectDir)Tekla-AutoRepair\plugins\AutoRepair.dll" />
     <ItemGroup>
-      <MyFile Include="$(ProjectDir)Tekla-AutoRepair\**\*.*"/>
+      <ModFolder Include="$(ProjectDir)Tekla-AutoRepair\**\*.*"/>
     </ItemGroup>
-    <Copy SourceFiles="@(MyFile)" DestinationFolder="$(GameDir)\Bepinex\plugins\$(ProjectName)\%(RecursiveDir)" />
+    <Copy SourceFiles="@(ModFolder)" DestinationFolder="$(GameDir)\Bepinex\plugins\$(ProjectName)\%(RecursiveDir)" />
     <Delete Files="$(ProjectDir)Tekla-AutoRepair\plugins\AutoRepair.pdb"/>
     <Delete Files="$(ProjectDir)Tekla-AutoRepair\plugins\AutoRepair.dll.mdb"/>
     <Exec Command="powershell Compress-Archive -Path $(ProjectDir)Tekla-AutoRepair\**\ -DestinationPath $(SolutionDir)__Releases\Tekla-AutoRepair.zip -Force" />
+    <ItemGroup>
+      <PluginsFolder Include="$(ProjectDir)Tekla-AutoRepair\plugins\"/>
+    </ItemGroup>
+    <Delete Files="$(SolutionDir)__Releases\Tekla-AutoRepair.7z"/>
+    <Exec Command="7z a -t7z $(SolutionDir)__Releases\Tekla-AutoRepair.7z @(PluginsFolder)" />
   </Target>
   
 </Project>

@@ -1,10 +1,32 @@
 [
     {
         "id": "dif_1",
-        "layer": 1
+        "layer": 1,
+        "general": {
+            "level_fixed": 2
+        },
+        "specific": [
+            {}
+        ]
     },
     {
         "id": "dif_2",
-        "layer": 2
+        "layer": 2,
+        "general": {
+            "level_min": 3,
+            "level_max": 5,
+            "level_lvlUpChance": 15,
+            "level_fixed": 0
+        },
+        "specific": [
+            {
+                "name": "Greydwarf_Shaman",
+                "level_fixed": 4
+            },
+            {
+                "name": "Troll",
+                "level_fixed": 5
+            }
+        ]
     }
 ]
