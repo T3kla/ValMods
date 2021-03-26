@@ -4,7 +4,7 @@ using HarmonyLib;
 using System.IO;
 using System.Reflection;
 
-namespace DifficultyAreas
+namespace Areas
 {
     [BepInPlugin(GUID, MODNAME, VERSION)]
     public class Main : BaseUnityPlugin

@@ -3,7 +3,7 @@ using System.IO;
 using UnityEngine;
 using Newtonsoft.Json;
 
-namespace DifficultyAreas.TJson
+namespace Areas.TJson
 {
 
     public sealed class Serialization

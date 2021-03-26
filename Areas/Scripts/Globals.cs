@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using DifficultyAreas.Containers;
+using Areas.Containers;
 
-namespace DifficultyAreas
+namespace Areas
 {
 
     public class Global

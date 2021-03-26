@@ -2,10 +2,10 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DifficultyAreas.TJson;
-using DifficultyAreas.Containers;
+using Areas.TJson;
+using Areas.Containers;
 
-namespace DifficultyAreas
+namespace Areas
 {
 
     public static class AreaHandler
@@ -28,7 +28,7 @@ namespace DifficultyAreas
             while (true)
             {
                 if (player == null) break;
-                
+
                 Area newArea = GetArea(player.transform.position);
 
                 if (newArea.id != PlayerCurrentArea.id)
@@ -45,7 +45,7 @@ namespace DifficultyAreas
             }
         }
 
-        private static Area GetArea(Vector3 playerPos)
+        public static Area GetArea(Vector3 playerPos)
         {
             Vector2 playerPos2D = new Vector2(playerPos.x, playerPos.z);
             int areaIndex = -1;

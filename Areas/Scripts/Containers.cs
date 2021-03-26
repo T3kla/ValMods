@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-namespace DifficultyAreas.Containers
+namespace Areas.Containers
 {
 
     public class Area
@@ -13,9 +14,6 @@ namespace DifficultyAreas.Containers
         public int inner_radious;
         public int outter_radious;
 
-        // public string[] lvlBracket;
-        // public AreaConfig overrideConfig;
-
         public AreaCfg cfg;
     }
 
@@ -24,7 +22,20 @@ namespace DifficultyAreas.Containers
         public string id;
         public int layer;
 
-        // public float hp_multiplier;
+        public CritterCfg general;
+        public List<CritterCfg> specific;
+    }
+
+    public class CritterCfg
+    {
+        // ----------------------------------------------------------------------------------------------------------------------------------- GENERAL
+        public string name;
+
+        // ----------------------------------------------------------------------------------------------------------------------------------- LEVEL
+        public int level_max;
+        public int level_min;
+        public int level_lvlUpChance;
+        public int level_fixed;
     }
 
 
