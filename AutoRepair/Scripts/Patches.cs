@@ -11,43 +11,24 @@ namespace AutoRepair.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CraftingStation), nameof(CraftingStation.Interact))]
-        public static void InteractPatch(CraftingStation __instance, Humanoid user, bool repeat)
+        public static void CraftingStation_Interact(CraftingStation __instance, Humanoid user, bool repeat)
         {
-            try
+
+            var count = 0;
+
+            var inv = InventoryGui.instance;
+            while (inv.HaveRepairableItems())
             {
-                // ----- Checks from HaveRepairableItems(), which are normally called to activate/deactivate repair button
-                var currentCraftingStation = Player.m_localPlayer.GetCurrentCraftingStation();
-                var inv = InventoryGui.instance;
-                
-                if (Player.m_localPlayer == null) return;
-                if (currentCraftingStation == null && !Player.m_localPlayer.NoCostCheat()) return;
-                if (currentCraftingStation && !currentCraftingStation.CheckUsable(Player.m_localPlayer, false)) return;
-                // -----
-
-                var itemList = new List<ItemDrop.ItemData>();
-                Player.m_localPlayer.GetInventory().GetWornItems(itemList);
-
-                var repairedObjects = new List<string>();
-                var didRepair = false;
-
-                foreach (var itemData in itemList.Where(itemData => inv.CanRepair(itemData)))
-                {
-                    itemData.m_durability = itemData.GetMaxDurability();
-                    didRepair = true;
-                    repairedObjects.Add(itemData.m_shared.m_name);
-                }
-
-                if (!didRepair) return;
-                
-                var count = repairedObjects.Count;
-                var msg = count > 1 ? $"Repaired {count} objects!" : $"Repaired 1 object!";
-                Debug.Log($"[AutoRepair] Repaired: {string.Join(" ,", repairedObjects)}");
-                Player.m_localPlayer.Message(MessageHud.MessageType.Center, msg, 0, null);
+                count++;
+                inv.RepairOneItem();
             }
-            catch
+
+            if (count > 0)
             {
-                // ignored
+                __instance.m_repairItemDoneEffects.Create(__instance.transform.position, Quaternion.identity, null, 1f);
+                Debug.Log($"[AutoRepair] Repaired {count} objects!");
             }
+
         }
 
     }
