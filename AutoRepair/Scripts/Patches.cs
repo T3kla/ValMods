@@ -26,6 +26,7 @@ namespace AutoRepair.Patches
             if (count > 0)
             {
                 __instance.m_repairItemDoneEffects.Create(__instance.transform.position, Quaternion.identity, null, 1f);
+                Player.m_localPlayer.Message(MessageHud.MessageType.Center, " ", 0, null);
                 Debug.Log($"[AutoRepair] Repaired {count} objects!");
             }
 
