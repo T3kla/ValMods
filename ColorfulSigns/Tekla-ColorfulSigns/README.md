@@ -1,4 +1,4 @@
-# ColorfulSigns for Valheim
+# ColorfulSigns
 Enable Unity's enriched text in signs and change default color to white.
 
 | Tag | Effect |
