@@ -377,9 +377,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Scripts\Globals.cs" />
     <Compile Include="Scripts\Main.cs" />
     <Compile Include="Scripts\Patches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scripts\RemoveDeathPins.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -391,16 +393,16 @@
   <Target Name="AfterBuild">
     <Exec Command="$(SolutionDir)pdb2mdb.exe $(ProjectDir)Tekla-RemoveDeathPins\plugins\RemoveDeathPins.dll" />
     <ItemGroup>
-      <ModFolder Include="$(ProjectDir)Tekla-RemoveDeathPins\**\*.*"/>
+      <ModFolder Include="$(ProjectDir)Tekla-RemoveDeathPins\**\*.*" />
     </ItemGroup>
     <Copy SourceFiles="@(ModFolder)" DestinationFolder="$(GameDir)\Bepinex\plugins\$(ProjectName)\%(RecursiveDir)" />
-    <Delete Files="$(ProjectDir)Tekla-RemoveDeathPins\plugins\RemoveDeathPins.pdb"/>
-    <Delete Files="$(ProjectDir)Tekla-RemoveDeathPins\plugins\RemoveDeathPins.dll.mdb"/>
+    <Delete Files="$(ProjectDir)Tekla-RemoveDeathPins\plugins\RemoveDeathPins.pdb" />
+    <Delete Files="$(ProjectDir)Tekla-RemoveDeathPins\plugins\RemoveDeathPins.dll.mdb" />
     <Exec Command="powershell Compress-Archive -Path $(ProjectDir)Tekla-RemoveDeathPins\**\ -DestinationPath $(SolutionDir)__Releases\Tekla-RemoveDeathPins.zip -Force" />
     <ItemGroup>
-      <PluginsFolder Include="$(ProjectDir)Tekla-RemoveDeathPins\plugins\"/>
+      <PluginsFolder Include="$(ProjectDir)Tekla-RemoveDeathPins\plugins\" />
     </ItemGroup>
-    <Delete Files="$(SolutionDir)__Releases\Tekla-RemoveDeathPins.7z"/>
+    <Delete Files="$(SolutionDir)__Releases\Tekla-RemoveDeathPins.7z" />
     <Exec Command="7z a -t7z $(SolutionDir)__Releases\Tekla-RemoveDeathPins.7z @(PluginsFolder)" />
   </Target>
   

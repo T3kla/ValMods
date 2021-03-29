@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using HarmonyLib;
 
-namespace RemoveDeathPins.Patches
+namespace RemoveDeathPins
 {
+
     [HarmonyPatch]
     public static class Patches
     {
@@ -17,7 +18,28 @@ namespace RemoveDeathPins.Patches
             Minimap.PinData pin = __instance.m_pins.Find(x => x.m_type == Minimap.PinType.Death);
             if (pin == null) return;
             if (Utils.DistanceXZ(pos, pin.m_pos) < radius)
-                RemoveDeathPin();
+                __result = pin;
+
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(Player), nameof(Player.OnDeath))]
+        public static void Player_OnDeath_Pre(Player __instance)
+        {
+
+            if (__instance.m_inventory.NrOfItems() > 0 || Globals.configAlwaysGen.Value == true)
+                RDP.AddDeathPoint(__instance.GetCenterPoint());
+
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Player), nameof(Player.OnDeath))]
+        public static void Player_OnDeath_Post(Player __instance)
+        {
+
+            PlayerProfile playerProfile = Game.instance.GetPlayerProfile();
+            playerProfile.GetWorldData(ZNet.instance.GetWorldUID()).m_haveDeathPoint = false;
+            playerProfile.GetWorldData(ZNet.instance.GetWorldUID()).m_deathPoint = Vector3.zero;
 
         }
 
@@ -30,24 +52,12 @@ namespace RemoveDeathPins.Patches
             if (!__instance.m_nview.IsOwner()) return;
             if (__instance.m_container.IsInUse()) return;
             if (__instance.m_container.GetInventory().NrOfItems() > 0) return;
-            RemoveDeathPin();
 
-        }
-
-        public static void RemoveDeathPin()
-        {
-
-            Minimap.PinData pin = Minimap.instance.m_pins.Find(x => x.m_type == Minimap.PinType.Death);
-            if (pin == null) return;
-
-            PlayerProfile playerProfile = Game.instance.GetPlayerProfile();
-            playerProfile.GetWorldData(ZNet.instance.GetWorldUID()).m_haveDeathPoint = false;
-            playerProfile.GetWorldData(ZNet.instance.GetWorldUID()).m_deathPoint = Vector3.zero;
-            Minimap.instance.m_pins.Remove(pin);
-
-            Debug.Log($"[RemoveDeathPins] Death pin removed!");
+            Vector3 tombPoint = __instance.transform.position;
+            RDP.RemoveDeathPin(tombPoint);
 
         }
 
     }
+
 }

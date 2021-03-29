@@ -1,9 +1,9 @@
 {
     "name": "RemoveDeathPins",
-    "description": "Enable Death Pin removal either by right clicking or retrieving tombstone.",
-    "version_number": "5.4.901",
+    "description": "Complete overhaul of the Death Pin system, which include it's removal.",
+    "version_number": "5.4.902",
     "website_url": "https://github.com/T3kla/ValMods",
     "dependencies": [
-        "denikson-BepInExPack_Valheim-5.4.900"
+        "denikson-BepInExPack_Valheim-5.4.901"
     ]
 }
