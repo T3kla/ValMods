@@ -34,7 +34,17 @@ namespace BuidlingUnleashed
 
         public void Start()
         {
+            InitializeConfig();
             harmony.PatchAll(assembly);
+        }
+
+        public void InitializeConfig()
+        {
+            Globals.configToolDelay = Config.Bind(
+                "General",
+                "Tool Delay",
+                0.15f,
+                "Changes the default value for tool delay. Official value is 0.5");
         }
     }
 }

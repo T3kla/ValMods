@@ -2,10 +2,11 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections.Generic;
+using BuidlingUnleashed;
 using UnityEngine;
 using HarmonyLib;
 
-namespace BuildingUnleashed.Patches
+namespace BuildingUnleashed
 {
     [HarmonyPatch]
     public static class Patches
@@ -17,7 +18,7 @@ namespace BuildingUnleashed.Patches
         {
 
             if (Player.m_localPlayer != null)
-                Player.m_localPlayer.m_toolUseDelay = 0f;
+                Player.m_localPlayer.m_toolUseDelay = Globals.configToolDelay.Value > 0f ? Globals.configToolDelay.Value : 0f;
 
         }
 

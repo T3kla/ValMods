@@ -1,4 +1,4 @@
-# BuidlingUnleashed
+# BuildingUnleashed
 Remove item wear, stamina requirements and delay from building and farming.
 
 ## Short story long
@@ -20,10 +20,13 @@ If you are installing this manually, do the following
 2. Move the contents of `plugins` folder into `<GameDirectory>\Bepinex\plugins`.
 3. Run the game.
 
-![Logo64](https://user-images.githubusercontent.com/23636548/112306898-a1ac1f00-8ca0-11eb-8b3e-90e73dc7bad2.png )
+![Logo64](https://user-images.githubusercontent.com/23636548/112306898-a1ac1f00-8ca0-11eb-8b3e-90e73dc7bad2.png)
 
 ## Changelog
+#### 5.4.902
+- ToolDelay reintroduced but reduced from the official
+- New Config setting to set your own ToolDelay
 #### 5.4.901
-- Removed tool (hoe, hammer, cultivator) delay
+- Removed ToolDelay (hoe, hammer, cultivator) 
 #### 5.4.900
 - Updated Bepinex version
