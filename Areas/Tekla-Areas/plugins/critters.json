@@ -1,0 +1,21 @@
+{
+    "cfg_1": {},
+    "cfg_2": {
+        "Greyling": {
+            "level_min": 3,
+            "level_max": 5,
+            "level_lvlUpChance": 50
+        },
+        "Greydwarf": {
+            "level_min": 3,
+            "level_max": 5,
+            "level_lvlUpChance": 50
+        },
+        "Troll": {
+            "level_fixed": 5
+        },
+        "Greydwarf_Shaman": {
+            "level_fixed": 5
+        }
+    }
+}
