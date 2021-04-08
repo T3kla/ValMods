@@ -1,9 +1,9 @@
 {
-  "name": "DifficultyAreas",
-  "description": "This is a Bepinex mod for Valheim that .",
-  "version_number": "1.0.0",
+  "name": "Areas",
+  "description": "Allows to finely tune difficulty based on areas. It's in Alpha and won't work well.",
+  "version_number": "0.1.0",
   "website_url": "",
   "dependencies": [
-    "denikson-BepInExPack_Valheim-5.4.600"
+    "denikson-BepInExPack_Valheim-5.4.901"
   ]
 }
