@@ -397,10 +397,14 @@
     <Delete Files="$(ProjectDir)Tekla-AutoRepair\plugins\AutoRepair.dll.mdb"/>
     <Exec Command="powershell Compress-Archive -Path $(ProjectDir)Tekla-AutoRepair\**\ -DestinationPath $(SolutionDir)__Releases\Tekla-AutoRepair.zip -Force" />
     <ItemGroup>
-      <PluginsFolder Include="$(ProjectDir)Tekla-AutoRepair\plugins\"/>
+      <PluginsFolderOrg Include="$(ProjectDir)Tekla-AutoRepair\plugins\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(PluginsFolderOrg)" DestinationFolder="$(ProjectDir)\plugins\$(ProjectName)\%(RecursiveDir)" />
+    <ItemGroup>
+      <PluginsFolder Include="$(ProjectDir)\plugins\"/>
     </ItemGroup>
     <Delete Files="$(SolutionDir)__Releases\Tekla-AutoRepair.7z"/>
     <Exec Command="7z a -t7z $(SolutionDir)__Releases\Tekla-AutoRepair.7z @(PluginsFolder)" />
+    <RemoveDir Directories="$(ProjectDir)plugins\" />
   </Target>
-  
 </Project>
