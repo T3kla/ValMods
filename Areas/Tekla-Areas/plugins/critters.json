@@ -1,21 +1,27 @@
 {
-    "cfg_1": {},
-    "cfg_2": {
+    "cfg_0": {
+        "Boar": {
+            "level_fixed": 1
+        },
         "Greyling": {
-            "level_min": 3,
-            "level_max": 5,
-            "level_lvlUpChance": 50
+            "level_fixed": 2
         },
         "Greydwarf": {
-            "level_min": 3,
-            "level_max": 5,
-            "level_lvlUpChance": 50
+            "level_fixed": 2
+        }
+    },
+    "cfg_1": {
+        "Greyling": {
+            "level_fixed": 3
+        },
+        "Greydwarf": {
+            "level_fixed": 3
         },
         "Troll": {
-            "level_fixed": 5
+            "level_fixed": 3
         },
         "Greydwarf_Shaman": {
-            "level_fixed": 5
+            "level_fixed": 3
         }
     }
 }

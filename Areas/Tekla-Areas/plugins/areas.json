@@ -1,7 +1,7 @@
-[
-    {
-        "id": "area_1",
-        "cfg_id": "cfg_1",
+{
+    "area_0": {
+        "id": "area_0",
+        "cfg": "cfg_0",
         "layer": 1,
         "display_name": "Isle of Not Death",
         "inner_radious": 0,
@@ -11,9 +11,9 @@
             "z": 0
         }
     },
-    {
-        "id": "area_2",
-        "cfg_id": "cfg_2",
+    "area_1": {
+        "id": "area_1",
+        "cfg": "cfg_1",
         "layer": 2,
         "display_name": "Isle of Death",
         "inner_radious": 300,
@@ -23,4 +23,4 @@
             "z": 0
         }
     }
-]
+}
