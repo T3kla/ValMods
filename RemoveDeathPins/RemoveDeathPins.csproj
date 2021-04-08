@@ -400,10 +400,15 @@
     <Delete Files="$(ProjectDir)Tekla-RemoveDeathPins\plugins\RemoveDeathPins.dll.mdb" />
     <Exec Command="powershell Compress-Archive -Path $(ProjectDir)Tekla-RemoveDeathPins\**\ -DestinationPath $(SolutionDir)__Releases\Tekla-RemoveDeathPins.zip -Force" />
     <ItemGroup>
-      <PluginsFolder Include="$(ProjectDir)Tekla-RemoveDeathPins\plugins\" />
+      <PluginsFolderOrg Include="$(ProjectDir)Tekla-RemoveDeathPins\plugins\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(PluginsFolderOrg)" DestinationFolder="$(ProjectDir)\plugins\$(ProjectName)\%(RecursiveDir)" />
+    <ItemGroup>
+      <PluginsFolder Include="$(ProjectDir)\plugins\" />
     </ItemGroup>
     <Delete Files="$(SolutionDir)__Releases\Tekla-RemoveDeathPins.7z" />
     <Exec Command="7z a -t7z $(SolutionDir)__Releases\Tekla-RemoveDeathPins.7z @(PluginsFolder)" />
+    <RemoveDir Directories="$(ProjectDir)plugins\" />
   </Target>
   
 </Project>

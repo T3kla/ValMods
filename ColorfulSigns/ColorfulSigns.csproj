@@ -21,6 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -413,10 +414,15 @@
     <Delete Files="$(ProjectDir)Tekla-ColorfulSigns\plugins\ColorfulSigns.dll.mdb" />
     <Exec Command="powershell Compress-Archive -Path $(ProjectDir)Tekla-ColorfulSigns\**\ $(SolutionDir)__Releases\Tekla-ColorfulSigns.zip -Force" />
     <ItemGroup>
-      <PluginsFolder Include="$(ProjectDir)Tekla-ColorfulSigns\plugins\"/>
+      <PluginsFolderOrg Include="$(ProjectDir)Tekla-ColorfulSigns\plugins\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(PluginsFolderOrg)" DestinationFolder="$(ProjectDir)\plugins\$(ProjectName)\%(RecursiveDir)" />
+    <ItemGroup>
+      <PluginsFolder Include="$(ProjectDir)\plugins\"/>
     </ItemGroup>
     <Delete Files="$(SolutionDir)__Releases\Tekla-ColorfulSigns.7z"/>
     <Exec Command="7z a -t7z $(SolutionDir)__Releases\Tekla-ColorfulSigns.7z @(PluginsFolder)" />
+    <RemoveDir Directories="$(ProjectDir)plugins\" />
   </Target>
   
 </Project>
