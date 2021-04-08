@@ -17,8 +17,9 @@ namespace BuildingUnleashed
         public static void Player_Awake(Player __instance)
         {
 
-            if (Player.m_localPlayer != null)
-                Player.m_localPlayer.m_toolUseDelay = Globals.configToolDelay.Value > 0f ? Globals.configToolDelay.Value : 0f;
+            if (Player.m_localPlayer == null) return;
+            Player.m_localPlayer.m_placeDelay = Globals.configPlaceDelay.Value > 0f ? Globals.configPlaceDelay.Value : 0f;
+            Player.m_localPlayer.m_removeDelay = Globals.configRemoveDelay.Value > 0f ? Globals.configRemoveDelay.Value : 0f;
 
         }
 

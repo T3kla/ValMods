@@ -6,7 +6,8 @@ namespace BuidlingUnleashed
     public static class Globals
     {
 
-        public static ConfigEntry<float> configToolDelay;
+        public static ConfigEntry<float> configPlaceDelay;
+        public static ConfigEntry<float> configRemoveDelay;
 
     }
 

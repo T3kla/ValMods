@@ -40,11 +40,17 @@ namespace BuidlingUnleashed
 
         public void InitializeConfig()
         {
-            Globals.configToolDelay = Config.Bind(
+            Globals.configPlaceDelay = Config.Bind(
                 "General",
-                "Tool Delay",
-                0.15f,
-                "Changes the default value for tool delay. Official value is 0.5");
+                "Place Delay",
+                0.3f,
+                "Changes the default delay value for building pieces or using tools. Official value is 0.4");
+
+            Globals.configRemoveDelay = Config.Bind(
+                "General",
+                "Remove Delay",
+                0.25f,
+                "Changes the default default value for removing pieces. Official value is 0.25");
         }
     }
 }

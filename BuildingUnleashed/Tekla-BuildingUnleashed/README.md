@@ -23,9 +23,13 @@ If you are installing this manually, do the following
 ![Logo64](https://user-images.githubusercontent.com/23636548/112306898-a1ac1f00-8ca0-11eb-8b3e-90e73dc7bad2.png)
 
 ## Changelog
+#### 5.4.903
+In the 29/3/2021 Update, ToolDelay was divided in PlaceDelay and RemoveDelay, so: 
+- New Config setting to set PlaceDelay
+- New Config setting to set RemoveDelay
 #### 5.4.902
 - ToolDelay reintroduced but reduced from the official
-- New Config setting to set your own ToolDelay
+- New Config setting to set ToolDelay
 #### 5.4.901
 - Removed ToolDelay (hoe, hammer, cultivator) 
 #### 5.4.900

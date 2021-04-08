@@ -389,7 +389,7 @@
   </PropertyGroup>
 
   <Target Name="AfterBuild">
-    <Exec Command="$(SolutionDir)pdb2mdb.exe $(ProjectDir)Tekla-BuildingUnleashed\plugins\BuildingUnleashed.dll" />
+    <Exec Command="$(SolutionDir)pdb2mdb.exe $(ProjectDir)\Tekla-BuildingUnleashed\plugins\BuildingUnleashed.dll" />
     <ItemGroup>
       <ModFolder Include="$(ProjectDir)Tekla-BuildingUnleashed\**\*.*" />
     </ItemGroup>
@@ -398,10 +398,15 @@
     <Delete Files="$(ProjectDir)Tekla-BuildingUnleashed\plugins\BuildingUnleashed.dll.mdb" />
     <Exec Command="powershell Compress-Archive -Path $(ProjectDir)Tekla-BuildingUnleashed\**\ -DestinationPath $(SolutionDir)__Releases\Tekla-BuildingUnleashed.zip -Force" />
     <ItemGroup>
-      <PluginsFolder Include="$(ProjectDir)Tekla-BuildingUnleashed\plugins\" />
+      <PluginsFolderOrg Include="$(ProjectDir)Tekla-BuildingUnleashed\plugins\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(PluginsFolderOrg)" DestinationFolder="$(ProjectDir)\plugins\$(ProjectName)\%(RecursiveDir)" />
+    <ItemGroup>
+      <PluginsFolder Include="$(ProjectDir)\plugins\" />
     </ItemGroup>
     <Delete Files="$(SolutionDir)__Releases\Tekla-BuildingUnleashed.7z" />
     <Exec Command="7z a -t7z $(SolutionDir)__Releases\Tekla-BuildingUnleashed.7z @(PluginsFolder)" />
+    <RemoveDir Directories="$(ProjectDir)plugins\" />
   </Target>
   
 </Project>
