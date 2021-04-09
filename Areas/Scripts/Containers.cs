@@ -26,6 +26,45 @@ namespace Areas.Containers
         public int? level_lvlUpChance;
         public int? level_fixed;
 
+        // Weird stuff
+        // public string name = "";
+        // public Faction faction = Faction.AnimalsVeg;
+        // public bool boss;
+        // public string bossEvent = "";
+        // public string defeatSetGlobalKey = "";
+
+        // Movement & Physics
+        public float? crouch_speed = 2f;
+        public float? walk_speed = 5f;
+        public float? speed = 10f;
+        public float? turn_speed = 300f;
+        public float? run_speed = 20f;
+        public float? run_turn_speed = 300f;
+        public float? fly_slow_speed = 5f;
+        public float? fly_fast_speed = 12f;
+        public float? fly_turn_speed = 12f;
+        public float? acceleration = 1f;
+        public float? jump_force = 10f;
+        public float? jump_force_forward;
+        public float? jump_force_tired_factor = 0.7f;
+        public float? air_control = 0.1f;
+        public bool? can_swim = true;
+        public float? swim_depth = 2f;
+        public float? swim_speed = 2f;
+        public float? swim_turn_speed = 100f;
+        public float? swim_acceleration = 0.05f;
+        // public GroundTiltType m_groundTilt;
+        public bool? flying;
+        public float? jump_stamina_usage = 10f;
+
+        // Health & Damage
+        public bool? tolerate_water = true;
+        public bool? tolerate_fire;
+        public bool? tolerate_smoke = true;
+        public float? health = 10f;
+        public bool? stagger_when_blocked = true;
+        public float? stagger_damage_factor;
+
     }
 
     public class SSMods
@@ -45,7 +84,7 @@ namespace Areas.Containers
 
         public string required_global_key; // only spawn if this key is set
 
-        // public List<string> m_requiredEnvironments = new List<string>(); // only spawn if this environment is active
+        // public List<string> requiredEnvironments = new List<string>(); // only spawn if this environment is active
 
         public int? group_size_min;
         public int? group_size_max;
