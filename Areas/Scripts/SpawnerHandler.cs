@@ -12,9 +12,14 @@ namespace Areas
     {
 
         private static Dictionary<string, List<SpawnSystem.SpawnData>> SS_Dic = new Dictionary<string, List<SpawnSystem.SpawnData>>();
+        private static HashSet<Transform> SS_List = new HashSet<Transform>();
+        private static HashSet<Transform> CS_List = new HashSet<Transform>();
+        private static HashSet<Transform> SA_List = new HashSet<Transform>();
 
         public static void Modify_SS(SpawnSystem ss)
         {
+
+            if (SS_List.Contains(ss.transform)) return;
 
             Area area = AreaHandler.GetArea(ss.transform.position);
             if (area == null) return;
@@ -24,10 +29,9 @@ namespace Areas
             Dictionary<int, SSMods> ssmods = Globals.SSMods[area.cfg];
             Debug.Log($"[Areas] Modifying SpawnSystem in \"{ss.transform.position}\" in area \"{area.id}\" with config \"{area.cfg}\"");
 
-            // ----------------------------------------------------------------------------------------------------------------------------------- PASTE 
+            // ----------------------------------------------------------------------------------------------------------------------------------- MODS
             if (SS_Dic.ContainsKey(area.cfg)) { ss.m_spawners = new List<SpawnSystem.SpawnData>(SS_Dic[area.cfg]); return; }
 
-            // ----------------------------------------------------------------------------------------------------------------------------------- MODS
             foreach (var mod in ssmods)
             {
                 if (mod.Key >= ss.m_spawners.Count) continue;
@@ -41,13 +45,16 @@ namespace Areas
                 spawnData.m_maxAltitude = mod.Value.group_size_min ?? spawnData.m_maxAltitude;
             }
 
-            // ----------------------------------------------------------------------------------------------------------------------------------- COPY
+            // ----------------------------------------------------------------------------------------------------------------------------------- EXIT
             if (!SS_Dic.ContainsKey(area.cfg)) SS_Dic.Add(area.cfg, new List<SpawnSystem.SpawnData>(ss.m_spawners));
+            SS_List.Add(ss.transform);
 
         }
 
         public static void Modify_CS(CreatureSpawner cs)
         {
+
+            if (CS_List.Contains(cs.transform)) return;
 
             string name = cs.name.Replace("(Clone)", "");
 
@@ -68,10 +75,15 @@ namespace Areas
             cs.m_requireSpawnArea = csmod.require_spawn_area ?? cs.m_requireSpawnArea;
             cs.m_spawnInPlayerBase = csmod.spawn_in_player_base ?? cs.m_spawnInPlayerBase;
             cs.m_setPatrolSpawnPoint = csmod.set_patrol_spawn_point ?? cs.m_setPatrolSpawnPoint;
+
+            CS_List.Add(cs.transform);
+
         }
 
         public static void Modify_SA(SpawnArea sa)
         {
+
+            if (SA_List.Contains(sa.transform)) return;
 
             string name = sa.name.Replace("(Clone)", "");
 
@@ -93,6 +105,19 @@ namespace Areas
             sa.m_maxNear = samod.max_near ?? sa.m_maxNear;
             sa.m_maxTotal = samod.max_total ?? sa.m_maxTotal;
             sa.m_onGroundOnly = samod.on_ground_only ?? sa.m_onGroundOnly;
+
+
+            // ----------------------------------------------------------------------------------------------------------------------------------- EXIT
+            SA_List.Add(sa.transform);
+
+        }
+
+        public static void Spawners_ResetData()
+        {
+
+            SS_List.Clear();
+            CS_List.Clear();
+            SA_List.Clear();
 
         }
 

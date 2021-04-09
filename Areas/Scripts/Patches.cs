@@ -89,6 +89,8 @@ namespace Areas.Patches
             Main.Remote_ResetData();
             Main.Current_ResetData();
 
+            SpawnerHandler.Spawners_ResetData();
+
         }
 
         [HarmonyPostfix]
