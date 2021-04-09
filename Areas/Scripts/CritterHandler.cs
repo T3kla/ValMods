@@ -75,12 +75,42 @@ namespace Areas
             critter.m_flying = ctmods.flying ?? critter.m_flying;
             critter.m_jumpStaminaUsage = ctmods.jump_stamina_usage ?? critter.m_jumpStaminaUsage;
 
-            critter.m_tolerateWater = ctmods.crouch_speed ?? critter.m_tolerateWater;
-            critter.m_tolerateFire = ctmods.crouch_speed ?? critter.m_tolerateFire;
-            critter.m_tolerateSmoke = ctmods.crouch_speed ?? critter.m_tolerateSmoke;
-            critter.m_health = ctmods.crouch_speed ?? critter.m_health;
-            critter.m_staggerWhenBlocked = ctmods.crouch_speed ?? critter.m_staggerWhenBlocked;
-            critter.m_staggerDamageFactor = ctmods.crouch_speed ?? critter.m_staggerDamageFactor;
+            critter.m_tolerateWater = ctmods.tolerate_water ?? critter.m_tolerateWater;
+            critter.m_tolerateFire = ctmods.tolerate_fire ?? critter.m_tolerateFire;
+            critter.m_tolerateSmoke = ctmods.tolerate_smoke ?? critter.m_tolerateSmoke;
+            critter.m_health = ctmods.health ?? critter.m_health;
+            critter.m_staggerWhenBlocked = ctmods.stagger_when_blocked ?? critter.m_staggerWhenBlocked;
+            critter.m_staggerDamageFactor = ctmods.stagger_damage_factor ?? critter.m_staggerDamageFactor;
+
+            MonsterAI ai = critter.GetComponent<MonsterAI>();
+            if (ai != null)
+            {
+                ai.m_alertRange = ctmods.alert_range ?? ai.m_alertRange;
+                ai.m_fleeIfHurtWhenTargetCantBeReached = ctmods.flee_if_hurt_when_target_cant_be_reached ?? ai.m_fleeIfHurtWhenTargetCantBeReached;
+                ai.m_fleeIfNotAlerted = ctmods.flee_if_not_alerted ?? ai.m_fleeIfNotAlerted;
+                ai.m_fleeIfLowHealth = ctmods.flee_if_low_health ?? ai.m_fleeIfLowHealth;
+                ai.m_circulateWhileCharging = ctmods.circulate_while_charging ?? ai.m_circulateWhileCharging;
+                ai.m_circulateWhileChargingFlying = ctmods.circulate_while_charging_flying ?? ai.m_circulateWhileChargingFlying;
+                ai.m_enableHuntPlayer = ctmods.enable_hunt_player ?? ai.m_enableHuntPlayer;
+                ai.m_attackPlayerObjects = ctmods.attack_player_objects ?? ai.m_attackPlayerObjects;
+                ai.m_attackPlayerObjectsWhenAlerted = ctmods.attack_player_objects_when_alerted ?? ai.m_attackPlayerObjectsWhenAlerted;
+                ai.m_interceptTimeMax = ctmods.intercept_time_max ?? ai.m_interceptTimeMax;
+                ai.m_interceptTimeMin = ctmods.intercept_time_min ?? ai.m_interceptTimeMin;
+                ai.m_maxChaseDistance = ctmods.max_chase_distance ?? ai.m_maxChaseDistance;
+                ai.m_minAttackInterval = ctmods.min_attack_interval ?? ai.m_minAttackInterval;
+                ai.m_circleTargetInterval = ctmods.circle_target_interval ?? ai.m_circleTargetInterval;
+                ai.m_circleTargetDuration = ctmods.circle_target_duration ?? ai.m_circleTargetDuration;
+                ai.m_circleTargetDistance = ctmods.circle_target_distance ?? ai.m_circleTargetDistance;
+                ai.m_sleeping = ctmods.sleeping ?? ai.m_sleeping;
+                ai.m_noiseWakeup = ctmods.noise_wakeup ?? ai.m_noiseWakeup;
+                ai.m_noiseRangeScale = ctmods.noise_range_scale ?? ai.m_noiseRangeScale;
+                ai.m_wakeupRange = ctmods.wakeup_range ?? ai.m_wakeupRange;
+                ai.m_avoidLand = ctmods.avoid_land ?? ai.m_avoidLand;
+                ai.m_consumeRange = ctmods.consume_range ?? ai.m_consumeRange;
+                ai.m_consumeSearchRange = ctmods.consume_search_range ?? ai.m_consumeSearchRange;
+                ai.m_consumeSearchInterval = ctmods.consume_search_interval ?? ai.m_consumeSearchInterval;
+                ai.m_consumeHeal = ctmods.consume_heal ?? ai.m_consumeHeal;
+            }
 
 
             // ----------------------------------------------------------------------------------------------------------------------------------- EMPTY HOLDER

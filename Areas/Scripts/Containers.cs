@@ -34,36 +34,73 @@ namespace Areas.Containers
         // public string defeatSetGlobalKey = "";
 
         // Movement & Physics
-        public float? crouch_speed = 2f;
-        public float? walk_speed = 5f;
-        public float? speed = 10f;
-        public float? turn_speed = 300f;
-        public float? run_speed = 20f;
-        public float? run_turn_speed = 300f;
-        public float? fly_slow_speed = 5f;
-        public float? fly_fast_speed = 12f;
-        public float? fly_turn_speed = 12f;
-        public float? acceleration = 1f;
-        public float? jump_force = 10f;
+        public float? crouch_speed;
+        public float? walk_speed;
+        public float? speed;
+        public float? turn_speed;
+        public float? run_speed;
+        public float? run_turn_speed;
+        public float? fly_slow_speed;
+        public float? fly_fast_speed;
+        public float? fly_turn_speed;
+        public float? acceleration;
+        public float? jump_force;
         public float? jump_force_forward;
-        public float? jump_force_tired_factor = 0.7f;
-        public float? air_control = 0.1f;
-        public bool? can_swim = true;
-        public float? swim_depth = 2f;
-        public float? swim_speed = 2f;
-        public float? swim_turn_speed = 100f;
-        public float? swim_acceleration = 0.05f;
+        public float? jump_force_tired_factor;
+        public float? air_control;
+        public bool? can_swim;
+        public float? swim_depth;
+        public float? swim_speed;
+        public float? swim_turn_speed;
+        public float? swim_acceleration;
         // public GroundTiltType m_groundTilt;
         public bool? flying;
-        public float? jump_stamina_usage = 10f;
+        public float? jump_stamina_usage;
 
         // Health & Damage
-        public bool? tolerate_water = true;
+        public bool? tolerate_water;
         public bool? tolerate_fire;
-        public bool? tolerate_smoke = true;
-        public float? health = 10f;
-        public bool? stagger_when_blocked = true;
+        public bool? tolerate_smoke;
+        public float? health;
+        public bool? stagger_when_blocked;
         public float? stagger_damage_factor;
+
+        // Monster AI stuff
+        public float? alert_range;
+        public bool? flee_if_hurt_when_target_cant_be_reached;
+        public bool? flee_if_not_alerted;
+        public float? flee_if_low_health;
+        public bool? circulate_while_charging;
+        public bool? circulate_while_charging_flying;
+        public bool? enable_hunt_player;
+        public bool? attack_player_objects;
+        public bool? attack_player_objects_when_alerted;
+        public float? intercept_time_max;
+        public float? intercept_time_min;
+        public float? max_chase_distance;
+        public float? min_attack_interval;
+
+        // Monster AI stuff, Circle target
+        public float? circle_target_interval;
+        public float? circle_target_duration;
+        public float? circle_target_distance;
+
+        // Monster AI stuff, Sleep
+        public bool? sleeping;
+        public bool? noise_wakeup;
+        public float? noise_range_scale;
+        public float? wakeup_range;
+        // public EffectList wakeupEffects = new EffectList();
+
+        // Monster AI stuff, Other
+        public bool? avoid_land;
+
+        // Monster AI stuff, Consume items
+        // public List<ItemDrop> consumeItems;
+        public float? consume_range;
+        public float? consume_search_range;
+        public float? consume_search_interval;
+        public float? consume_heal;
 
     }
 
