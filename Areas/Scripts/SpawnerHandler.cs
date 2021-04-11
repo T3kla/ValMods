@@ -30,7 +30,7 @@ namespace Areas
             Debug.Log($"[Areas] Modifying SpawnSystem in \"{ss.transform.position}\" in area \"{area.id}\" with config \"{area.cfg}\"");
 
             // ----------------------------------------------------------------------------------------------------------------------------------- MODS
-            if (SS_Dic.ContainsKey(area.cfg)) { ss.m_spawners = new List<SpawnSystem.SpawnData>(SS_Dic[area.cfg]); return; }
+            if (SS_Dic.ContainsKey(area.cfg)) { ss.m_spawners = SS_Dic[area.cfg]; return; }
 
             foreach (var mod in ssmods)
             {
@@ -112,9 +112,10 @@ namespace Areas
 
         }
 
-        public static void Spawners_ResetData()
+        public static void ResetData()
         {
 
+            SS_Dic.Clear();
             SS_List.Clear();
             CS_List.Clear();
             SA_List.Clear();

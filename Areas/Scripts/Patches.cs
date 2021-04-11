@@ -89,8 +89,6 @@ namespace Areas.Patches
             Main.Remote_ResetData();
             Main.Current_ResetData();
 
-            SpawnerHandler.Spawners_ResetData();
-
         }
 
         [HarmonyPostfix]
@@ -105,6 +103,51 @@ namespace Areas.Patches
 
             Debug.Log($"[Areas] Instance is sending Data to client \"{client}\"");
             RPC.SendDataToClient(client);
+
+        }
+
+        //   GameObject prefab = ZNetScene.instance.GetPrefab("PlayerNPC");
+
+        // if (ZNetScene.instance.m_namedPrefabs != null)
+        //     {
+        //         if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(StringExtensionMethods.GetStableHashCode(prefab.name)))
+        //             ZNetScene.instance.m_namedPrefabs.Add(StringExtensionMethods.GetStableHashCode(prefab.name), prefab);
+        //     }
+        //     if (ZNetScene.instance.m_prefabs != null && !ZNetScene.instance.m_prefabs.Contains(prefab))
+        //     {
+        //         ZNetScene.instance.m_prefabs.Add(prefab);
+        //     }
+
+
+        // ----------------------------------------------------------------------------------------------------------------------------------- CRITTER REGISTER
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Character), nameof(Character.Awake))]
+        public static void Character_Awake_Post(Character __instance)
+        {
+
+            if (__instance.IsPlayer()) return;
+            if (CritterHandler.CheckedCritters.Contains(__instance.transform)) return;
+
+            string name = __instance.name.Replace("(Clone)", "");
+
+            ZNetView znView = __instance.GetComponent<ZNetView>();
+            if (znView == null) { CritterHandler.CheckedCritters.Add(__instance.transform); return; }
+
+            string hexColorStr = znView.GetZDO().GetString("Areas color");
+            if (!string.IsNullOrEmpty(hexColorStr)) CritterHandler.Assign_CT_Color(name, __instance, hexColorStr);
+
+            CritterHandler.CheckedCritters.Add(__instance.transform);
+
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(Character), nameof(Character.OnDestroy))]
+        public static void Character_OnDeath_Pre(Character __instance)
+        {
+
+            if (__instance.IsPlayer()) return;
+            CritterHandler.CheckedCritters.Remove(__instance.transform);
 
         }
 

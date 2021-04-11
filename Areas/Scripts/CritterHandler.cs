@@ -12,8 +12,11 @@ namespace Areas
     public static class CritterHandler
     {
 
-        public static MethodInfo SetCritter_Info = AccessTools.Method(typeof(CritterHandler), nameof(CritterHandler.SetCritterHolder), new Type[] { typeof(GameObject) });
-        public static void SetCritterHolder(GameObject critter) { CritterHolder = critter; }
+        public static Dictionary<(string, string), Material> CTMatDic = new Dictionary<(string, string), Material>();
+        public static List<Transform> CheckedCritters = new List<Transform>();
+
+        public static MethodInfo SetCritter_Info = AccessTools.Method(typeof(CritterHandler), nameof(CritterHandler.CT_SetHolder), new Type[] { typeof(GameObject) });
+        public static void CT_SetHolder(GameObject critter) { CritterHolder = critter; }
         public static GameObject CritterHolder = null;
 
         public static void Modify_CT()
@@ -51,6 +54,17 @@ namespace Areas
                 int upChance = Mathf.Clamp(level_lvlUpChance, 0, 100);
                 while (newLvl < level_max && UnityEngine.Random.Range(0f, 100f) <= upChance) newLvl++;
                 critter.SetLevel(newLvl > 0 ? newLvl : 1);
+            }
+
+            float? size = ctmods.size;
+            if (size != null) { Assign_CT_Size(critter, (float)size); }
+
+            string hexColorStr = ctmods.color;
+            if (hexColorStr != null)
+            {
+                Assign_CT_Color(name, critter, hexColorStr);
+                ZNetView znView = critter.GetComponent<ZNetView>();
+                if (znView != null) { znView.GetZDO().Set("Areas color", hexColorStr); }
             }
 
             critter.m_crouchSpeed = ctmods.crouch_speed ?? critter.m_crouchSpeed;
@@ -114,7 +128,72 @@ namespace Areas
 
 
             // ----------------------------------------------------------------------------------------------------------------------------------- EMPTY HOLDER
+            CheckedCritters.Add(critter.transform);
             CritterHolder = null;
+
+        }
+
+        private static void Assign_CT_Size(Character critter, float modifier)
+        {
+
+            critter.transform.localScale *= Mathf.Clamp(modifier, 0.1f, 50f);
+            Physics.SyncTransforms();
+
+        }
+
+        public static void Generate_CTMatDic()
+        {
+
+            foreach (var cfg in Globals.CTMods)
+                foreach (var critter in cfg.Value)
+                {
+                    string name = critter.Key;
+                    if (string.IsNullOrEmpty(critter.Value.color)) continue;
+                    Color color;
+                    if (!ColorUtility.TryParseHtmlString(critter.Value.color, out color)) continue;
+
+                    Material newMat = new Material(Shader.Find("Standard"));
+                    newMat.color = color;
+                    newMat.SetFloat("_Smoothness", 0f);
+                    newMat.ToFadeMode();
+
+                    CTMatDic.Add((name, critter.Value.color), newMat);
+                }
+
+        }
+
+        public static void Assign_CT_Color(string name, Character critter, string hexColorStr)
+        {
+
+            Material newMat;
+            if (!CTMatDic.TryGetValue((name, hexColorStr), out newMat)) return;
+
+            Renderer renderer = null;
+
+            LevelEffects levelEffects = critter.GetComponentInChildren<LevelEffects>();
+            if (levelEffects != null)
+            {
+                if (levelEffects.m_mainRender != null)
+                    renderer = levelEffects.m_mainRender;
+            }
+            else
+            {
+                renderer = critter.GetComponentInChildren<SkinnedMeshRenderer>();
+            }
+            if (renderer == null) return;
+
+            List<Material> newArray = new List<Material>(renderer.materials);
+            newArray.Add(newMat);
+            renderer.materials = newArray.ToArray();
+
+        }
+
+        public static void ResetData()
+        {
+
+            CritterHolder = null;
+            CTMatDic.Clear();
+            CheckedCritters.Clear();
 
         }
 

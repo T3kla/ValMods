@@ -21,12 +21,16 @@ namespace Areas.Containers
     public class CTMods
     {
 
+        // CUstom Variables
         public int? level_min;
         public int? level_max;
         public int? level_lvlUpChance;
         public int? level_fixed;
 
-        // Weird stuff
+        public string color;
+        public float? size;
+
+        // Weird Character Stuff
         // public string name = "";
         // public Faction faction = Faction.AnimalsVeg;
         // public bool boss;

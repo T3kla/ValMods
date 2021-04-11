@@ -11,9 +11,15 @@ using UnityEngine;
 namespace Areas
 {
 
+    public delegate void DVoid();
+
     [BepInPlugin(GUID, MODNAME, VERSION)]
     public class Main : BaseUnityPlugin
     {
+
+        public static DVoid OnDataLoaded;
+        public static DVoid OnDataReset;
+
         #region[Declarations]
 
         public const string
@@ -47,6 +53,12 @@ namespace Areas
             Instance = this;
             Globals.Path.Assembly = Path.GetDirectoryName(assembly.Location);
             Local_ReadFromDisk();
+
+            OnDataLoaded += CritterHandler.Generate_CTMatDic;
+
+            OnDataReset += CritterHandler.ResetData;
+            OnDataReset += SpawnerHandler.ResetData;
+
             harmony.PatchAll(assembly);
 
         }
@@ -70,6 +82,8 @@ namespace Areas
             Globals.SSMods = Serialization.Deserialize<Dictionary<string, Dictionary<int, SSMods>>>(Globals.LocalRaw.SSData);
             Globals.CSMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CSMods>>>(Globals.LocalRaw.CSData);
             Globals.SAMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, SAMods>>>(Globals.LocalRaw.SAData);
+
+            if (OnDataLoaded != null) OnDataLoaded.Invoke();
         }
 
         public static void Local_ResetData()
@@ -92,6 +106,8 @@ namespace Areas
             Globals.SSMods = Serialization.Deserialize<Dictionary<string, Dictionary<int, SSMods>>>(Globals.RemoteRaw.SSData);
             Globals.CSMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CSMods>>>(Globals.RemoteRaw.CSData);
             Globals.SAMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, SAMods>>>(Globals.RemoteRaw.SAData);
+
+            if (OnDataLoaded != null) OnDataLoaded.Invoke();
         }
 
         public static void Remote_ResetData()
@@ -114,6 +130,8 @@ namespace Areas
             Globals.SSMods = new Dictionary<string, Dictionary<int, SSMods>>();
             Globals.CSMods = new Dictionary<string, Dictionary<string, CSMods>>();
             Globals.SAMods = new Dictionary<string, Dictionary<string, SAMods>>();
+
+            if (OnDataReset != null) OnDataReset.Invoke();
         }
 
     }
