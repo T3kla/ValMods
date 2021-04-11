@@ -5,7 +5,7 @@
         "layer": 1,
         "display_name": "Isle of Not Death",
         "inner_radious": 0,
-        "outter_radious": 300,
+        "outter_radious": 600,
         "centre": {
             "x": 0,
             "z": 0
@@ -16,7 +16,7 @@
         "cfg": "cfg_1",
         "layer": 2,
         "display_name": "Isle of Death",
-        "inner_radious": 300,
+        "inner_radious": 600,
         "outter_radious": 20000,
         "centre": {
             "x": 0,

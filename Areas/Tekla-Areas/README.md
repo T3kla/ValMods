@@ -1,6 +1,8 @@
 # Areas
 Allows to finely tune difficulty based on areas. It's in Alpha and won't work well.
 
+**Questions?** Check the [Wiki](https://github.com/T3kla/ValMods/wiki/Areas) first.
+
 ## Issues & Suggestions
 Please report issues and suggestions [here](https://github.com/T3kla/ValMods/issues) or tag me as `@Tekla` in [Valheim Modding](https://discord.gg/RBq2mzeu4z) Discord server.
 
@@ -14,5 +16,10 @@ If you are installing this manually, do the following
 ![Logo64](https://user-images.githubusercontent.com/23636548/112306898-a1ac1f00-8ca0-11eb-8b3e-90e73dc7bad2.png)
 
 ## Changelog
+#### 0.1.1
+- Allow Color and Size modifications
+- Allow "Character" component modifications
+- Allow "Monster AI" component modifications
+- Optimisations in the way SpawnSystem is handled
 #### 0.1.0
 - ??
