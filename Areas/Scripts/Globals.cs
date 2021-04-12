@@ -43,6 +43,13 @@ namespace Areas
 
         }
 
+        public static class Config
+        {
+
+            public static ConfigEntry<bool> Debug;
+
+        }
+
         public static Dictionary<string, Area> Areas = new Dictionary<string, Area>();
         public static Dictionary<string, Dictionary<string, CTMods>> CTMods = new Dictionary<string, Dictionary<string, CTMods>>();
         public static Dictionary<string, Dictionary<int, SSMods>> SSMods = new Dictionary<string, Dictionary<int, SSMods>>();

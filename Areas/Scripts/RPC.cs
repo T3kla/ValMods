@@ -42,11 +42,11 @@ namespace Areas.NetCode
             Globals.RemoteRaw.CSData = zpg.ReadString();
             Globals.RemoteRaw.SAData = zpg.ReadString();
 
-            Debug.Log($"[Areas] Recieved data as Areas count is \"{Globals.RemoteRaw.Areas.Length}\"");
-            Debug.Log($"[Areas] Recieved data as CTData count is \"{Globals.RemoteRaw.CTData.Length}\"");
-            Debug.Log($"[Areas] Recieved data as SSData count is \"{Globals.RemoteRaw.SSData.Length}\"");
-            Debug.Log($"[Areas] Recieved data as CSData count is \"{Globals.RemoteRaw.CSData.Length}\"");
-            Debug.Log($"[Areas] Recieved data as SAData count is \"{Globals.RemoteRaw.SAData.Length}\"");
+            Main.Log.LogInfo($"Recieved data as Areas count is \"{Globals.RemoteRaw.Areas.Length}\"");
+            Main.Log.LogInfo($"Recieved data as CTData count is \"{Globals.RemoteRaw.CTData.Length}\"");
+            Main.Log.LogInfo($"Recieved data as SSData count is \"{Globals.RemoteRaw.SSData.Length}\"");
+            Main.Log.LogInfo($"Recieved data as CSData count is \"{Globals.RemoteRaw.CSData.Length}\"");
+            Main.Log.LogInfo($"Recieved data as SAData count is \"{Globals.RemoteRaw.SAData.Length}\"");
 
             Main.Remote_LoadData();
 

@@ -27,7 +27,7 @@ namespace Areas
             if (Globals.SSMods[area.cfg].Values.Count < 1) return;
 
             Dictionary<int, SSMods> ssmods = Globals.SSMods[area.cfg];
-            Debug.Log($"[Areas] Modifying SpawnSystem in \"{ss.transform.position}\" in area \"{area.id}\" with config \"{area.cfg}\"");
+            Main.Log.LogInfo($"Modifying SpawnSystem in \"{ss.transform.position}\" in area \"{area.id}\"");
 
             // ----------------------------------------------------------------------------------------------------------------------------------- MODS
             if (SS_Dic.ContainsKey(area.cfg)) { ss.m_spawners = SS_Dic[area.cfg]; return; }
@@ -64,7 +64,7 @@ namespace Areas
             if (!Globals.CSMods[area.cfg].ContainsKey(name)) return;
 
             CSMods csmod = Globals.CSMods[area.cfg][name];
-            Debug.Log($"[Areas] Modifying CreatureSpawner \"{name}\" in \"{cs.transform.position}\" in area \"{area.id}\" with config \"{area.cfg}\"");
+            Main.Log.LogInfo($"Modifying CreatureSpawner \"{name}\" in \"{cs.transform.position}\" in area \"{area.id}\"");
 
             // ----------------------------------------------------------------------------------------------------------------------------------- MODS
             cs.m_respawnTimeMinuts = csmod.respawn_time_minutes ?? cs.m_respawnTimeMinuts;
@@ -93,7 +93,7 @@ namespace Areas
             if (!Globals.CSMods[area.cfg].ContainsKey(name)) return;
 
             SAMods samod = Globals.SAMods[area.cfg][name];
-            Debug.Log($"[Areas] Modifying SpawnArea: \"{name}\" in \"{sa.transform.position}\" in area \"{area.id}\" with config \"{area.cfg}\"");
+            Main.Log.LogInfo($"Modifying SpawnArea: \"{name}\" in \"{sa.transform.position}\" in area \"{area.id}\"");
 
             // ----------------------------------------------------------------------------------------------------------------------------------- MODS
             sa.m_spawnIntervalSec = samod.spawn_interval_sec ?? sa.m_spawnIntervalSec;

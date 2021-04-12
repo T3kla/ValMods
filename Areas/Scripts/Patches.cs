@@ -19,7 +19,7 @@ namespace Areas.Patches
         public static void Player_OnSpawned(Player __instance)
         {
 
-            Debug.Log($"[Areas] ZoneLookup try Start because Player.OnSpawned");
+            Main.Log.LogInfo($"ZoneLookup try Start because Player.OnSpawned");
             AreaHandler.ZoneLookup_Start();
 
         }
@@ -29,7 +29,7 @@ namespace Areas.Patches
         public static void Player_OnRespawn(Player __instance)
         {
 
-            Debug.Log($"[Areas] ZoneLookup try Start because Player.OnRespawn");
+            Main.Log.LogInfo($"ZoneLookup try Start because Player.OnRespawn");
             AreaHandler.ZoneLookup_Start();
 
         }
@@ -39,7 +39,7 @@ namespace Areas.Patches
         public static void Player_OnDeath(Player __instance)
         {
 
-            Debug.Log($"[Areas] ZoneLookup try Stop because Player.OnDeath");
+            Main.Log.LogInfo($"ZoneLookup try Stop because Player.OnDeath");
             AreaHandler.ZoneLookup_Stop();
 
         }
@@ -64,7 +64,7 @@ namespace Areas.Patches
 
             ZNetType type = __instance.GetInstanceType();
 
-            Debug.Log($"[Areas] Instance is \"{type.ToString()}\"");
+            Main.Log.LogInfo($"Instance is \"{type.ToString()}\"");
 
             switch (type)
             {
@@ -101,7 +101,7 @@ namespace Areas.Patches
 
             long client = __instance.GetPeer(rpc).m_uid;
 
-            Debug.Log($"[Areas] Instance is sending Data to client \"{client}\"");
+            Main.Log.LogInfo($"Instance is sending Data to client \"{client}\"");
             RPC.SendDataToClient(client);
 
         }

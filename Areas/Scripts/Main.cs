@@ -13,22 +13,20 @@ namespace Areas
 
     public delegate void DVoid();
 
-    [BepInPlugin(GUID, MODNAME, VERSION)]
+    [BepInPlugin(GUID, NAME, VERSION)]
     public class Main : BaseUnityPlugin
     {
 
         public static DVoid OnDataLoaded;
         public static DVoid OnDataReset;
 
-        #region[Declarations]
+        private const string NAME = "Areas";
+        private const string GUID = "Tekla_" + NAME;
+        private const string VERSION = "1.0.0";
 
-        public const string
-            MODNAME = "Areas",
-            AUTHOR = "",
-            GUID = AUTHOR + "_" + MODNAME,
-            VERSION = "1.0.0.0";
+        public static Main Instance;
+        public static ManualLogSource Log = new ManualLogSource(NAME);
 
-        internal readonly ManualLogSource log;
         internal readonly Harmony harmony;
         internal readonly Assembly assembly;
         public readonly string modFolder;
@@ -36,16 +34,13 @@ namespace Areas
         public Main()
         {
 
-            log = Logger;
+            Log = new ManualLogSource("MyLogSource");
+
             harmony = new Harmony(GUID);
             assembly = Assembly.GetExecutingAssembly();
             modFolder = Path.GetDirectoryName(assembly.Location);
 
         }
-
-        #endregion
-
-        internal static Main Instance;
 
         private void Awake()
         {
@@ -59,7 +54,25 @@ namespace Areas
             OnDataReset += CritterHandler.ResetData;
             OnDataReset += SpawnerHandler.ResetData;
 
+            Configs();
+
+            if (Globals.Config.Debug.Value)
+                BepInEx.Logging.Logger.Sources.Add(Log);
+            else
+                BepInEx.Logging.Logger.Sources.Remove(Log);
+
             harmony.PatchAll(assembly);
+
+        }
+
+        public void Configs()
+        {
+
+            Globals.Config.Debug = Config.Bind(
+                "General",
+                "Debug Logs",
+                false,
+                "Enables or disables debug logs.");
 
         }
 
@@ -76,7 +89,7 @@ namespace Areas
 
         public static void Local_LoadData()
         {
-            Debug.Log($"[Areas] Instance is loading Local Data");
+            Main.Log.LogInfo($"Instance is loading Local Data");
             Globals.Areas = Serialization.Deserialize<Dictionary<string, Area>>(Globals.LocalRaw.Areas);
             Globals.CTMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CTMods>>>(Globals.LocalRaw.CTData);
             Globals.SSMods = Serialization.Deserialize<Dictionary<string, Dictionary<int, SSMods>>>(Globals.LocalRaw.SSData);
@@ -88,7 +101,7 @@ namespace Areas
 
         public static void Local_ResetData()
         {
-            Debug.Log($"[Areas] Instance is reseting Local Data");
+            Main.Log.LogInfo($"Instance is reseting Local Data");
             Globals.LocalRaw.Areas = "{}";
             Globals.LocalRaw.CTData = "{}";
             Globals.LocalRaw.SSData = "{}";
@@ -100,7 +113,7 @@ namespace Areas
         // ----------------------------------------------------------------------------------------------------------------------------------- REMOTE
         public static void Remote_LoadData()
         {
-            Debug.Log($"[Areas] Instance is loading Remote Data");
+            Main.Log.LogInfo($"Instance is loading Remote Data");
             Globals.Areas = Serialization.Deserialize<Dictionary<string, Area>>(Globals.RemoteRaw.Areas);
             Globals.CTMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CTMods>>>(Globals.RemoteRaw.CTData);
             Globals.SSMods = Serialization.Deserialize<Dictionary<string, Dictionary<int, SSMods>>>(Globals.RemoteRaw.SSData);
@@ -112,7 +125,7 @@ namespace Areas
 
         public static void Remote_ResetData()
         {
-            Debug.Log($"[Areas] Instance is reseting Remote Data");
+            Main.Log.LogInfo($"Instance is reseting Remote Data");
             Globals.RemoteRaw.Areas = "{}";
             Globals.RemoteRaw.CTData = "{}";
             Globals.RemoteRaw.SSData = "{}";
@@ -124,7 +137,7 @@ namespace Areas
         // ----------------------------------------------------------------------------------------------------------------------------------- CURRENT
         public static void Current_ResetData()
         {
-            Debug.Log($"[Areas] Instance is reseting Current Data");
+            Main.Log.LogInfo($"Instance is reseting Current Data");
             Globals.Areas = new Dictionary<string, Area>();
             Globals.CTMods = new Dictionary<string, Dictionary<string, CTMods>>();
             Globals.SSMods = new Dictionary<string, Dictionary<int, SSMods>>();

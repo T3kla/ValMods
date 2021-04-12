@@ -33,7 +33,7 @@ namespace Areas
             if (!Globals.CTMods.ContainsKey(area.cfg)) { CritterHolder = null; return; }
             if (!Globals.CTMods[area.cfg].ContainsKey(name)) { CritterHolder = null; return; }
 
-            Debug.Log($"[Areas] Modifying Critter \"{name}\" in \"{critter.transform.position}\" in area \"{area.id}\" with config \"{area.cfg}\"");
+            Main.Log.LogInfo($"Modifying Critter \"{name}\" in \"{critter.transform.position}\" in area \"{area.id}\" with config \"{area.cfg}\"");
 
             CTMods ctmods = Globals.CTMods[area.cfg][name];
 
