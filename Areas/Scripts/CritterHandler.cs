@@ -99,6 +99,52 @@ namespace Areas
             MonsterAI ai = critter.GetComponent<MonsterAI>();
             if (ai != null)
             {
+                // Base AI
+                ai.m_viewRange = ctmods.view_range ?? ai.m_viewRange;
+                ai.m_viewAngle = ctmods.view_angle ?? ai.m_viewAngle;
+                ai.m_hearRange = ctmods.hear_range ?? ai.m_hearRange;
+                ai.m_idleSoundInterval = ctmods.idle_sound_interval ?? ai.m_idleSoundInterval;
+                ai.m_idleSoundChance = ctmods.idle_sound_chance ?? ai.m_idleSoundChance;
+                ai.m_moveMinAngle = ctmods.move_min_angle ?? ai.m_moveMinAngle;
+                ai.m_smoothMovement = ctmods.smooth_movement ?? ai.m_smoothMovement;
+                ai.m_serpentMovement = ctmods.serpent_movement ?? ai.m_serpentMovement;
+                ai.m_serpentTurnRadius = ctmods.serpent_turn_radius ?? ai.m_serpentTurnRadius;
+                ai.m_jumpInterval = ctmods.jump_interval ?? ai.m_jumpInterval;
+                ai.m_randomCircleInterval = ctmods.random_circle_interval ?? ai.m_randomCircleInterval;
+                ai.m_randomMoveInterval = ctmods.random_move_interval ?? ai.m_randomMoveInterval;
+                ai.m_randomMoveRange = ctmods.random_move_range ?? ai.m_randomMoveRange;
+                ai.m_randomFly = ctmods.random_fly ?? ai.m_randomFly;
+                ai.m_chanceToTakeoff = ctmods.chance_to_takeoff ?? ai.m_chanceToTakeoff;
+                ai.m_chanceToLand = ctmods.chance_to_land ?? ai.m_chanceToLand;
+                ai.m_groundDuration = ctmods.ground_duration ?? ai.m_groundDuration;
+                ai.m_airDuration = ctmods.air_duration ?? ai.m_airDuration;
+                ai.m_maxLandAltitude = ctmods.max_land_altitude ?? ai.m_maxLandAltitude;
+                ai.m_flyAltitudeMin = ctmods.fly_altitude_min ?? ai.m_flyAltitudeMin;
+                ai.m_flyAltitudeMax = ctmods.fly_altitude_max ?? ai.m_flyAltitudeMax;
+                ai.m_takeoffTime = ctmods.takeoff_time ?? ai.m_takeoffTime;
+                ai.m_avoidFire = ctmods.avoid_fire ?? ai.m_avoidFire;
+                ai.m_afraidOfFire = ctmods.afraid_of_fire ?? ai.m_afraidOfFire;
+                ai.m_avoidWater = ctmods.avoid_water ?? ai.m_avoidWater;
+                ai.m_spawnMessage = ctmods.spawn_message ?? ai.m_spawnMessage;
+                ai.m_deathMessage = ctmods.death_message ?? ai.m_deathMessage;
+                if (!string.IsNullOrEmpty(ctmods.path_agent_type))
+                    switch (ctmods.path_agent_type)
+                    {
+                        case "Humanoid": ai.m_pathAgentType = Pathfinding.AgentType.Humanoid; break;
+                        case "TrollSize": ai.m_pathAgentType = Pathfinding.AgentType.TrollSize; break;
+                        case "HugeSize": ai.m_pathAgentType = Pathfinding.AgentType.HugeSize; break;
+                        case "HorseSize": ai.m_pathAgentType = Pathfinding.AgentType.HorseSize; break;
+                        case "HumanoidNoSwim": ai.m_pathAgentType = Pathfinding.AgentType.HumanoidNoSwim; break;
+                        case "HumanoidAvoidWater": ai.m_pathAgentType = Pathfinding.AgentType.HumanoidAvoidWater; break;
+                        case "Fish": ai.m_pathAgentType = Pathfinding.AgentType.Fish; break;
+                        case "Wolf": ai.m_pathAgentType = Pathfinding.AgentType.Wolf; break;
+                        case "BigFish": ai.m_pathAgentType = Pathfinding.AgentType.BigFish; break;
+                        case "GoblinBruteSize": ai.m_pathAgentType = Pathfinding.AgentType.GoblinBruteSize; break;
+                        case "HumanoidBigNoSwim": ai.m_pathAgentType = Pathfinding.AgentType.HumanoidBigNoSwim; break;
+                        default: break;
+                    }
+
+                // Monster AI
                 ai.m_alertRange = ctmods.alert_range ?? ai.m_alertRange;
                 ai.m_fleeIfHurtWhenTargetCantBeReached = ctmods.flee_if_hurt_when_target_cant_be_reached ?? ai.m_fleeIfHurtWhenTargetCantBeReached;
                 ai.m_fleeIfNotAlerted = ctmods.flee_if_not_alerted ?? ai.m_fleeIfNotAlerted;

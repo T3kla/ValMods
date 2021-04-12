@@ -69,6 +69,42 @@ namespace Areas.Containers
         public bool? stagger_when_blocked;
         public float? stagger_damage_factor;
 
+        // Base AI stuff
+        public string path_agent_type;
+        public float? view_range;
+        public float? view_angle;
+        public float? hear_range;
+        // public EffectList alertedEffects = new EffectList();
+        // public EffectList idleSound = new EffectList();
+        public float? idle_sound_interval;
+        public float? idle_sound_chance;
+        public float? move_min_angle;
+        public bool? smooth_movement;
+        public bool? serpent_movement;
+        public float? serpent_turn_radius;
+        public float? jump_interval;
+
+        public float? random_circle_interval;
+
+        public float? random_move_interval;
+        public float? random_move_range;
+
+        public bool? random_fly;
+        public float? chance_to_takeoff;
+        public float? chance_to_land;
+        public float? ground_duration;
+        public float? air_duration;
+        public float? max_land_altitude;
+        public float? fly_altitude_min;
+        public float? fly_altitude_max;
+        public float? takeoff_time;
+
+        public bool? avoid_fire;
+        public bool? afraid_of_fire;
+        public bool? avoid_water;
+        public string spawn_message;
+        public string death_message;
+
         // Monster AI stuff
         public float? alert_range;
         public bool? flee_if_hurt_when_target_cant_be_reached;
@@ -84,22 +120,18 @@ namespace Areas.Containers
         public float? max_chase_distance;
         public float? min_attack_interval;
 
-        // Monster AI stuff, Circle target
         public float? circle_target_interval;
         public float? circle_target_duration;
         public float? circle_target_distance;
 
-        // Monster AI stuff, Sleep
         public bool? sleeping;
         public bool? noise_wakeup;
         public float? noise_range_scale;
         public float? wakeup_range;
         // public EffectList wakeupEffects = new EffectList();
 
-        // Monster AI stuff, Other
         public bool? avoid_land;
 
-        // Monster AI stuff, Consume items
         // public List<ItemDrop> consumeItems;
         public float? consume_range;
         public float? consume_search_range;
