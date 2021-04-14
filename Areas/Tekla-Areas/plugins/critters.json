@@ -2,6 +2,9 @@
     "cfg_0": {
         "Boar": {
             "level_fixed": 5,
+            "level_min_AddByBoss": {
+                "Eikthyr": 1
+            },
             "color": "#FF001824",
             "size": 1.2
         },
