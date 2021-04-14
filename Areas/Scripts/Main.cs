@@ -50,6 +50,7 @@ namespace Areas
             Local_ReadFromDisk();
 
             OnDataLoaded += CritterHandler.Generate_CTMatDic;
+            OnDataLoaded += SpawnerHandler.Generate_SSDataDic;
 
             OnDataReset += CritterHandler.ResetData;
             OnDataReset += SpawnerHandler.ResetData;
