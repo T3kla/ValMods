@@ -134,7 +134,7 @@ namespace Areas.Patches
             ZNetView znView = __instance.GetComponent<ZNetView>();
             if (znView == null) { CritterHandler.CheckedCritters.Add(__instance.transform); return; }
 
-            string hexColorStr = znView.GetZDO().GetString("Areas color");
+            string hexColorStr = znView.GetZDO().GetString("Critter Paint");
             if (!string.IsNullOrEmpty(hexColorStr)) CritterHandler.Assign_CT_Color(name, __instance, hexColorStr);
 
             CritterHandler.CheckedCritters.Add(__instance.transform);

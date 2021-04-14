@@ -27,6 +27,16 @@ namespace Areas.Containers
         public int? level_lvlUpChance;
         public int? level_fixed;
 
+        public int? level_min_AddByDay;
+        public int? level_max_AddByDay;
+        public int? level_lvlUpChance_AddByDay;
+        public int? level_fixed_AddByDay;
+
+        public Dictionary<string, int> level_min_AddByBoss;
+        public Dictionary<string, int> level_max_AddByBoss;
+        public Dictionary<string, int> level_lvlUpChance_AddByBoss;
+        public Dictionary<string, int> level_fixed_AddByBoss;
+
         public string color;
         public float? size;
 
@@ -37,7 +47,6 @@ namespace Areas.Containers
         // public string bossEvent = "";
         // public string defeatSetGlobalKey = "";
 
-        // Movement & Physics
         public float? crouch_speed;
         public float? walk_speed;
         public float? speed;
@@ -61,7 +70,6 @@ namespace Areas.Containers
         public bool? flying;
         public float? jump_stamina_usage;
 
-        // Health & Damage
         public bool? tolerate_water;
         public bool? tolerate_fire;
         public bool? tolerate_smoke;
