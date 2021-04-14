@@ -39,7 +39,7 @@ namespace Areas
 
             if (CS_List.Contains(cs.transform)) return;
 
-            string name = cs.name.Replace("(Clone)", "");
+            string name = cs.GetCleanName();
 
             Area area = AreaHandler.GetArea(cs.transform.position);
             if (area == null) return;
@@ -68,7 +68,7 @@ namespace Areas
 
             if (SA_List.Contains(sa.transform)) return;
 
-            string name = sa.name.Replace("(Clone)", "");
+            string name = sa.GetCleanName();
 
             Area area = AreaHandler.GetArea(sa.transform.position);
             if (area == null) return;

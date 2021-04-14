@@ -61,4 +61,34 @@ namespace Areas
 
     }
 
+    public static class CharacterExtensions
+    {
+
+        public static string GetCleanName(this Character character)
+        {
+            return character.name.Replace("(Clone)", "").Trim();
+        }
+
+    }
+
+    public static class CreatureSpawnerExtensions
+    {
+
+        public static string GetCleanName(this CreatureSpawner cs)
+        {
+            return cs.name.Replace("(Clone)", "").Trim();
+        }
+
+    }
+
+    public static class SpawnAreaExtensions
+    {
+
+        public static string GetCleanName(this SpawnArea sa)
+        {
+            return sa.name.Replace("(Clone)", "").Trim();
+        }
+
+    }
+
 }

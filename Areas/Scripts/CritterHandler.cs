@@ -16,23 +16,23 @@ namespace Areas
         public static Dictionary<(string, string), Material> CT_MatDic = new Dictionary<(string, string), Material>();
         public static List<Transform> CheckedCritters = new List<Transform>();
 
-        public static MethodInfo SetCritter_Info = AccessTools.Method(typeof(CritterHandler), nameof(CritterHandler.CT_SetHolder), new Type[] { typeof(GameObject) });
-        public static void CT_SetHolder(GameObject critter) { CritterHolder = critter; }
-        public static GameObject CritterHolder = null;
+        public static MethodInfo CT_SetHolderInfo = AccessTools.Method(typeof(CritterHandler), nameof(CritterHandler.CT_SetHolder), new Type[] { typeof(GameObject) });
+        public static void CT_SetHolder(GameObject critter) { CT_Holder = critter; }
+        public static GameObject CT_Holder = null;
 
         public static void Modify_CT()
         {
 
-            if (CritterHolder == null) return;
-            Character critter = CritterHolder.GetComponent<Character>();
-            if (critter == null) { CritterHolder = null; return; }
+            if (CT_Holder == null) return;
+            Character critter = CT_Holder.GetComponent<Character>();
+            if (critter == null) { CT_Holder = null; return; }
 
-            string name = critter.name.Replace("(Clone)", "");
+            string name = critter.GetCleanName();
 
             Area area = AreaHandler.GetArea(critter.transform.position);
-            if (area == null) { CritterHolder = null; return; }
-            if (!Globals.CTMods.ContainsKey(area.cfg)) { CritterHolder = null; return; }
-            if (!Globals.CTMods[area.cfg].ContainsKey(name)) { CritterHolder = null; return; }
+            if (area == null) { CT_Holder = null; return; }
+            if (!Globals.CTMods.ContainsKey(area.cfg)) { CT_Holder = null; return; }
+            if (!Globals.CTMods[area.cfg].ContainsKey(name)) { CT_Holder = null; return; }
 
             Main.Log.LogInfo($"Modifying Critter \"{name}\" in \"{critter.transform.position}\" in area \"{area.id}\" with config \"{area.cfg}\"");
 
@@ -162,7 +162,7 @@ namespace Areas
 
             // ----------------------------------------------------------------------------------------------------------------------------------- EMPTY HOLDER
             CheckedCritters.Add(critter.transform);
-            CritterHolder = null;
+            CT_Holder = null;
 
         }
 
@@ -296,7 +296,7 @@ namespace Areas
         public static void ResetData()
         {
 
-            CritterHolder = null;
+            CT_Holder = null;
             CT_MatDic.Clear();
             CheckedCritters.Clear();
 

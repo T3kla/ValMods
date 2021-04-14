@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Reflection.Emit;
+using static CharacterDrop;
 
 namespace Areas.Patches
 {
@@ -129,7 +130,7 @@ namespace Areas.Patches
             if (__instance.IsPlayer()) return;
             if (CritterHandler.CheckedCritters.Contains(__instance.transform)) return;
 
-            string name = __instance.name.Replace("(Clone)", "");
+            string name = __instance.GetCleanName();
 
             ZNetView znView = __instance.GetComponent<ZNetView>();
             if (znView == null) { CritterHandler.CheckedCritters.Add(__instance.transform); return; }
@@ -149,6 +150,46 @@ namespace Areas.Patches
             if (__instance.IsPlayer()) return;
             CritterHandler.CheckedCritters.Remove(__instance.transform);
 
+        }
+
+
+        // ----------------------------------------------------------------------------------------------------------------------------------- CRITTER LOOT
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(CharacterDrop), nameof(CharacterDrop.GenerateDropList))]
+        public static void CharacterDrop_GenerateDropList_Post(CharacterDrop __instance, ref List<KeyValuePair<GameObject, int>> __result)
+        {
+            List<KeyValuePair<GameObject, int>> list = new List<KeyValuePair<GameObject, int>>();
+
+            int lvlReward = 1;
+
+            if (__instance.m_character)
+            {
+                int lvl = __instance.m_character.GetLevel();
+
+                if (lvl <= 3)
+                    lvlReward = Mathf.Max(1, (int)Mathf.Pow(2f, lvl - 1));
+                else
+                    lvlReward = Mathf.Max(1, (int)Mathf.Pow(2f, Mathf.FloorToInt(0.1f * lvl + 3) - 1));
+            }
+
+            foreach (Drop drop in __instance.m_drops)
+            {
+                if (drop.m_prefab == null) continue;
+
+                float dropChance = drop.m_chance;
+
+                if (drop.m_levelMultiplier) dropChance *= (float)lvlReward;
+
+                if (UnityEngine.Random.value <= dropChance)
+                {
+                    int amount = UnityEngine.Random.Range(drop.m_amountMin, drop.m_amountMax);
+                    if (drop.m_levelMultiplier) amount *= lvlReward;
+                    if (drop.m_onePerPlayer) amount = ZNet.instance.GetNrOfPlayers();
+                    if (amount > 0) list.Add(new KeyValuePair<GameObject, int>(drop.m_prefab, amount));
+                }
+            }
+
+            __result = list;
         }
 
 
@@ -175,7 +216,7 @@ namespace Areas.Patches
                     // i+2 = ldloc.0 loads from stloc.0 which should be the gameobject
                     codes.Add(new CodeInstruction(OpCodes.Ldloc_0));
                     // i+3 = call the modify critter info where the first arg is ldloc.0
-                    codes.Add(new CodeInstruction(OpCodes.Call, CritterHandler.SetCritter_Info));
+                    codes.Add(new CodeInstruction(OpCodes.Call, CritterHandler.CT_SetHolderInfo));
 
                     // this jumps i+1 because i'm already adding it
                     i++;
@@ -217,7 +258,7 @@ namespace Areas.Patches
                     // i+2 = ldloc.3 loads from stloc.3 which should be the gameobject
                     codes.Add(new CodeInstruction(OpCodes.Ldloc_3));
                     // i+3 = call the modify critter info where the first arg is ldloc.3
-                    codes.Add(new CodeInstruction(OpCodes.Call, CritterHandler.SetCritter_Info));
+                    codes.Add(new CodeInstruction(OpCodes.Call, CritterHandler.CT_SetHolderInfo));
 
                     // this jumps i+1 because i'm already adding it
                     i++;
@@ -259,7 +300,7 @@ namespace Areas.Patches
                     // i+2 = ldloc.s V_4 loads from stloc.s V_4 which should be the gameobject
                     codes.Add(new CodeInstruction(OpCodes.Ldloc_S, 4));
                     // i+3 = call the modify critter info where the first arg is ldloc.s V_4
-                    codes.Add(new CodeInstruction(OpCodes.Call, CritterHandler.SetCritter_Info));
+                    codes.Add(new CodeInstruction(OpCodes.Call, CritterHandler.CT_SetHolderInfo));
 
                     // this jumps i+1 because i'm already adding it
                     i++;
