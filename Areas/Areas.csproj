@@ -24,6 +24,9 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ModConfigEnforcer">
+      <HintPath>..\..\..\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\cache\Pfhoenix-ConfigEnforcer\ModConfigEnforcer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
