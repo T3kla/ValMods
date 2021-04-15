@@ -7,6 +7,7 @@ using HarmonyLib;
 using Areas.TJson;
 using Areas.Containers;
 using UnityEngine;
+using ModConfigEnforcer;
 
 namespace Areas
 {
@@ -14,6 +15,7 @@ namespace Areas
     public delegate void DVoid();
 
     [BepInPlugin(GUID, NAME, VERSION)]
+    [BepInDependency("pfhoenix.modconfigenforcer", BepInDependency.DependencyFlags.HardDependency)]
     public class Main : BaseUnityPlugin
     {
 
@@ -55,6 +57,8 @@ namespace Areas
             OnDataReset += CritterHandler.ResetData;
             OnDataReset += SpawnerHandler.ResetData;
 
+            ConfigManager.RegisterMod(GUID, Config);
+
             Configs();
 
             if (Globals.Config.Debug.Value)
@@ -69,11 +73,15 @@ namespace Areas
         public void Configs()
         {
 
-            Globals.Config.Debug = Config.Bind(
-                "General",
-                "Debug Logs",
-                false,
-                "Enables or disables debug logs.");
+            Globals.Config.Loot = ConfigManager.RegisterModConfigVariable<int>(GUID,
+                "Loot Fix", 10,
+                "General", $"Number of levels it takes to get the next vanilla level reward. Only works for LvL3+. For example a value of 5 will result in: LvL5 monster = LvL4 reward, LvL10 monster = LvL5 reward, LvL15 monster = LvL6 reward.",
+                false);
+
+            Globals.Config.Debug = ConfigManager.RegisterModConfigVariable<bool>(GUID,
+                "Enable Logger", true,
+                "Debug", "Enables or disables debugging logs.",
+                true);
 
         }
 

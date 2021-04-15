@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Areas.Containers;
 using BepInEx.Configuration;
+using ModConfigEnforcer;
 
 namespace Areas
 {
@@ -46,7 +47,8 @@ namespace Areas
         public static class Config
         {
 
-            public static ConfigEntry<bool> Debug;
+            public static ConfigVariable<bool> Debug;
+            public static ConfigVariable<int> Loot;
 
         }
 

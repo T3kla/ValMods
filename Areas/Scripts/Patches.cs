@@ -46,6 +46,35 @@ namespace Areas.Patches
         }
 
 
+        // ----------------------------------------------------------------------------------------------------------------------------------- TELEPORT
+        // [HarmonyPrefix]
+        // [HarmonyPatch(typeof(Teleport), nameof(Teleport.Interact))]
+        // private static void Prefix(Teleport __instance)
+        // {
+        //     if (CreatureLevelControl.dungeonRespawnTime.Value <= 0)
+        //     {
+        //         return;
+        //     }
+        //     foreach (DungeonGenerator dungeonGenerator in ((GameObject)AccessTools.DeclaredField(typeof(ZNetScene), "m_netSceneRoot").GetValue(ZNetScene.instance)).GetComponentsInChildren<DungeonGenerator>())
+        //     {
+        //         if (new Bounds(dungeonGenerator.transform.position, Vector3.one * 20f).Contains(__instance.m_targetPoint.transform.position))
+        //         {
+        //             long num = (long)ZNet.instance.GetTimeSeconds();
+        //             ZDO zdo = dungeonGenerator.GetComponent<ZNetView>().GetZDO();
+        //             long @long = zdo.GetLong("cllc DungeonRegen", 0L);
+        //             if (num > @long + (long)(CreatureLevelControl.dungeonRespawnTime.Value * 60))
+        //             {
+        //                 if (@long != 0L)
+        //                 {
+        //                     __instance.gameObject.AddComponent<CreatureLevelControl.DungeonLoadCheck.UpdateDungeonFrameEnd>().dungeonGenerator = dungeonGenerator;
+        //                 }
+        //                 zdo.Set("cllc DungeonRegen", num);
+        //             }
+        //         }
+        //     }
+        // }
+
+
         // ----------------------------------------------------------------------------------------------------------------------------------- RCP SUFF
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Game), nameof(Game.Start))]
@@ -167,9 +196,14 @@ namespace Areas.Patches
                 int lvl = __instance.m_character.GetLevel();
 
                 if (lvl <= 3)
-                    lvlReward = Mathf.Max(1, (int)Mathf.Pow(2f, lvl - 1));
+                    lvlReward = Mathf.FloorToInt(Mathf.Max(1, 2 * (lvl - 1)));
                 else
-                    lvlReward = Mathf.Max(1, (int)Mathf.Pow(2f, Mathf.FloorToInt(0.1f * lvl + 3) - 1));
+                {
+                    int adjustLvl = Mathf.FloorToInt((1 / Globals.Config.Loot.Value) * lvl + 3);
+                    lvlReward = Mathf.FloorToInt(Mathf.Max(1, 2 * (adjustLvl - 1)));
+                }
+
+                Main.Log.LogInfo($"Calculating DropList of \"{__instance.m_character.GetCleanName()}\" at \"{lvl}\" ");
             }
 
             foreach (Drop drop in __instance.m_drops)
