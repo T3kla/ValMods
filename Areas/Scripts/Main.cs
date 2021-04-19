@@ -79,13 +79,13 @@ namespace Areas
 
 
             Globals.Config.DungeonRegenEnable = ConfigManager.RegisterModConfigVariable<bool>(GUID,
-                "Enable", true,
+                "Enable", false,
                 "Dungeon Regen", "Enables or disables Dungeon Regeneration.",
                 false);
 
             Globals.Config.DungeonRegenCooldown = ConfigManager.RegisterModConfigVariable<long>(GUID,
-                "Cooldown", 30,
-                "Dungeon Regen", "Set the amount of minutes to regenerate a dungeon.",
+                "Cooldown", 60,
+                "Dungeon Regen", "Set the amount of minutes it takes each dungeon to try to regenerate.",
                 false);
 
             Globals.Config.DungeonRegenAllowedThemes = ConfigManager.RegisterModConfigVariable<string>(GUID,

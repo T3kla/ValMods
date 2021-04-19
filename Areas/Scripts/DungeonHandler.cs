@@ -103,6 +103,8 @@ namespace Areas
         public static void Task_Schedule(DungeonGenerator dungeon, long remainder = 0L)
         {
 
+            if (dungeon == null) return;
+
             long trueRem = remainder > 0 ? remainder : dungeon.GetRegenRemainder();
 
             string trueRemStr = string.Format("{0}:{1}", Mathf.Floor(trueRem / 60).ToString("00"), (trueRem % 60).ToString("00"));
