@@ -42,7 +42,7 @@ namespace Areas
             while (true)
             {
 
-                if (player == null) { Main.Log.LogWarning($"ZoneLookup Break because player == null"); break; }
+                if (player == null) { Main.GLog.LogWarning($"ZoneLookup Break because player == null"); break; }
 
                 Area newArea = GetArea(player.transform.position) ?? new Area() { id = "" };
 
@@ -52,7 +52,7 @@ namespace Areas
                     player.Message(MessageHud.MessageType.Center, msg, 0, null);
                     PlayerCurrentArea = newArea;
 
-                    Main.Log.LogInfo($"ZoneLookup newArea: {(PlayerCurrentArea != null ? newArea.display_name : "None")}");
+                    Main.GLog.LogInfo($"ZoneLookup newArea: {(PlayerCurrentArea != null ? newArea.display_name : "None")}");
                 }
 
                 yield return new WaitForSecondsRealtime(4f);

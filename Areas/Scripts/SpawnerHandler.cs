@@ -12,12 +12,16 @@ namespace Areas
     {
 
         private static Dictionary<string, List<SpawnSystem.SpawnData>> SS_DataDic = new Dictionary<string, List<SpawnSystem.SpawnData>>();
+        private static bool SS_DataDicFlag = false;
+
         private static HashSet<Transform> SS_List = new HashSet<Transform>();
         private static HashSet<Transform> CS_List = new HashSet<Transform>();
         private static HashSet<Transform> SA_List = new HashSet<Transform>();
 
         public static void Modify_SS(SpawnSystem ss)
         {
+
+            if (SS_DataDicFlag) Generate_SSDataDic(ss);
 
             if (SS_List.Contains(ss.transform)) return;
 
@@ -27,7 +31,7 @@ namespace Areas
             if (Globals.SSMods[area.cfg].Values.Count < 1) return;
 
             Dictionary<int, SSMods> ssmods = Globals.SSMods[area.cfg];
-            Main.Log.LogInfo($"Modifying SpawnSystem in \"{ss.transform.position}\" in area \"{area.id}\"");
+            Main.GLog.LogInfo($"Modifying SpawnSystem \"{ss.GetCleanName()}\"");
 
             if (SS_DataDic.ContainsKey(area.cfg)) { ss.m_spawners = SS_DataDic[area.cfg]; return; }
             SS_List.Add(ss.transform);
@@ -47,7 +51,7 @@ namespace Areas
             if (!Globals.CSMods[area.cfg].ContainsKey(name)) return;
 
             CSMods mod = Globals.CSMods[area.cfg][name];
-            Main.Log.LogInfo($"Modifying CreatureSpawner \"{name}\" in \"{cs.transform.position}\" in area \"{area.id}\"");
+            Main.GLog.LogInfo($"Modifying CreatureSpawner \"{name}\" in area \"{area.id}\"");
 
             // ----------------------------------------------------------------------------------------------------------------------------------- MODS
             cs.m_respawnTimeMinuts = mod.respawn_time_minutes.HasValue ? mod.respawn_time_minutes.Value : cs.m_respawnTimeMinuts;
@@ -76,7 +80,7 @@ namespace Areas
             if (!Globals.CSMods[area.cfg].ContainsKey(name)) return;
 
             SAMods mod = Globals.SAMods[area.cfg][name];
-            Main.Log.LogInfo($"Modifying SpawnArea: \"{name}\" in \"{sa.transform.position}\" in area \"{area.id}\"");
+            Main.GLog.LogInfo($"Modifying SpawnArea: \"{name}\" in area \"{area.id}\"");
 
             // ----------------------------------------------------------------------------------------------------------------------------------- MODS
             sa.m_spawnIntervalSec = mod.spawn_interval_sec.HasValue ? mod.spawn_interval_sec.Value : sa.m_spawnIntervalSec;
@@ -95,7 +99,12 @@ namespace Areas
 
         }
 
-        public static void Generate_SSDataDic()
+        public static void Set_SSDataDicFlag()
+        {
+            SS_DataDicFlag = true;
+        }
+
+        public static void Generate_SSDataDic(SpawnSystem ss)
         {
 
             List<SpawnSystem.SpawnData> ModifySSList(ref List<SpawnSystem.SpawnData> list, Dictionary<int, SSMods> mods)
@@ -115,9 +124,6 @@ namespace Areas
                 return list;
             }
 
-            GameObject prefab = ZNetScene.instance.GetPrefab("_ZoneCtrl");
-            SpawnSystem ss = prefab.GetComponent<SpawnSystem>();
-
             if (ss == null) return;
 
             foreach (var cfg in Globals.SSMods)
@@ -127,7 +133,9 @@ namespace Areas
                 SS_DataDic.Add(cfg.Key, newList);
             }
 
-            Main.Log.LogInfo($"SS_DataDic generated with count: \"{SS_DataDic.Count}\"");
+            SS_DataDicFlag = false;
+
+            Main.GLog.LogInfo($"SS_DataDic generated with count: \"{SS_DataDic.Count}\"");
 
         }
 

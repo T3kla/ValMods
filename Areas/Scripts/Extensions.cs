@@ -67,6 +67,17 @@ namespace Areas
         public static string GetCleanName(this Character character)
         {
             return character.name.Replace("(Clone)", "").Trim();
+
+        }
+
+    }
+
+    public static class SpawnerSystemExtensions
+    {
+
+        public static string GetCleanName(this SpawnSystem ss)
+        {
+            return ss.name.Replace("(Clone)", "").Trim() + ss.transform.position.ToString("F0");
         }
 
     }
@@ -76,7 +87,7 @@ namespace Areas
 
         public static string GetCleanName(this CreatureSpawner cs)
         {
-            return cs.name.Replace("(Clone)", "").Trim();
+            return cs.name.Replace("(Clone)", "").Trim() + cs.transform.position.ToString("F0");
         }
 
     }
@@ -86,7 +97,32 @@ namespace Areas
 
         public static string GetCleanName(this SpawnArea sa)
         {
-            return sa.name.Replace("(Clone)", "").Trim();
+            return sa.name.Replace("(Clone)", "").Trim() + sa.transform.position.ToString("F0");
+        }
+
+    }
+
+    public static class DungeonGeneratorExtensions
+    {
+
+        public static string GetCleanName(this DungeonGenerator dg)
+        {
+            return dg.name.Replace("(Clone)", "").Replace("(DungeonGenerator)", "").Trim() + dg.transform.position.ToString("F0");
+        }
+
+        public static long GetRegenAtSecond(this DungeonGenerator dg)
+        {
+            long regenAtSecond = dg.GetComponent<ZNetView>().GetZDO().GetLong("Areas RegenAtSecond");
+            return regenAtSecond < 0L ? 0L : regenAtSecond;
+        }
+
+        public static long GetRegenRemainder(this DungeonGenerator dg)
+        {
+            long currentSecond = (long)ZNet.instance.GetTimeSeconds();
+            long regenAtSecond = dg.GetComponent<ZNetView>().GetZDO().GetLong("Areas RegenAtSecond");
+            long remainder = regenAtSecond - currentSecond;
+
+            return remainder < 0L ? 0L : remainder;
         }
 
     }

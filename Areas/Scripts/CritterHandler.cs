@@ -34,7 +34,7 @@ namespace Areas
             if (!Globals.CTMods.ContainsKey(area.cfg)) { CT_Holder = null; return; }
             if (!Globals.CTMods[area.cfg].ContainsKey(name)) { CT_Holder = null; return; }
 
-            Main.Log.LogInfo($"Modifying Critter \"{name}\" in \"{critter.transform.position}\" in area \"{area.id}\" with config \"{area.cfg}\"");
+            Main.GLog.LogInfo($"Modifying Critter \"{name}\" in \"{critter.transform.position}\" in area \"{area.id}\" with config \"{area.cfg}\"");
 
             CTMods ctmod = Globals.CTMods[area.cfg][name];
 
@@ -289,7 +289,7 @@ namespace Areas
                     CT_MatDic.Add((name, critter.Value.color), newMat);
                 }
 
-            Main.Log.LogInfo($"CT_MatDic generated with count: \"{CT_MatDic.Count}\"");
+            Main.GLog.LogInfo($"CT_MatDic generated with count: \"{CT_MatDic.Count}\"");
 
         }
 

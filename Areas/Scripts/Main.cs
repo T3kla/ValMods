@@ -27,7 +27,7 @@ namespace Areas
         private const string VERSION = "1.0.0";
 
         public static Main Instance;
-        public static ManualLogSource Log = new ManualLogSource(NAME);
+        public static ManualLogSource GLog;
 
         internal readonly Harmony harmony;
         internal readonly Assembly assembly;
@@ -36,8 +36,7 @@ namespace Areas
         public Main()
         {
 
-            Log = new ManualLogSource("MyLogSource");
-
+            GLog = new ManualLogSource(NAME + ".General");
             harmony = new Harmony(GUID);
             assembly = Assembly.GetExecutingAssembly();
             modFolder = Path.GetDirectoryName(assembly.Location);
@@ -52,7 +51,7 @@ namespace Areas
             Local_ReadFromDisk();
 
             OnDataLoaded += CritterHandler.Generate_CTMatDic;
-            OnDataLoaded += SpawnerHandler.Generate_SSDataDic;
+            OnDataLoaded += SpawnerHandler.Set_SSDataDicFlag;
 
             OnDataReset += CritterHandler.ResetData;
             OnDataReset += SpawnerHandler.ResetData;
@@ -62,9 +61,9 @@ namespace Areas
             Configs();
 
             if (Globals.Config.Debug.Value)
-                BepInEx.Logging.Logger.Sources.Add(Log);
+                BepInEx.Logging.Logger.Sources.Add(GLog);
             else
-                BepInEx.Logging.Logger.Sources.Remove(Log);
+                BepInEx.Logging.Logger.Sources.Remove(GLog);
 
             harmony.PatchAll(assembly);
 
@@ -75,12 +74,34 @@ namespace Areas
 
             Globals.Config.Loot = ConfigManager.RegisterModConfigVariable<int>(GUID,
                 "Loot Fix", 10,
-                "General", $"Number of levels it takes to get the next vanilla level reward. Only works for LvL3+. For example a value of 5 will result in: LvL5 monster = LvL4 reward, LvL10 monster = LvL5 reward, LvL15 monster = LvL6 reward.",
+                "General", "Number of levels it takes to get the next vanilla level reward. Only works for LvL3+. For example a value of 5 will result in: LvL5 monster = LvL4 reward, LvL10 monster = LvL5 reward, LvL15 monster = LvL6 reward.",
                 false);
 
+
+            Globals.Config.DungeonRegenEnable = ConfigManager.RegisterModConfigVariable<bool>(GUID,
+                "Enable", true,
+                "Dungeon Regen", "Enables or disables Dungeon Regeneration.",
+                false);
+
+            Globals.Config.DungeonRegenCooldown = ConfigManager.RegisterModConfigVariable<long>(GUID,
+                "Cooldown", 30,
+                "Dungeon Regen", "Set the amount of minutes to regenerate a dungeon.",
+                false);
+
+            Globals.Config.DungeonRegenAllowedThemes = ConfigManager.RegisterModConfigVariable<string>(GUID,
+                "Themes", "Crypt, SunkenCrypt, Cave, ForestCrypt",
+                "Dungeon Regen", "Set allowed dungeon themes to regen. Possible themes are: Crypt, SunkenCrypt, Cave, ForestCrypt",
+                false);
+
+            Globals.Config.DungeonRegenPlayerProtection = ConfigManager.RegisterModConfigVariable<bool>(GUID,
+                "Player Protection", true,
+                "Dungeon Regen", "If enabled, Dungeons won't regen while players are inside.",
+                false);
+
+
             Globals.Config.Debug = ConfigManager.RegisterModConfigVariable<bool>(GUID,
-                "Enable Logger", true,
-                "Debug", "Enables or disables debugging logs.",
+                "Enable", true,
+                "Logger", "Enables or disables debugging logs.",
                 true);
 
         }
@@ -98,7 +119,7 @@ namespace Areas
 
         public static void Local_LoadData()
         {
-            Main.Log.LogInfo($"Instance is loading Local Data");
+            Main.GLog.LogInfo($"Instance is loading Local Data");
             Globals.Areas = Serialization.Deserialize<Dictionary<string, Area>>(Globals.LocalRaw.Areas);
             Globals.CTMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CTMods>>>(Globals.LocalRaw.CTData);
             Globals.SSMods = Serialization.Deserialize<Dictionary<string, Dictionary<int, SSMods>>>(Globals.LocalRaw.SSData);
@@ -110,7 +131,7 @@ namespace Areas
 
         public static void Local_ResetData()
         {
-            Main.Log.LogInfo($"Instance is reseting Local Data");
+            Main.GLog.LogInfo($"Instance is reseting Local Data");
             Globals.LocalRaw.Areas = "{}";
             Globals.LocalRaw.CTData = "{}";
             Globals.LocalRaw.SSData = "{}";
@@ -122,7 +143,7 @@ namespace Areas
         // ----------------------------------------------------------------------------------------------------------------------------------- REMOTE
         public static void Remote_LoadData()
         {
-            Main.Log.LogInfo($"Instance is loading Remote Data");
+            Main.GLog.LogInfo($"Instance is loading Remote Data");
             Globals.Areas = Serialization.Deserialize<Dictionary<string, Area>>(Globals.RemoteRaw.Areas);
             Globals.CTMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CTMods>>>(Globals.RemoteRaw.CTData);
             Globals.SSMods = Serialization.Deserialize<Dictionary<string, Dictionary<int, SSMods>>>(Globals.RemoteRaw.SSData);
@@ -134,7 +155,7 @@ namespace Areas
 
         public static void Remote_ResetData()
         {
-            Main.Log.LogInfo($"Instance is reseting Remote Data");
+            Main.GLog.LogInfo($"Instance is reseting Remote Data");
             Globals.RemoteRaw.Areas = "{}";
             Globals.RemoteRaw.CTData = "{}";
             Globals.RemoteRaw.SSData = "{}";
@@ -146,7 +167,7 @@ namespace Areas
         // ----------------------------------------------------------------------------------------------------------------------------------- CURRENT
         public static void Current_ResetData()
         {
-            Main.Log.LogInfo($"Instance is reseting Current Data");
+            Main.GLog.LogInfo($"Instance is reseting Current Data");
             Globals.Areas = new Dictionary<string, Area>();
             Globals.CTMods = new Dictionary<string, Dictionary<string, CTMods>>();
             Globals.SSMods = new Dictionary<string, Dictionary<int, SSMods>>();

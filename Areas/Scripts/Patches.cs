@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using static CharacterDrop;
+using System.Linq;
 
 namespace Areas.Patches
 {
@@ -20,7 +21,7 @@ namespace Areas.Patches
         public static void Player_OnSpawned(Player __instance)
         {
 
-            Main.Log.LogInfo($"ZoneLookup try Start because Player.OnSpawned");
+            Main.GLog.LogInfo($"ZoneLookup try Start because Player.OnSpawned");
             AreaHandler.ZoneLookup_Start();
 
         }
@@ -30,7 +31,7 @@ namespace Areas.Patches
         public static void Player_OnRespawn(Player __instance)
         {
 
-            Main.Log.LogInfo($"ZoneLookup try Start because Player.OnRespawn");
+            Main.GLog.LogInfo($"ZoneLookup try Start because Player.OnRespawn");
             AreaHandler.ZoneLookup_Start();
 
         }
@@ -40,39 +41,27 @@ namespace Areas.Patches
         public static void Player_OnDeath(Player __instance)
         {
 
-            Main.Log.LogInfo($"ZoneLookup try Stop because Player.OnDeath");
+            Main.GLog.LogInfo($"ZoneLookup try Stop because Player.OnDeath");
             AreaHandler.ZoneLookup_Stop();
 
         }
 
 
-        // ----------------------------------------------------------------------------------------------------------------------------------- TELEPORT
-        // [HarmonyPrefix]
-        // [HarmonyPatch(typeof(Teleport), nameof(Teleport.Interact))]
-        // private static void Prefix(Teleport __instance)
-        // {
-        //     if (CreatureLevelControl.dungeonRespawnTime.Value <= 0)
-        //     {
-        //         return;
-        //     }
-        //     foreach (DungeonGenerator dungeonGenerator in ((GameObject)AccessTools.DeclaredField(typeof(ZNetScene), "m_netSceneRoot").GetValue(ZNetScene.instance)).GetComponentsInChildren<DungeonGenerator>())
-        //     {
-        //         if (new Bounds(dungeonGenerator.transform.position, Vector3.one * 20f).Contains(__instance.m_targetPoint.transform.position))
-        //         {
-        //             long num = (long)ZNet.instance.GetTimeSeconds();
-        //             ZDO zdo = dungeonGenerator.GetComponent<ZNetView>().GetZDO();
-        //             long @long = zdo.GetLong("cllc DungeonRegen", 0L);
-        //             if (num > @long + (long)(CreatureLevelControl.dungeonRespawnTime.Value * 60))
-        //             {
-        //                 if (@long != 0L)
-        //                 {
-        //                     __instance.gameObject.AddComponent<CreatureLevelControl.DungeonLoadCheck.UpdateDungeonFrameEnd>().dungeonGenerator = dungeonGenerator;
-        //                 }
-        //                 zdo.Set("cllc DungeonRegen", num);
-        //             }
-        //         }
-        //     }
-        // }
+        // ----------------------------------------------------------------------------------------------------------------------------------- DUNGEONS
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(DungeonGenerator), nameof(DungeonGenerator.Awake))]
+        private static void DungeonGenerator_Awake_Post(DungeonGenerator __instance)
+        {
+
+            if (!Globals.Config.DungeonRegenEnable.Value) return;
+            if (!Globals.Config.DungeonRegenAllowedThemes.Value.Contains(__instance.m_themes.ToString())) return;
+
+            if (__instance.GetRegenRemainder() <= 0L)
+                DungeonHandler.Task_Schedule(__instance, 10L);
+            else
+                DungeonHandler.Task_Schedule(__instance);
+
+        }
 
 
         // ----------------------------------------------------------------------------------------------------------------------------------- RCP SUFF
@@ -94,7 +83,7 @@ namespace Areas.Patches
 
             ZNetType type = __instance.GetInstanceType();
 
-            Main.Log.LogInfo($"Instance is \"{type.ToString()}\"");
+            Main.GLog.LogInfo($"Instance is \"{type.ToString()}\"");
 
             switch (type)
             {
@@ -119,6 +108,8 @@ namespace Areas.Patches
             Main.Remote_ResetData();
             Main.Current_ResetData();
 
+            DungeonHandler.Task_DescheduleAll();
+
         }
 
         [HarmonyPostfix]
@@ -131,22 +122,10 @@ namespace Areas.Patches
 
             long client = __instance.GetPeer(rpc).m_uid;
 
-            Main.Log.LogInfo($"Instance is sending Data to client \"{client}\"");
+            Main.GLog.LogInfo($"Instance is sending Data to client \"{client}\"");
             RPC.SendDataToClient(client);
 
         }
-
-        //   GameObject prefab = ZNetScene.instance.GetPrefab("PlayerNPC");
-
-        // if (ZNetScene.instance.m_namedPrefabs != null)
-        //     {
-        //         if (!ZNetScene.instance.m_namedPrefabs.ContainsKey(StringExtensionMethods.GetStableHashCode(prefab.name)))
-        //             ZNetScene.instance.m_namedPrefabs.Add(StringExtensionMethods.GetStableHashCode(prefab.name), prefab);
-        //     }
-        //     if (ZNetScene.instance.m_prefabs != null && !ZNetScene.instance.m_prefabs.Contains(prefab))
-        //     {
-        //         ZNetScene.instance.m_prefabs.Add(prefab);
-        //     }
 
 
         // ----------------------------------------------------------------------------------------------------------------------------------- CRITTER REGISTER
@@ -203,7 +182,7 @@ namespace Areas.Patches
                     lvlReward = Mathf.FloorToInt(Mathf.Max(1, 2 * (adjustLvl - 1)));
                 }
 
-                Main.Log.LogInfo($"Calculating DropList of \"{__instance.m_character.GetCleanName()}\" at \"{lvl}\" ");
+                Main.GLog.LogInfo($"Calculating DropList of \"{__instance.m_character.GetCleanName()}\" at \"{lvl}\" ");
             }
 
             foreach (Drop drop in __instance.m_drops)

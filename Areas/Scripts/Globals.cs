@@ -47,8 +47,12 @@ namespace Areas
         public static class Config
         {
 
-            public static ConfigVariable<bool> Debug;
             public static ConfigVariable<int> Loot;
+            public static ConfigVariable<bool> DungeonRegenEnable;
+            public static ConfigVariable<long> DungeonRegenCooldown;
+            public static ConfigVariable<string> DungeonRegenAllowedThemes;
+            public static ConfigVariable<bool> DungeonRegenPlayerProtection;
+            public static ConfigVariable<bool> Debug;
 
         }
 

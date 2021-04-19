@@ -396,6 +396,7 @@
     <Compile Include="Scripts\AreaHandler.cs" />
     <Compile Include="Scripts\Containers.cs" />
     <Compile Include="Scripts\CritterHandler.cs" />
+    <Compile Include="Scripts\DungeonHandler.cs" />
     <Compile Include="Scripts\Extensions.cs" />
     <Compile Include="Scripts\Globals.cs" />
     <Compile Include="Scripts\Main.cs" />
