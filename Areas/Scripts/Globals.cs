@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
-using Areas.Containers;
-using BepInEx.Configuration;
 using ModConfigEnforcer;
+using Areas.Containers;
 
 namespace Areas
 {
@@ -14,33 +12,33 @@ namespace Areas
         {
 
             public static string Assembly;
-            public static string Areas { get { return $@"{Assembly}\areas.json"; } }
-            public static string CTData { get { return $@"{Assembly}\critters.json"; } }
-            public static string SSData { get { return $@"{Assembly}\ss_data.json"; } } // SpawnSystem
-            public static string CSData { get { return $@"{Assembly}\cs_data.json"; } } // CreatureSystem
-            public static string SAData { get { return $@"{Assembly}\sa_data.json"; } } // SpawnArea
+            public static string Areas { get { return $@"{Assembly}\areas.yaml"; } }
+            public static string CTData { get { return $@"{Assembly}\critters.yaml"; } }
+            public static string SSData { get { return $@"{Assembly}\ss_data.yaml"; } } // SpawnSystem
+            public static string CSData { get { return $@"{Assembly}\cs_data.yaml"; } } // CreatureSystem
+            public static string SAData { get { return $@"{Assembly}\sa_data.yaml"; } } // SpawnArea
 
         }
 
         public static class LocalRaw
         {
 
-            public static string Areas = "{}";
-            public static string CTData = "{}";
-            public static string SSData = "{}";
-            public static string CSData = "{}";
-            public static string SAData = "{}";
+            public static string Areas = "";
+            public static string CTData = "";
+            public static string SSData = "";
+            public static string CSData = "";
+            public static string SAData = "";
 
         }
 
         public static class RemoteRaw
         {
 
-            public static string Areas = "{}";
-            public static string CTData = "{}";
-            public static string SSData = "{}";
-            public static string CSData = "{}";
-            public static string SAData = "{}";
+            public static string Areas = "";
+            public static string CTData = "";
+            public static string SSData = "";
+            public static string CSData = "";
+            public static string SAData = "";
 
         }
 

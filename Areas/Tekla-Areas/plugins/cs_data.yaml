@@ -1,0 +1,21 @@
+cfg_0:
+    Spawner_Blob:
+        respawn_time_minutes: 0
+        trigger_distance: 30
+        trigger_noise: 0
+        spawn_at_day: true
+        spawn_at_night: false
+        require_spawn_area: false
+        spawn_in_player_base: false
+        set_patrol_spawn_point: false
+
+cfg_1:
+    Spawner_BlobElite:
+        respawn_time_minutes: 0
+        trigger_distance: 60
+        trigger_noise: 0
+        spawn_at_day: true
+        spawn_at_night: true
+        require_spawn_area: false
+        spawn_in_player_base: false
+        set_patrol_spawn_point: false

@@ -28,6 +28,17 @@ namespace Areas.NetCode
 namespace Areas
 {
 
+    public static class StringExtensions
+    {
+
+        public static int ToInt(this string str)
+        {
+            int y = 0;
+            int.TryParse(str, out y);
+            return y;
+        }
+
+    }
     public static class MaterialExtensions
     {
 

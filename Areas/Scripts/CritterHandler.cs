@@ -1,11 +1,11 @@
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 using UnityEngine;
-using Newtonsoft.Json.Linq;
-using Areas.Containers;
 using HarmonyLib;
-using System.Reflection;
-using System.Linq;
+using Areas.Containers;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 namespace Areas
 {
@@ -14,11 +14,13 @@ namespace Areas
     {
 
         public static Dictionary<(string, string), Material> CT_MatDic = new Dictionary<(string, string), Material>();
-        public static List<Transform> CheckedCritters = new List<Transform>();
+        public static HashSet<Transform> CheckedCritters = new HashSet<Transform>();
 
         public static MethodInfo CT_SetHolderInfo = AccessTools.Method(typeof(CritterHandler), nameof(CritterHandler.CT_SetHolder), new Type[] { typeof(GameObject) });
         public static void CT_SetHolder(GameObject critter) { CT_Holder = critter; }
         public static GameObject CT_Holder = null;
+
+        public static Dictionary<string, bool> KilledBosses = new Dictionary<string, bool>();
 
         public static void Modify_CT()
         {
@@ -34,88 +36,72 @@ namespace Areas
             if (!Globals.CTMods.ContainsKey(area.cfg)) { CT_Holder = null; return; }
             if (!Globals.CTMods[area.cfg].ContainsKey(name)) { CT_Holder = null; return; }
 
-            Main.GLog.LogInfo($"Modifying Critter \"{name}\" in \"{critter.transform.position}\" in area \"{area.id}\" with config \"{area.cfg}\"");
-
-            CTMods ctmod = Globals.CTMods[area.cfg][name];
-
+            CTMods mods = Globals.CTMods[area.cfg][name];
 
             // ----------------------------------------------------------------------------------------------------------------------------------- MODS
-            if (ctmod.level_fixed.HasValue)
-                Assign_CT_Level(critter, ctmod, "fixed");
-            else if (ctmod.level_min.HasValue && ctmod.level_max.HasValue)
-                Assign_CT_Level(critter, ctmod, "minmax");
+            if (mods.scale_by_boss != null) if (mods.scale_by_boss.Count > 0) RefreshKilledBosses();
 
-            if (ctmod.size.HasValue)
-                Assign_CT_Size(critter, ctmod.size.Value);
-
-            if (ctmod.color != null)
-            {
-                Assign_CT_Color(name, critter, ctmod.color);
-                ZNetView znView = critter.GetComponent<ZNetView>();
-                if (znView != null) { znView.GetZDO().Set("Critter Paint", ctmod.color); }
-            }
-
-            critter.m_crouchSpeed = ctmod.crouch_speed.HasValue ? ctmod.crouch_speed.Value : critter.m_crouchSpeed;
-            critter.m_walkSpeed = ctmod.walk_speed.HasValue ? ctmod.walk_speed.Value : critter.m_walkSpeed;
-            critter.m_speed = ctmod.speed.HasValue ? ctmod.speed.Value : critter.m_speed;
-            critter.m_turnSpeed = ctmod.turn_speed.HasValue ? ctmod.turn_speed.Value : critter.m_turnSpeed;
-            critter.m_runSpeed = ctmod.run_speed.HasValue ? ctmod.run_speed.Value : critter.m_runSpeed;
-            critter.m_runTurnSpeed = ctmod.run_turn_speed.HasValue ? ctmod.run_turn_speed.Value : critter.m_runTurnSpeed;
-            critter.m_flySlowSpeed = ctmod.fly_slow_speed.HasValue ? ctmod.fly_slow_speed.Value : critter.m_flySlowSpeed;
-            critter.m_flyFastSpeed = ctmod.fly_fast_speed.HasValue ? ctmod.fly_fast_speed.Value : critter.m_flyFastSpeed;
-            critter.m_flyTurnSpeed = ctmod.fly_turn_speed.HasValue ? ctmod.fly_turn_speed.Value : critter.m_flyTurnSpeed;
-            critter.m_acceleration = ctmod.acceleration.HasValue ? ctmod.acceleration.Value : critter.m_acceleration;
-            critter.m_jumpForce = ctmod.jump_force.HasValue ? ctmod.jump_force.Value : critter.m_jumpForce;
-            critter.m_jumpForceForward = ctmod.jump_force_forward.HasValue ? ctmod.jump_force_forward.Value : critter.m_jumpForceForward;
-            critter.m_jumpForceTiredFactor = ctmod.jump_force_tired_factor.HasValue ? ctmod.jump_force_tired_factor.Value : critter.m_jumpForceTiredFactor;
-            critter.m_airControl = ctmod.air_control.HasValue ? ctmod.air_control.Value : critter.m_airControl;
-            critter.m_canSwim = ctmod.can_swim.HasValue ? ctmod.can_swim.Value : critter.m_canSwim;
-            critter.m_swimDepth = ctmod.swim_depth.HasValue ? ctmod.swim_depth.Value : critter.m_swimDepth;
-            critter.m_swimSpeed = ctmod.swim_speed.HasValue ? ctmod.swim_speed.Value : critter.m_swimSpeed;
-            critter.m_swimTurnSpeed = ctmod.swim_turn_speed.HasValue ? ctmod.swim_turn_speed.Value : critter.m_swimTurnSpeed;
-            critter.m_swimAcceleration = ctmod.swim_acceleration.HasValue ? ctmod.swim_acceleration.Value : critter.m_swimAcceleration;
-            critter.m_flying = ctmod.flying.HasValue ? ctmod.flying.Value : critter.m_flying;
-            critter.m_jumpStaminaUsage = ctmod.jump_stamina_usage.HasValue ? ctmod.jump_stamina_usage.Value : critter.m_jumpStaminaUsage;
-            critter.m_tolerateWater = ctmod.tolerate_water.HasValue ? ctmod.tolerate_water.Value : critter.m_tolerateWater;
-            critter.m_tolerateFire = ctmod.tolerate_fire.HasValue ? ctmod.tolerate_fire.Value : critter.m_tolerateFire;
-            critter.m_tolerateSmoke = ctmod.tolerate_smoke.HasValue ? ctmod.tolerate_smoke.Value : critter.m_tolerateSmoke;
-            critter.m_health = ctmod.health.HasValue ? ctmod.health.Value : critter.m_health;
-            critter.m_staggerWhenBlocked = ctmod.stagger_when_blocked.HasValue ? ctmod.stagger_when_blocked.Value : critter.m_staggerWhenBlocked;
-            critter.m_staggerDamageFactor = ctmod.stagger_damage_factor.HasValue ? ctmod.stagger_damage_factor.Value : critter.m_staggerDamageFactor;
+            critter.m_crouchSpeed = mods.crouch_speed.HasValue ? mods.crouch_speed.Value : critter.m_crouchSpeed;
+            critter.m_walkSpeed = mods.walk_speed.HasValue ? mods.walk_speed.Value : critter.m_walkSpeed;
+            critter.m_speed = mods.speed.HasValue ? mods.speed.Value : critter.m_speed;
+            critter.m_turnSpeed = mods.turn_speed.HasValue ? mods.turn_speed.Value : critter.m_turnSpeed;
+            critter.m_runSpeed = mods.run_speed.HasValue ? mods.run_speed.Value : critter.m_runSpeed;
+            critter.m_runTurnSpeed = mods.run_turn_speed.HasValue ? mods.run_turn_speed.Value : critter.m_runTurnSpeed;
+            critter.m_flySlowSpeed = mods.fly_slow_speed.HasValue ? mods.fly_slow_speed.Value : critter.m_flySlowSpeed;
+            critter.m_flyFastSpeed = mods.fly_fast_speed.HasValue ? mods.fly_fast_speed.Value : critter.m_flyFastSpeed;
+            critter.m_flyTurnSpeed = mods.fly_turn_speed.HasValue ? mods.fly_turn_speed.Value : critter.m_flyTurnSpeed;
+            critter.m_acceleration = mods.acceleration.HasValue ? mods.acceleration.Value : critter.m_acceleration;
+            critter.m_jumpForce = mods.jump_force.HasValue ? mods.jump_force.Value : critter.m_jumpForce;
+            critter.m_jumpForceForward = mods.jump_force_forward.HasValue ? mods.jump_force_forward.Value : critter.m_jumpForceForward;
+            critter.m_jumpForceTiredFactor = mods.jump_force_tired_factor.HasValue ? mods.jump_force_tired_factor.Value : critter.m_jumpForceTiredFactor;
+            critter.m_airControl = mods.air_control.HasValue ? mods.air_control.Value : critter.m_airControl;
+            critter.m_canSwim = mods.can_swim.HasValue ? mods.can_swim.Value : critter.m_canSwim;
+            critter.m_swimDepth = mods.swim_depth.HasValue ? mods.swim_depth.Value : critter.m_swimDepth;
+            critter.m_swimSpeed = mods.swim_speed.HasValue ? mods.swim_speed.Value : critter.m_swimSpeed;
+            critter.m_swimTurnSpeed = mods.swim_turn_speed.HasValue ? mods.swim_turn_speed.Value : critter.m_swimTurnSpeed;
+            critter.m_swimAcceleration = mods.swim_acceleration.HasValue ? mods.swim_acceleration.Value : critter.m_swimAcceleration;
+            critter.m_flying = mods.flying.HasValue ? mods.flying.Value : critter.m_flying;
+            critter.m_jumpStaminaUsage = mods.jump_stamina_usage.HasValue ? mods.jump_stamina_usage.Value : critter.m_jumpStaminaUsage;
+            critter.m_tolerateWater = mods.tolerate_water.HasValue ? mods.tolerate_water.Value : critter.m_tolerateWater;
+            critter.m_tolerateFire = mods.tolerate_fire.HasValue ? mods.tolerate_fire.Value : critter.m_tolerateFire;
+            critter.m_tolerateSmoke = mods.tolerate_smoke.HasValue ? mods.tolerate_smoke.Value : critter.m_tolerateSmoke;
+            critter.m_health = mods.health.HasValue ? mods.health.Value : critter.m_health;
+            critter.m_staggerWhenBlocked = mods.stagger_when_blocked.HasValue ? mods.stagger_when_blocked.Value : critter.m_staggerWhenBlocked;
+            critter.m_staggerDamageFactor = mods.stagger_damage_factor.HasValue ? mods.stagger_damage_factor.Value : critter.m_staggerDamageFactor;
 
             MonsterAI ai = critter.GetComponent<MonsterAI>();
             if (ai != null)
             {
                 // Base AI
-                ai.m_viewRange = ctmod.view_range.HasValue ? ctmod.view_range.Value : ai.m_viewRange;
-                ai.m_viewAngle = ctmod.view_angle.HasValue ? ctmod.view_angle.Value : ai.m_viewAngle;
-                ai.m_hearRange = ctmod.hear_range.HasValue ? ctmod.hear_range.Value : ai.m_hearRange;
-                ai.m_idleSoundInterval = ctmod.idle_sound_interval.HasValue ? ctmod.idle_sound_interval.Value : ai.m_idleSoundInterval;
-                ai.m_idleSoundChance = ctmod.idle_sound_chance.HasValue ? ctmod.idle_sound_chance.Value : ai.m_idleSoundChance;
-                ai.m_moveMinAngle = ctmod.move_min_angle.HasValue ? ctmod.move_min_angle.Value : ai.m_moveMinAngle;
-                ai.m_smoothMovement = ctmod.smooth_movement.HasValue ? ctmod.smooth_movement.Value : ai.m_smoothMovement;
-                ai.m_serpentMovement = ctmod.serpent_movement.HasValue ? ctmod.serpent_movement.Value : ai.m_serpentMovement;
-                ai.m_serpentTurnRadius = ctmod.serpent_turn_radius.HasValue ? ctmod.serpent_turn_radius.Value : ai.m_serpentTurnRadius;
-                ai.m_jumpInterval = ctmod.jump_interval.HasValue ? ctmod.jump_interval.Value : ai.m_jumpInterval;
-                ai.m_randomCircleInterval = ctmod.random_circle_interval.HasValue ? ctmod.random_circle_interval.Value : ai.m_randomCircleInterval;
-                ai.m_randomMoveInterval = ctmod.random_move_interval.HasValue ? ctmod.random_move_interval.Value : ai.m_randomMoveInterval;
-                ai.m_randomMoveRange = ctmod.random_move_range.HasValue ? ctmod.random_move_range.Value : ai.m_randomMoveRange;
-                ai.m_randomFly = ctmod.random_fly.HasValue ? ctmod.random_fly.Value : ai.m_randomFly;
-                ai.m_chanceToTakeoff = ctmod.chance_to_takeoff.HasValue ? ctmod.chance_to_takeoff.Value : ai.m_chanceToTakeoff;
-                ai.m_chanceToLand = ctmod.chance_to_land.HasValue ? ctmod.chance_to_land.Value : ai.m_chanceToLand;
-                ai.m_groundDuration = ctmod.ground_duration.HasValue ? ctmod.ground_duration.Value : ai.m_groundDuration;
-                ai.m_airDuration = ctmod.air_duration.HasValue ? ctmod.air_duration.Value : ai.m_airDuration;
-                ai.m_maxLandAltitude = ctmod.max_land_altitude.HasValue ? ctmod.max_land_altitude.Value : ai.m_maxLandAltitude;
-                ai.m_flyAltitudeMin = ctmod.fly_altitude_min.HasValue ? ctmod.fly_altitude_min.Value : ai.m_flyAltitudeMin;
-                ai.m_flyAltitudeMax = ctmod.fly_altitude_max.HasValue ? ctmod.fly_altitude_max.Value : ai.m_flyAltitudeMax;
-                ai.m_takeoffTime = ctmod.takeoff_time.HasValue ? ctmod.takeoff_time.Value : ai.m_takeoffTime;
-                ai.m_avoidFire = ctmod.avoid_fire.HasValue ? ctmod.avoid_fire.Value : ai.m_avoidFire;
-                ai.m_afraidOfFire = ctmod.afraid_of_fire.HasValue ? ctmod.afraid_of_fire.Value : ai.m_afraidOfFire;
-                ai.m_avoidWater = ctmod.avoid_water.HasValue ? ctmod.avoid_water.Value : ai.m_avoidWater;
-                ai.m_spawnMessage = ctmod.spawn_message ?? ai.m_spawnMessage;
-                ai.m_deathMessage = ctmod.death_message ?? ai.m_deathMessage;
-                if (!string.IsNullOrEmpty(ctmod.path_agent_type))
-                    switch (ctmod.path_agent_type)
+                ai.m_viewRange = mods.view_range.HasValue ? mods.view_range.Value : ai.m_viewRange;
+                ai.m_viewAngle = mods.view_angle.HasValue ? mods.view_angle.Value : ai.m_viewAngle;
+                ai.m_hearRange = mods.hear_range.HasValue ? mods.hear_range.Value : ai.m_hearRange;
+                ai.m_idleSoundInterval = mods.idle_sound_interval.HasValue ? mods.idle_sound_interval.Value : ai.m_idleSoundInterval;
+                ai.m_idleSoundChance = mods.idle_sound_chance.HasValue ? mods.idle_sound_chance.Value : ai.m_idleSoundChance;
+                ai.m_moveMinAngle = mods.move_min_angle.HasValue ? mods.move_min_angle.Value : ai.m_moveMinAngle;
+                ai.m_smoothMovement = mods.smooth_movement.HasValue ? mods.smooth_movement.Value : ai.m_smoothMovement;
+                ai.m_serpentMovement = mods.serpent_movement.HasValue ? mods.serpent_movement.Value : ai.m_serpentMovement;
+                ai.m_serpentTurnRadius = mods.serpent_turn_radius.HasValue ? mods.serpent_turn_radius.Value : ai.m_serpentTurnRadius;
+                ai.m_jumpInterval = mods.jump_interval.HasValue ? mods.jump_interval.Value : ai.m_jumpInterval;
+                ai.m_randomCircleInterval = mods.random_circle_interval.HasValue ? mods.random_circle_interval.Value : ai.m_randomCircleInterval;
+                ai.m_randomMoveInterval = mods.random_move_interval.HasValue ? mods.random_move_interval.Value : ai.m_randomMoveInterval;
+                ai.m_randomMoveRange = mods.random_move_range.HasValue ? mods.random_move_range.Value : ai.m_randomMoveRange;
+                ai.m_randomFly = mods.random_fly.HasValue ? mods.random_fly.Value : ai.m_randomFly;
+                ai.m_chanceToTakeoff = mods.chance_to_takeoff.HasValue ? mods.chance_to_takeoff.Value : ai.m_chanceToTakeoff;
+                ai.m_chanceToLand = mods.chance_to_land.HasValue ? mods.chance_to_land.Value : ai.m_chanceToLand;
+                ai.m_groundDuration = mods.ground_duration.HasValue ? mods.ground_duration.Value : ai.m_groundDuration;
+                ai.m_airDuration = mods.air_duration.HasValue ? mods.air_duration.Value : ai.m_airDuration;
+                ai.m_maxLandAltitude = mods.max_land_altitude.HasValue ? mods.max_land_altitude.Value : ai.m_maxLandAltitude;
+                ai.m_flyAltitudeMin = mods.fly_altitude_min.HasValue ? mods.fly_altitude_min.Value : ai.m_flyAltitudeMin;
+                ai.m_flyAltitudeMax = mods.fly_altitude_max.HasValue ? mods.fly_altitude_max.Value : ai.m_flyAltitudeMax;
+                ai.m_takeoffTime = mods.takeoff_time.HasValue ? mods.takeoff_time.Value : ai.m_takeoffTime;
+                ai.m_avoidFire = mods.avoid_fire.HasValue ? mods.avoid_fire.Value : ai.m_avoidFire;
+                ai.m_afraidOfFire = mods.afraid_of_fire.HasValue ? mods.afraid_of_fire.Value : ai.m_afraidOfFire;
+                ai.m_avoidWater = mods.avoid_water.HasValue ? mods.avoid_water.Value : ai.m_avoidWater;
+                ai.m_spawnMessage = mods.spawn_message ?? ai.m_spawnMessage;
+                ai.m_deathMessage = mods.death_message ?? ai.m_deathMessage;
+                if (!string.IsNullOrEmpty(mods.path_agent_type))
+                    switch (mods.path_agent_type)
                     {
                         case "Humanoid": ai.m_pathAgentType = Pathfinding.AgentType.Humanoid; break;
                         case "TrollSize": ai.m_pathAgentType = Pathfinding.AgentType.TrollSize; break;
@@ -132,103 +118,101 @@ namespace Areas
                     }
 
                 // Monster AI
-                ai.m_alertRange = ctmod.alert_range.HasValue ? ctmod.alert_range.Value : ai.m_alertRange;
-                ai.m_fleeIfHurtWhenTargetCantBeReached = ctmod.flee_if_hurt_when_target_cant_be_reached.HasValue ? ctmod.flee_if_hurt_when_target_cant_be_reached.Value : ai.m_fleeIfHurtWhenTargetCantBeReached;
-                ai.m_fleeIfNotAlerted = ctmod.flee_if_not_alerted.HasValue ? ctmod.flee_if_not_alerted.Value : ai.m_fleeIfNotAlerted;
-                ai.m_fleeIfLowHealth = ctmod.flee_if_low_health.HasValue ? ctmod.flee_if_low_health.Value : ai.m_fleeIfLowHealth;
-                ai.m_circulateWhileCharging = ctmod.circulate_while_charging.HasValue ? ctmod.circulate_while_charging.Value : ai.m_circulateWhileCharging;
-                ai.m_circulateWhileChargingFlying = ctmod.circulate_while_charging_flying.HasValue ? ctmod.circulate_while_charging_flying.Value : ai.m_circulateWhileChargingFlying;
-                ai.m_enableHuntPlayer = ctmod.enable_hunt_player.HasValue ? ctmod.enable_hunt_player.Value : ai.m_enableHuntPlayer;
-                ai.m_attackPlayerObjects = ctmod.attack_player_objects.HasValue ? ctmod.attack_player_objects.Value : ai.m_attackPlayerObjects;
-                ai.m_attackPlayerObjectsWhenAlerted = ctmod.attack_player_objects_when_alerted.HasValue ? ctmod.attack_player_objects_when_alerted.Value : ai.m_attackPlayerObjectsWhenAlerted;
-                ai.m_interceptTimeMax = ctmod.intercept_time_max.HasValue ? ctmod.intercept_time_max.Value : ai.m_interceptTimeMax;
-                ai.m_interceptTimeMin = ctmod.intercept_time_min.HasValue ? ctmod.intercept_time_min.Value : ai.m_interceptTimeMin;
-                ai.m_maxChaseDistance = ctmod.max_chase_distance.HasValue ? ctmod.max_chase_distance.Value : ai.m_maxChaseDistance;
-                ai.m_minAttackInterval = ctmod.min_attack_interval.HasValue ? ctmod.min_attack_interval.Value : ai.m_minAttackInterval;
-                ai.m_circleTargetInterval = ctmod.circle_target_interval.HasValue ? ctmod.circle_target_interval.Value : ai.m_circleTargetInterval;
-                ai.m_circleTargetDuration = ctmod.circle_target_duration.HasValue ? ctmod.circle_target_duration.Value : ai.m_circleTargetDuration;
-                ai.m_circleTargetDistance = ctmod.circle_target_distance.HasValue ? ctmod.circle_target_distance.Value : ai.m_circleTargetDistance;
-                ai.m_sleeping = ctmod.sleeping.HasValue ? ctmod.sleeping.Value : ai.m_sleeping;
-                ai.m_noiseWakeup = ctmod.noise_wakeup.HasValue ? ctmod.noise_wakeup.Value : ai.m_noiseWakeup;
-                ai.m_noiseRangeScale = ctmod.noise_range_scale.HasValue ? ctmod.noise_range_scale.Value : ai.m_noiseRangeScale;
-                ai.m_wakeupRange = ctmod.wakeup_range.HasValue ? ctmod.wakeup_range.Value : ai.m_wakeupRange;
-                ai.m_avoidLand = ctmod.avoid_land.HasValue ? ctmod.avoid_land.Value : ai.m_avoidLand;
-                ai.m_consumeRange = ctmod.consume_range.HasValue ? ctmod.consume_range.Value : ai.m_consumeRange;
-                ai.m_consumeSearchRange = ctmod.consume_search_range.HasValue ? ctmod.consume_search_range.Value : ai.m_consumeSearchRange;
-                ai.m_consumeSearchInterval = ctmod.consume_search_interval.HasValue ? ctmod.consume_search_interval.Value : ai.m_consumeSearchInterval;
-                ai.m_consumeHeal = ctmod.consume_heal.HasValue ? ctmod.consume_heal.Value : ai.m_consumeHeal;
+                ai.m_alertRange = mods.alert_range.HasValue ? mods.alert_range.Value : ai.m_alertRange;
+                ai.m_fleeIfHurtWhenTargetCantBeReached = mods.flee_if_hurt_when_target_cant_be_reached.HasValue ? mods.flee_if_hurt_when_target_cant_be_reached.Value : ai.m_fleeIfHurtWhenTargetCantBeReached;
+                ai.m_fleeIfNotAlerted = mods.flee_if_not_alerted.HasValue ? mods.flee_if_not_alerted.Value : ai.m_fleeIfNotAlerted;
+                ai.m_fleeIfLowHealth = mods.flee_if_low_health.HasValue ? mods.flee_if_low_health.Value : ai.m_fleeIfLowHealth;
+                ai.m_circulateWhileCharging = mods.circulate_while_charging.HasValue ? mods.circulate_while_charging.Value : ai.m_circulateWhileCharging;
+                ai.m_circulateWhileChargingFlying = mods.circulate_while_charging_flying.HasValue ? mods.circulate_while_charging_flying.Value : ai.m_circulateWhileChargingFlying;
+                ai.m_enableHuntPlayer = mods.enable_hunt_player.HasValue ? mods.enable_hunt_player.Value : ai.m_enableHuntPlayer;
+                ai.m_attackPlayerObjects = mods.attack_player_objects.HasValue ? mods.attack_player_objects.Value : ai.m_attackPlayerObjects;
+                ai.m_attackPlayerObjectsWhenAlerted = mods.attack_player_objects_when_alerted.HasValue ? mods.attack_player_objects_when_alerted.Value : ai.m_attackPlayerObjectsWhenAlerted;
+                ai.m_interceptTimeMax = mods.intercept_time_max.HasValue ? mods.intercept_time_max.Value : ai.m_interceptTimeMax;
+                ai.m_interceptTimeMin = mods.intercept_time_min.HasValue ? mods.intercept_time_min.Value : ai.m_interceptTimeMin;
+                ai.m_maxChaseDistance = mods.max_chase_distance.HasValue ? mods.max_chase_distance.Value : ai.m_maxChaseDistance;
+                ai.m_minAttackInterval = mods.min_attack_interval.HasValue ? mods.min_attack_interval.Value : ai.m_minAttackInterval;
+                ai.m_circleTargetInterval = mods.circle_target_interval.HasValue ? mods.circle_target_interval.Value : ai.m_circleTargetInterval;
+                ai.m_circleTargetDuration = mods.circle_target_duration.HasValue ? mods.circle_target_duration.Value : ai.m_circleTargetDuration;
+                ai.m_circleTargetDistance = mods.circle_target_distance.HasValue ? mods.circle_target_distance.Value : ai.m_circleTargetDistance;
+                ai.m_sleeping = mods.sleeping.HasValue ? mods.sleeping.Value : ai.m_sleeping;
+                ai.m_noiseWakeup = mods.noise_wakeup.HasValue ? mods.noise_wakeup.Value : ai.m_noiseWakeup;
+                ai.m_noiseRangeScale = mods.noise_range_scale.HasValue ? mods.noise_range_scale.Value : ai.m_noiseRangeScale;
+                ai.m_wakeupRange = mods.wakeup_range.HasValue ? mods.wakeup_range.Value : ai.m_wakeupRange;
+                ai.m_avoidLand = mods.avoid_land.HasValue ? mods.avoid_land.Value : ai.m_avoidLand;
+                ai.m_consumeRange = mods.consume_range.HasValue ? mods.consume_range.Value : ai.m_consumeRange;
+                ai.m_consumeSearchRange = mods.consume_search_range.HasValue ? mods.consume_search_range.Value : ai.m_consumeSearchRange;
+                ai.m_consumeSearchInterval = mods.consume_search_interval.HasValue ? mods.consume_search_interval.Value : ai.m_consumeSearchInterval;
+                ai.m_consumeHeal = mods.consume_heal.HasValue ? mods.consume_heal.Value : ai.m_consumeHeal;
             }
 
+            Assign_CT_Health(critter, mods);
+            Assign_CT_Damage(critter, mods);
 
-            // ----------------------------------------------------------------------------------------------------------------------------------- EMPTY HOLDER
+            if (mods.evolutions?.Count > 0)
+                Assign_CT_Evolutions(critter, mods);
+
+            if (mods.size.HasValue)
+                Assign_CT_Size(critter, mods.size.Value);
+
+            if (mods.color != null)
+            {
+                Assign_CT_Color(name, critter, mods.color);
+                ZNetView znView = critter.GetComponent<ZNetView>();
+                if (znView != null) { znView.GetZDO().Set("Areas CritterPaint", mods.color); }
+            }
+
+            if (mods.level_fixed.HasValue)
+                Assign_CT_Level(critter, mods, "fixed");
+            else if (mods.level_max.HasValue)
+                Assign_CT_Level(critter, mods, "minmax");
+
+
+            // ----------------------------------------------------------------------------------------------------------------------------------- EXIT
+            Main.GLog.LogInfo($"Modifying Critter \"Lv.{critter.GetLevel()} {name}\" in area \"{area.name}\" with config \"{area.cfg}\"");
+
             CheckedCritters.Add(critter.transform);
             CT_Holder = null;
 
         }
 
-        private static void Assign_CT_Level(Character critter, CTMods mods, string route)
+        private static void Assign_CT_Health(Character critter, CTMods mods)
         {
 
-            int ByBoss(Dictionary<string, bool> boss, Dictionary<string, int> perBoss)
-            {
-                if (perBoss == null) return 0;
-                int result = 0;
-                foreach (var item in perBoss)
-                    switch (item.Key)
-                    {
-                        case "Eikthyr": result += boss["eikthyr"] ? Mathf.Clamp(item.Value, 0, 100) : 0; break;
-                        case "The Elder": result += boss["gdking"] ? Mathf.Clamp(item.Value, 0, 100) : 0; break;
-                        case "Bonemass": result += boss["bonemass"] ? Mathf.Clamp(item.Value, 0, 100) : 0; break;
-                        case "Moder": result += boss["dragon"] ? Mathf.Clamp(item.Value, 0, 100) : 0; break;
-                        case "Yagluth": result += boss["goblinking"] ? Mathf.Clamp(item.Value, 0, 100) : 0; break;
-                        default: break;
-                    }
-                return result;
-            }
+            float multi = mods.health_multi.HasValue ? mods.health_multi.Value : 1;
+            multi *= ByDay(mods, "health_multi", true);
+            multi *= ByBoss(mods, "health_multi", true);
 
-            int days = EnvMan.instance.GetDay(ZNet.instance.GetTimeSeconds());
+            critter.m_health *= multi;
 
-            Dictionary<string, bool> bosses = new Dictionary<string, bool>
-            {
-                {"eikthyr",ZoneSystem.instance.GetGlobalKey("defeated_eikthyr")},
-                {"gdking",ZoneSystem.instance.GetGlobalKey("defeated_gdking")},
-                {"bonemass",ZoneSystem.instance.GetGlobalKey("defeated_bonemass")},
-                {"dragon",ZoneSystem.instance.GetGlobalKey("defeated_dragon")},
-                {"goblinking",ZoneSystem.instance.GetGlobalKey("defeated_goblinking")},
-            };
+        }
 
-            // Fixed level route
-            if (route == "fixed")
-            {
+        private static void Assign_CT_Damage(Character critter, CTMods mods)
+        {
 
-                int lvl = (int)mods.level_fixed;
-                lvl += mods.level_fixed_AddByDay.HasValue ? Mathf.FloorToInt(days / (float)mods.level_fixed_AddByDay) : 0;
-                lvl += mods.level_fixed_AddByBoss != null ? ByBoss(bosses, mods.level_fixed_AddByBoss) : 0;
-                critter.SetLevel(Mathf.Clamp(lvl, 0, 100));
+            ZNetView netView = critter.GetComponent<ZNetView>();
+            if (netView == null) return;
 
-            }
-            // MinMax level route
-            else if (route == "minmax")
-            {
+            float multi = mods.damage_multi.HasValue ? mods.damage_multi.Value : 1;
+            multi *= ByDay(mods, "damage_multi", true);
+            multi *= ByBoss(mods, "damage_multi", true);
 
-                int lvlMin = (int)mods.level_min;
-                int lvlMax = (int)mods.level_max;
-                int lvlCha = (int)mods.level_lvlUpChance;
+            netView.GetZDO()?.Set("Areas CritterDmgMultiplier", multi);
 
-                lvlMin += mods.level_min_AddByDay.HasValue ? Mathf.FloorToInt(days / (float)mods.level_min_AddByDay) : 0;
-                lvlMax += mods.level_max_AddByDay.HasValue ? Mathf.FloorToInt(days / (float)mods.level_max_AddByDay) : 0;
-                lvlCha += mods.level_lvlUpChance_AddByDay.HasValue ? Mathf.FloorToInt(days / (float)mods.level_lvlUpChance_AddByDay) : 0;
+        }
 
-                lvlMin += mods.level_min_AddByBoss != null ? ByBoss(bosses, mods.level_min_AddByBoss) : 0;
-                lvlMax += mods.level_max_AddByBoss != null ? ByBoss(bosses, mods.level_max_AddByBoss) : 0;
-                lvlCha += mods.level_lvlUpChance_AddByBoss != null ? ByBoss(bosses, mods.level_lvlUpChance_AddByBoss) : 0;
+        private static void Assign_CT_Evolutions(Character critter, CTMods mods)
+        {
 
-                lvlCha = Mathf.Clamp(lvlCha, 0, 100);
+            ZNetView netView = critter.GetComponent<ZNetView>();
+            if (netView == null) return;
 
-                while (lvlMin < lvlMax && UnityEngine.Random.Range(0f, 100f) <= lvlCha) lvlMin++;
-                critter.SetLevel(Mathf.Clamp(lvlMin, 1, 100));
+            var binFormatter = new BinaryFormatter();
+            var mStream = new MemoryStream();
+            binFormatter.Serialize(mStream, mods.evolutions);
 
-            }
+            netView.GetZDO()?.Set($"Areas EvolutionSetter", mStream.ToArray());
+
+            mStream.Close();
 
         }
 
@@ -266,6 +250,88 @@ namespace Areas
 
         }
 
+        private static void Assign_CT_Level(Character critter, CTMods mods, string route)
+        {
+
+            if (route == "fixed")
+            {
+
+                int lvlFixed = mods.level_fixed.Value;
+
+                lvlFixed += Mathf.FloorToInt(ByDay(mods, "level_fixed"));
+                lvlFixed += Mathf.FloorToInt(ByBoss(mods, "level_fixed"));
+
+                critter.SetLevel(Mathf.Clamp(lvlFixed, 0, 100));
+
+            }
+            else if (route == "minmax")
+            {
+
+                int lvlMin = mods.level_min.HasValue ? mods.level_min.Value : 1;
+                int lvlMax = mods.level_max.HasValue ? mods.level_max.Value : 3;
+                float lvlCha = mods.level_chance.HasValue ? mods.level_chance.Value : 15;
+
+                lvlMin += Mathf.FloorToInt(ByDay(mods, "level_min"));
+                lvlMax += Mathf.FloorToInt(ByDay(mods, "level_max"));
+                lvlCha += Mathf.FloorToInt(ByDay(mods, "level_lvlUpChance"));
+
+                lvlMin += Mathf.FloorToInt(ByBoss(mods, "level_min"));
+                lvlMax += Mathf.FloorToInt(ByBoss(mods, "level_max"));
+                lvlCha += Mathf.FloorToInt(ByBoss(mods, "level_lvlUpChance"));
+
+                lvlCha = Mathf.Clamp(lvlCha, 0, 100);
+
+                while (lvlMin < lvlMax && UnityEngine.Random.Range(0f, 100f) <= lvlCha) lvlMin++;
+                critter.SetLevel(Mathf.Clamp(lvlMin, 1, 100));
+
+            }
+
+        }
+
+        private static float ByDay(CTMods mods, string selector, bool multiply = false)
+        {
+
+            float result = multiply ? 1f : 0f;
+
+            CTMods.ByDay byDay;
+            if (mods.scale_by_day != null)
+                if (mods.scale_by_day.TryGetValue(selector, out byDay))
+                    if (!multiply)
+                        result += Mathf.FloorToInt(EnvMan.instance.GetDay(ZNet.instance.GetTimeSeconds()) / byDay.days) * byDay.value;
+                    else
+                        result *= Mathf.Clamp(Mathf.FloorToInt(EnvMan.instance.GetDay(ZNet.instance.GetTimeSeconds()) / byDay.days) * byDay.value, 1, 100);
+
+            return result;
+
+        }
+
+        private static float ByBoss(CTMods mods, string selector, bool multiply = false)
+        {
+
+            float result = multiply ? 1f : 0f;
+
+            if (mods.scale_by_boss == null) return result;
+            if (!mods.scale_by_boss.ContainsKey(selector)) return result;
+
+            var resultList = new List<float>();
+            var perBoss = mods.scale_by_boss[selector];
+            foreach (var item in perBoss)
+                switch (item.Key)
+                {
+                    case "eikthyr": if (KilledBosses["eikthyr"]) resultList.Add(Mathf.Clamp(item.Value, 0, 100)); break;
+                    case "the_elder": if (KilledBosses["gdking"]) resultList.Add(Mathf.Clamp(item.Value, 0, 100)); break;
+                    case "bonemass": if (KilledBosses["bonemass"]) resultList.Add(Mathf.Clamp(item.Value, 0, 100)); break;
+                    case "moder": if (KilledBosses["dragon"]) resultList.Add(Mathf.Clamp(item.Value, 0, 100)); break;
+                    case "yagluth": if (KilledBosses["goblinking"]) resultList.Add(Mathf.Clamp(item.Value, 0, 100)); break;
+                    default: break;
+                }
+
+            resultList.ForEach(a => result = multiply ? result * a : result + a);
+
+            return result;
+
+        }
+
         public static void Generate_CTMatDic()
         {
 
@@ -293,9 +359,24 @@ namespace Areas
 
         }
 
+        private static void RefreshKilledBosses()
+        {
+
+            KilledBosses = new Dictionary<string, bool>
+            {
+                {"eikthyr",ZoneSystem.instance.GetGlobalKey("defeated_eikthyr")},
+                {"gdking",ZoneSystem.instance.GetGlobalKey("defeated_gdking")},
+                {"bonemass",ZoneSystem.instance.GetGlobalKey("defeated_bonemass")},
+                {"dragon",ZoneSystem.instance.GetGlobalKey("defeated_dragon")},
+                {"goblinking",ZoneSystem.instance.GetGlobalKey("defeated_goblinking")},
+            };
+
+        }
+
         public static void ResetData()
         {
 
+            KilledBosses = new Dictionary<string, bool>();
             CT_Holder = null;
             CT_MatDic.Clear();
             CheckedCritters.Clear();

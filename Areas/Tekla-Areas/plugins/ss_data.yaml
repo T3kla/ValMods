@@ -1,0 +1,19 @@
+cfg_0:
+    0:
+        group_size_min: 10
+        group_size_max: 20
+        group_radius: 10
+        spawn_at_night: true
+        spawn_at_day: true
+        min_altitude: 0
+        max_altitude: 1000
+
+cfg_1:
+    1:
+        group_size_min: 1
+        group_size_max: 1
+        group_radius: 5
+        spawn_at_night: false
+        spawn_at_day: true
+        min_altitude: 0
+        max_altitude: 1000

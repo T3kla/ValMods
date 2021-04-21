@@ -16,6 +16,14 @@ If you are installing this manually, do the following
 ![Logo64](https://user-images.githubusercontent.com/23636548/112306898-a1ac1f00-8ca0-11eb-8b3e-90e73dc7bad2.png)
 
 ## Changelog
+#### 0.1.2
+- Allow "Base AI" component modifications
+- Allow scaling parameters via days passed and bosses killed
+- Added Config Enforcer compatibility (dependency)
+- Added config to adjust loot spawning for LvL3+ critters
+- Dungeon regeneration functionality and configs
+- Changed serializer from JSON to YAML
+- Resource load order and optimisation
 #### 0.1.1
 - Allow Color and Size modifications
 - Allow "Character" component modifications

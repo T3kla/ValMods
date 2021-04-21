@@ -1,9 +1,6 @@
-using System;
-using System.Linq;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
-using Areas.Containers;
 using UnityEngine;
+using Areas.Containers;
 
 namespace Areas
 {
@@ -51,7 +48,7 @@ namespace Areas
             if (!Globals.CSMods[area.cfg].ContainsKey(name)) return;
 
             CSMods mod = Globals.CSMods[area.cfg][name];
-            Main.GLog.LogInfo($"Modifying CreatureSpawner \"{name}\" in area \"{area.id}\"");
+            Main.GLog.LogInfo($"Modifying CreatureSpawner \"{name}\" in area \"{area.name}\"");
 
             // ----------------------------------------------------------------------------------------------------------------------------------- MODS
             cs.m_respawnTimeMinuts = mod.respawn_time_minutes.HasValue ? mod.respawn_time_minutes.Value : cs.m_respawnTimeMinuts;
@@ -80,7 +77,7 @@ namespace Areas
             if (!Globals.CSMods[area.cfg].ContainsKey(name)) return;
 
             SAMods mod = Globals.SAMods[area.cfg][name];
-            Main.GLog.LogInfo($"Modifying SpawnArea: \"{name}\" in area \"{area.id}\"");
+            Main.GLog.LogInfo($"Modifying SpawnArea: \"{name}\" in area \"{area.name}\"");
 
             // ----------------------------------------------------------------------------------------------------------------------------------- MODS
             sa.m_spawnIntervalSec = mod.spawn_interval_sec.HasValue ? mod.spawn_interval_sec.Value : sa.m_spawnIntervalSec;

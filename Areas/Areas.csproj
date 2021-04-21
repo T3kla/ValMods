@@ -26,8 +26,11 @@
   <ItemGroup>
     <Reference Include="ModConfigEnforcer">
       <HintPath>..\..\..\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\cache\Pfhoenix-ConfigEnforcer\ModConfigEnforcer.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Primitives" />
+    <Reference Include="System.ComponentModel.TypeConverter" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="0Harmony, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
@@ -378,17 +381,8 @@
       <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.XRModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
-      <HintPath>..\__Common Dependencies\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-      <HintPath>..\__Common Dependencies\System.Data.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-      <HintPath>..\__Common Dependencies\System.Runtime.Serialization.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="YamlDotNet">
+      <HintPath>..\__Common Dependencies\Yaml\YamlDotNet.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -403,7 +397,7 @@
     <Compile Include="Scripts\Patches.cs" />
     <Compile Include="Scripts\RPC.cs" />
     <Compile Include="Scripts\SpawnerHandler.cs" />
-    <Compile Include="Scripts\TJson.cs" />
+    <Compile Include="Scripts\TYaml.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tekla-Areas\plugins\area_configs.json" />

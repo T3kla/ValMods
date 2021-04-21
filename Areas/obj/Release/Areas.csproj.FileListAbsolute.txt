@@ -6,5 +6,5 @@ C:\Repos\Tekla.Mods\Areas\Tekla-Areas\plugins\Areas.dll
 C:\Repos\Tekla.Mods\Areas\Tekla-Areas\plugins\Areas.pdb
 C:\Repos\Tekla.Mods\Areas\obj\Release\Areas.pdb
 C:\Repos\Tekla.Mods\Areas\obj\Release\Areas.csprojAssemblyReference.cache
-C:\Repos\Tekla.Mods\Areas\Tekla-Areas\plugins\ModConfigEnforcer.dll
+C:\Repos\Tekla.Mods\Areas\Tekla-Areas\plugins\YamlDotNet.dll
 C:\Repos\Tekla.Mods\Areas\obj\Release\Areas.csproj.CopyComplete

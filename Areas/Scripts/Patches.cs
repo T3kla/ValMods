@@ -6,7 +6,8 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using static CharacterDrop;
-using System.Linq;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Areas.Patches
 {
@@ -143,7 +144,7 @@ namespace Areas.Patches
             ZNetView znView = __instance.GetComponent<ZNetView>();
             if (znView == null) { CritterHandler.CheckedCritters.Add(__instance.transform); return; }
 
-            string hexColorStr = znView.GetZDO().GetString("Critter Paint");
+            string hexColorStr = znView.GetZDO().GetString("Areas CritterPaint");
             if (!string.IsNullOrEmpty(hexColorStr)) CritterHandler.Assign_CT_Color(name, __instance, hexColorStr);
 
             CritterHandler.CheckedCritters.Add(__instance.transform);
@@ -157,6 +158,66 @@ namespace Areas.Patches
 
             if (__instance.IsPlayer()) return;
             CritterHandler.CheckedCritters.Remove(__instance.transform);
+            CritterHandler.CheckedCritters.RemoveWhere(a => a == null);
+
+        }
+
+
+        // ----------------------------------------------------------------------------------------------------------------------------------- CRITTER DAMAGE
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(Character), nameof(Character.Damage))]
+        private static void Character_Damage_Pre(Character __instance, HitData hit)
+        {
+
+            Character attacker = hit.GetAttacker();
+            if (attacker.IsPlayer()) return;
+
+            ZNetView netView = attacker.GetComponent<ZNetView>();
+            if (netView == null) return;
+
+            float multi = netView.GetZDO().GetFloat("Areas CritterDmgMultiplier", 1f);
+            hit.ApplyModifier(multi);
+
+        }
+
+
+        // ----------------------------------------------------------------------------------------------------------------------------------- CRITTER EVOLUTIONS
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(LevelEffects), nameof(LevelEffects.SetupLevelVisualization))]
+        public static void LevelEffects_SetupLevelVisualization_Pre(LevelEffects __instance, ref int level)
+        {
+
+            Character character = __instance.m_character;
+            if (character.IsPlayer()) return;
+
+            ZNetView netView = character.GetComponent<ZNetView>();
+            if (netView == null) return;
+
+            Byte[] array = netView.GetZDO().GetByteArray("Areas EvolutionSetter");
+            if (array == null) return;
+            if (array.Length < 1) return;
+
+            var mStream = new MemoryStream();
+            var binFormatter = new BinaryFormatter();
+            mStream.Write(array, 0, array.Length);
+            mStream.Position = 0;
+
+            var evolutions = binFormatter.Deserialize(mStream) as Dictionary<int, string>;
+
+            mStream.Close();
+
+            if (evolutions == null) return;
+            if (evolutions.Count < 1) return;
+
+            foreach (var stage in evolutions)
+            {
+                string[] bracket = stage.Value.Split('-');
+                if (level >= bracket[0].ToInt() && level <= bracket[1].ToInt())
+                {
+                    level = stage.Key;
+                    break;
+                }
+            }
 
         }
 

@@ -137,3 +137,5 @@ C:\Repos\Tekla.Mods\ColorfulSigns\obj\Release\ColorfulSigns.csprojAssemblyRefere
 C:\Repos\Tekla.Mods\ColorfulSigns\obj\Release\ColorfulSigns.csproj.CoreCompileInputs.cache
 C:\Repos\Tekla.Mods\ColorfulSigns\obj\Release\ColorfulSigns.dll
 C:\Repos\Tekla.Mods\ColorfulSigns\obj\Release\ColorfulSigns.pdb
+C:\Repos\Tekla.Mods\ColorfulSigns\Tekla-ColorfulSigns\plugins\Newtonsoft.Json.dll
+C:\Repos\Tekla.Mods\ColorfulSigns\obj\Release\ColorfulSigns.csproj.CopyComplete

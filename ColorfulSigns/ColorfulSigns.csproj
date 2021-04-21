@@ -24,8 +24,14 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\__Common Dependencies\Json\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
     <Reference Include="0Harmony, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Default\BepInEx\core\0Harmony.dll</HintPath>
@@ -375,18 +381,6 @@
       <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\unstripped_corlib\UnityEngine.XRModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
-      <HintPath>..\__Common Dependencies\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-      <HintPath>..\__Common Dependencies\System.Data.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-      <HintPath>..\__Common Dependencies\System.Runtime.Serialization.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Scripts\Globals.cs" />
@@ -399,15 +393,13 @@
     <Content Include="Tekla-ColorfulSigns\plugins\color_library.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-
   <PropertyGroup>
     <GameDir>C:\Program Files (x86)\Steam\steamapps\common\Valheim</GameDir>
   </PropertyGroup>
-
   <Target Name="AfterBuild">
     <Exec Command="$(SolutionDir)pdb2mdb.exe $(ProjectDir)Tekla-ColorfulSigns\plugins\ColorfulSigns.dll" />
     <ItemGroup>
-      <ModFolder Include="$(ProjectDir)Tekla-ColorfulSigns\**\*.*"/>
+      <ModFolder Include="$(ProjectDir)Tekla-ColorfulSigns\**\*.*" />
     </ItemGroup>
     <Copy SourceFiles="@(ModFolder)" DestinationFolder="$(GameDir)\Bepinex\plugins\$(ProjectName)\%(RecursiveDir)" />
     <Delete Files="$(ProjectDir)Tekla-ColorfulSigns\plugins\ColorfulSigns.pdb" />
@@ -418,11 +410,10 @@
     </ItemGroup>
     <Copy SourceFiles="@(PluginsFolderOrg)" DestinationFolder="$(ProjectDir)\plugins\$(ProjectName)\%(RecursiveDir)" />
     <ItemGroup>
-      <PluginsFolder Include="$(ProjectDir)\plugins\"/>
+      <PluginsFolder Include="$(ProjectDir)\plugins\" />
     </ItemGroup>
-    <Delete Files="$(SolutionDir)__Releases\Tekla-ColorfulSigns.7z"/>
+    <Delete Files="$(SolutionDir)__Releases\Tekla-ColorfulSigns.7z" />
     <Exec Command="7z a -t7z $(SolutionDir)__Releases\Tekla-ColorfulSigns.7z @(PluginsFolder)" />
     <RemoveDir Directories="$(ProjectDir)plugins\" />
   </Target>
-  
 </Project>

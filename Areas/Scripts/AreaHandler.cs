@@ -1,9 +1,5 @@
-using System.IO;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Newtonsoft.Json.Linq;
-using Areas.TJson;
 using Areas.Containers;
 
 namespace Areas
@@ -12,7 +8,7 @@ namespace Areas
     public static class AreaHandler
     {
 
-        public static Area PlayerCurrentArea = new Area() { id = "" };
+        public static Area PlayerCurrentArea = new Area { name = "" };
         public static Coroutine PlayerAreaLookupCorou;
 
         public static void ZoneLookup_Start()
@@ -44,15 +40,15 @@ namespace Areas
 
                 if (player == null) { Main.GLog.LogWarning($"ZoneLookup Break because player == null"); break; }
 
-                Area newArea = GetArea(player.transform.position) ?? new Area() { id = "" };
+                Area newArea = GetArea(player.transform.position) ?? new Area { name = "" };
 
-                if (newArea.id != PlayerCurrentArea.id)
+                if (newArea.name != PlayerCurrentArea.name)
                 {
-                    string msg = newArea.id == "" ? $"Exiting {PlayerCurrentArea.display_name}" : $"Entering {newArea.display_name}";
+                    string msg = newArea.name == "" ? $"Exiting {PlayerCurrentArea.name}" : $"Entering {newArea.name}";
                     player.Message(MessageHud.MessageType.Center, msg, 0, null);
                     PlayerCurrentArea = newArea;
 
-                    Main.GLog.LogInfo($"ZoneLookup newArea: {(PlayerCurrentArea != null ? newArea.display_name : "None")}");
+                    Main.GLog.LogInfo($"ZoneLookup newArea: {(PlayerCurrentArea != null ? newArea.name : "None")}");
                 }
 
                 yield return new WaitForSecondsRealtime(4f);
@@ -74,7 +70,7 @@ namespace Areas
             {
                 float dis = Vector2.Distance(pos, a.Value.centre);
 
-                if (dis < a.Value.inner_radious || dis > a.Value.outter_radious) continue;
+                if (dis < a.Value.radius.x || dis > a.Value.radius.z) continue;
                 if (a.Value.layer <= layer) continue;
 
                 area = a.Key;
