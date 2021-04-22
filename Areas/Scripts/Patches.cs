@@ -130,7 +130,6 @@ namespace Areas.Patches
 
 
         // ----------------------------------------------------------------------------------------------------------------------------------- CRITTER REGISTER
-
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Character), nameof(Character.Awake))]
         public static void Character_Awake_Post(Character __instance)
@@ -145,7 +144,7 @@ namespace Areas.Patches
             if (znView == null) { CritterHandler.CheckedCritters.Add(__instance.transform); return; }
 
             string hexColorStr = znView.GetZDO().GetString("Areas CritterPaint");
-            if (!string.IsNullOrEmpty(hexColorStr)) CritterHandler.Assign_CT_Color(name, __instance, hexColorStr);
+            if (!string.IsNullOrEmpty(hexColorStr)) CritterHandler.Assign_CT_Color(__instance, hexColorStr);
 
             CritterHandler.CheckedCritters.Add(__instance.transform);
 
@@ -201,23 +200,11 @@ namespace Areas.Patches
             var binFormatter = new BinaryFormatter();
             mStream.Write(array, 0, array.Length);
             mStream.Position = 0;
-
-            var evolutions = binFormatter.Deserialize(mStream) as Dictionary<int, string>;
-
+            var evolutions = binFormatter.Deserialize(mStream) as Dictionary<int, int[]>;
             mStream.Close();
 
-            if (evolutions == null) return;
-            if (evolutions.Count < 1) return;
-
             foreach (var stage in evolutions)
-            {
-                string[] bracket = stage.Value.Split('-');
-                if (level >= bracket[0].ToInt() && level <= bracket[1].ToInt())
-                {
-                    level = stage.Key;
-                    break;
-                }
-            }
+                if (level >= stage.Value[0] && level <= stage.Value[1]) { level = stage.Key; break; }
 
         }
 
@@ -308,7 +295,7 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SpawnSystem), nameof(SpawnSystem.Spawn))]
-        public static void SpawnSystem_Spawn_Post(SpawnSystem __instance) { CritterHandler.Modify_CT(); }
+        public static void SpawnSystem_Spawn_Post(SpawnSystem __instance) { CritterHandler.ModifySpawned_CT(); }
 
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(CreatureSpawner), nameof(CreatureSpawner.Spawn))]
@@ -350,7 +337,7 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CreatureSpawner), nameof(CreatureSpawner.Spawn))]
-        public static void CreatureSpawner_Spawn_Post(CreatureSpawner __instance) { CritterHandler.Modify_CT(); }
+        public static void CreatureSpawner_Spawn_Post(CreatureSpawner __instance) { CritterHandler.ModifySpawned_CT(); }
 
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(SpawnArea), nameof(SpawnArea.SpawnOne))]
@@ -392,7 +379,7 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SpawnArea), nameof(SpawnArea.SpawnOne))]
-        public static void SpawnArea_SpawnOne_Post(SpawnArea __instance) { CritterHandler.Modify_CT(); }
+        public static void SpawnArea_SpawnOne_Post(SpawnArea __instance) { CritterHandler.ModifySpawned_CT(); }
 
 
         // ----------------------------------------------------------------------------------------------------------------------------------- MODIFY SPAWNERS

@@ -19,36 +19,43 @@ namespace Areas.Containers
     public class CTMods
     {
 
-        public class ByDay
-        {
-            public int days { get; set; }
-            public float value { get; set; }
-        }
+        public CTCustomData custom;
+        public CTCharacterData character;
+        public CTBaseAIData base_ai;
+        public CTMonsterAIData monster_ai;
 
-        // Custom Variables
+    }
+
+
+    public class CTCustomData
+    {
         public int? level_min { get; set; }
         public int? level_max { get; set; }
         public float? level_chance { get; set; }
         public int? level_fixed { get; set; }
-
         public float? health_multi { get; set; }
         public float? damage_multi { get; set; }
-
         public float? size { get; set; }
         public string color { get; set; }
-
-        public Dictionary<int, string> evolutions { get; set; }
-
+        public Dictionary<int, int[]> evolutions { get; set; }
         public Dictionary<string, ByDay> scale_by_day { get; set; }
         public Dictionary<string, Dictionary<string, float>> scale_by_boss { get; set; }
 
-        // Weird Character Stuff
-        // public string name = ""{ get; set; }
-        // public Faction faction = Faction.AnimalsVeg{ get; set; }
-        // public bool boss{ get; set; }
-        // public string bossEvent = ""{ get; set; }
-        // public string defeatSetGlobalKey = ""{ get; set; }
+    }
 
+    public class ByDay
+    {
+        public int days { get; set; }
+        public float value { get; set; }
+    }
+
+    public class CTCharacterData
+    {
+        public string name { get; set; }                                // Not in Wiki
+        // public Faction faction = Faction.AnimalsVeg{ get; set; }
+        public bool boss { get; set; }                                  // Not in Wiki
+        public string bossEvent { get; set; }                           // Not in Wiki
+        public string defeatSetGlobalKey { get; set; }                  // Not in Wiki
         public float? crouch_speed { get; set; }
         public float? walk_speed { get; set; }
         public float? speed { get; set; }
@@ -71,15 +78,16 @@ namespace Areas.Containers
         // public GroundTiltType m_groundTilt{ get; set; }
         public bool? flying { get; set; }
         public float? jump_stamina_usage { get; set; }
-
         public bool? tolerate_water { get; set; }
         public bool? tolerate_fire { get; set; }
         public bool? tolerate_smoke { get; set; }
         public float? health { get; set; }
         public bool? stagger_when_blocked { get; set; }
         public float? stagger_damage_factor { get; set; }
+    }
 
-        // Base AI stuff
+    public class CTBaseAIData
+    {
         public string path_agent_type { get; set; }
         public float? view_range { get; set; }
         public float? view_angle { get; set; }
@@ -93,12 +101,9 @@ namespace Areas.Containers
         public bool? serpent_movement { get; set; }
         public float? serpent_turn_radius { get; set; }
         public float? jump_interval { get; set; }
-
         public float? random_circle_interval { get; set; }
-
         public float? random_move_interval { get; set; }
         public float? random_move_range { get; set; }
-
         public bool? random_fly { get; set; }
         public float? chance_to_takeoff { get; set; }
         public float? chance_to_land { get; set; }
@@ -108,14 +113,15 @@ namespace Areas.Containers
         public float? fly_altitude_min { get; set; }
         public float? fly_altitude_max { get; set; }
         public float? takeoff_time { get; set; }
-
         public bool? avoid_fire { get; set; }
         public bool? afraid_of_fire { get; set; }
         public bool? avoid_water { get; set; }
         public string spawn_message { get; set; }
         public string death_message { get; set; }
+    }
 
-        // Monster AI stuff
+    public class CTMonsterAIData
+    {
         public float? alert_range { get; set; }
         public bool? flee_if_hurt_when_target_cant_be_reached { get; set; }
         public bool? flee_if_not_alerted { get; set; }
@@ -129,25 +135,20 @@ namespace Areas.Containers
         public float? intercept_time_min { get; set; }
         public float? max_chase_distance { get; set; }
         public float? min_attack_interval { get; set; }
-
         public float? circle_target_interval { get; set; }
         public float? circle_target_duration { get; set; }
         public float? circle_target_distance { get; set; }
-
         public bool? sleeping { get; set; }
         public bool? noise_wakeup { get; set; }
         public float? noise_range_scale { get; set; }
         public float? wakeup_range { get; set; }
         // public EffectList wakeupEffects = new EffectList(){ get; set; }
-
         public bool? avoid_land { get; set; }
-
         // public List<ItemDrop> consumeItems{ get; set; }
         public float? consume_range { get; set; }
         public float? consume_search_range { get; set; }
         public float? consume_search_interval { get; set; }
         public float? consume_heal { get; set; }
-
     }
 
     public class SSMods

@@ -1,30 +1,33 @@
 cfg_0:
     Boar:
-        level_min: 1
-        level_max: 20
-        level_chance: 75
-        health_multi: 1.2
-        damage_multi: 0.5
-        size: 1.2
-        color: "#FF001824"
-        evolutions:
-            1: "1-5"
-            2: "6-10"
-            3: "11-20"
-        scale_by_day:
-            level_min: { days: 60, value: 1 }
-            level_max: { days: 60, value: 1 }
-            health_multi: { days: 60, value: 2 }
-            damage_multi: { days: 60, value: 1.2 }
-        scale_by_boss:
-            level_min: { moder: 1, bonemass: 1, yagluth: 1 }
-            level_max: { eikthyr: 1, the_elder: 1 }
-            level_chance: { eikthyr: 1, the_elder: 1 }
-            health_multi: { eikthyr: 1.1 }
-            damage_multi: { the_elder: 1.2 }
+        custom:
+            level_min: 1
+            level_max: 20
+            level_chance: 75
+            health_multi: 1.2
+            damage_multi: 0.5
+            size: 1.2
+            color: "#FF001824"
+            evolutions:
+                1: "1-5"
+                2: "6-10"
+                3: "11-20"
+            scale_by_day:
+                level_min: { days: 60, value: 1 }
+                level_max: { days: 60, value: 1 }
+                health_multi: { days: 60, value: 2 }
+                damage_multi: { days: 60, value: 1.2 }
+            scale_by_boss:
+                level_min: { moder: 1, bonemass: 1, yagluth: 1 }
+                level_max: { eikthyr: 1, the_elder: 1 }
+                level_chance: { eikthyr: 1, the_elder: 1 }
+                health_multi: { eikthyr: 1.1 }
+                damage_multi: { the_elder: 1.2 }
     Greyling:
-        level_fixed: 2
+        custom:
+            level_fixed: 2
 
 cfg_1:
     Troll:
-        level_fixed: 3
+        custom:
+            level_fixed: 3
