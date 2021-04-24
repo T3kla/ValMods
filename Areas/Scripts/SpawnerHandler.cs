@@ -27,7 +27,7 @@ namespace Areas
             if (!Globals.SSMods.ContainsKey(area.cfg)) return;
             if (Globals.SSMods[area.cfg].Values.Count < 1) return;
 
-            Dictionary<int, SSMods> ssmods = Globals.SSMods[area.cfg];
+            Dictionary<int, SSData> ssmods = Globals.SSMods[area.cfg];
             Main.GLog.LogInfo($"Modifying SpawnSystem \"{ss.GetCleanName()}\"");
 
             if (SS_DataDic.ContainsKey(area.cfg)) { ss.m_spawners = SS_DataDic[area.cfg]; return; }
@@ -47,7 +47,7 @@ namespace Areas
             if (!Globals.CSMods.ContainsKey(area.cfg)) return;
             if (!Globals.CSMods[area.cfg].ContainsKey(name)) return;
 
-            CSMods mod = Globals.CSMods[area.cfg][name];
+            CSData mod = Globals.CSMods[area.cfg][name];
             Main.GLog.LogInfo($"Modifying CreatureSpawner \"{name}\" in area \"{area.name}\"");
 
             // ----------------------------------------------------------------------------------------------------------------------------------- MODS
@@ -76,7 +76,7 @@ namespace Areas
             if (!Globals.CSMods.ContainsKey(area.cfg)) return;
             if (!Globals.CSMods[area.cfg].ContainsKey(name)) return;
 
-            SAMods mod = Globals.SAMods[area.cfg][name];
+            SAData mod = Globals.SAMods[area.cfg][name];
             Main.GLog.LogInfo($"Modifying SpawnArea: \"{name}\" in area \"{area.name}\"");
 
             // ----------------------------------------------------------------------------------------------------------------------------------- MODS
@@ -104,7 +104,7 @@ namespace Areas
         public static void Generate_SSDataDic(SpawnSystem ss)
         {
 
-            List<SpawnSystem.SpawnData> ModifySSList(ref List<SpawnSystem.SpawnData> list, Dictionary<int, SSMods> mods)
+            List<SpawnSystem.SpawnData> ModifySSList(ref List<SpawnSystem.SpawnData> list, Dictionary<int, SSData> mods)
             {
                 foreach (var mod in mods)
                 {

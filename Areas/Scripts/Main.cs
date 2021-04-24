@@ -49,7 +49,6 @@ namespace Areas
             Globals.Path.Assembly = Path.GetDirectoryName(assembly.Location);
             Local_ReadFromDisk();
 
-            OnDataLoaded += CritterHandler.Generate_CTMatDic;
             OnDataLoaded += SpawnerHandler.Set_SSDataDicFlag;
 
             OnDataReset += CritterHandler.ResetData;
@@ -120,10 +119,10 @@ namespace Areas
         {
             Main.GLog.LogInfo($"Instance is loading Local Data");
             Globals.Areas = Serialization.Deserialize<Dictionary<string, Area>>(Globals.LocalRaw.Areas);
-            Globals.CTMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CTMods>>>(Globals.LocalRaw.CTData);
-            Globals.SSMods = Serialization.Deserialize<Dictionary<string, Dictionary<int, SSMods>>>(Globals.LocalRaw.SSData);
-            Globals.CSMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CSMods>>>(Globals.LocalRaw.CSData);
-            Globals.SAMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, SAMods>>>(Globals.LocalRaw.SAData);
+            Globals.CTMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CTData>>>(Globals.LocalRaw.CTData);
+            Globals.SSMods = Serialization.Deserialize<Dictionary<string, Dictionary<int, SSData>>>(Globals.LocalRaw.SSData);
+            Globals.CSMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CSData>>>(Globals.LocalRaw.CSData);
+            Globals.SAMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, SAData>>>(Globals.LocalRaw.SAData);
 
             if (OnDataLoaded != null) OnDataLoaded.Invoke();
         }
@@ -144,10 +143,10 @@ namespace Areas
         {
             Main.GLog.LogInfo($"Instance is loading Remote Data");
             Globals.Areas = Serialization.Deserialize<Dictionary<string, Area>>(Globals.RemoteRaw.Areas);
-            Globals.CTMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CTMods>>>(Globals.RemoteRaw.CTData);
-            Globals.SSMods = Serialization.Deserialize<Dictionary<string, Dictionary<int, SSMods>>>(Globals.RemoteRaw.SSData);
-            Globals.CSMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CSMods>>>(Globals.RemoteRaw.CSData);
-            Globals.SAMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, SAMods>>>(Globals.RemoteRaw.SAData);
+            Globals.CTMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CTData>>>(Globals.RemoteRaw.CTData);
+            Globals.SSMods = Serialization.Deserialize<Dictionary<string, Dictionary<int, SSData>>>(Globals.RemoteRaw.SSData);
+            Globals.CSMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CSData>>>(Globals.RemoteRaw.CSData);
+            Globals.SAMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, SAData>>>(Globals.RemoteRaw.SAData);
 
             if (OnDataLoaded != null) OnDataLoaded.Invoke();
         }
@@ -168,10 +167,10 @@ namespace Areas
         {
             Main.GLog.LogInfo($"Instance is reseting Current Data");
             Globals.Areas = new Dictionary<string, Area>();
-            Globals.CTMods = new Dictionary<string, Dictionary<string, CTMods>>();
-            Globals.SSMods = new Dictionary<string, Dictionary<int, SSMods>>();
-            Globals.CSMods = new Dictionary<string, Dictionary<string, CSMods>>();
-            Globals.SAMods = new Dictionary<string, Dictionary<string, SAMods>>();
+            Globals.CTMods = new Dictionary<string, Dictionary<string, CTData>>();
+            Globals.SSMods = new Dictionary<string, Dictionary<int, SSData>>();
+            Globals.CSMods = new Dictionary<string, Dictionary<string, CSData>>();
+            Globals.SAMods = new Dictionary<string, Dictionary<string, SAData>>();
 
             if (OnDataReset != null) OnDataReset.Invoke();
         }

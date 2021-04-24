@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using Areas.Containers;
 using UnityEngine;
 
 namespace Areas.NetCode
@@ -39,38 +44,6 @@ namespace Areas
         }
 
     }
-    public static class MaterialExtensions
-    {
-
-        public static void ToOpaqueMode(this Material material)
-        {
-
-            material.SetOverrideTag("RenderType", "");
-            material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-            material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-            material.SetInt("_ZWrite", 1);
-            material.DisableKeyword("_ALPHATEST_ON");
-            material.DisableKeyword("_ALPHABLEND_ON");
-            material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-            material.renderQueue = -1;
-
-        }
-
-        public static void ToFadeMode(this Material material)
-        {
-
-            material.SetOverrideTag("RenderType", "Transparent");
-            material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-            material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-            material.SetInt("_ZWrite", 0);
-            material.DisableKeyword("_ALPHATEST_ON");
-            material.EnableKeyword("_ALPHABLEND_ON");
-            material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-
-        }
-
-    }
 
     public static class CharacterExtensions
     {
@@ -78,6 +51,60 @@ namespace Areas
         public static string GetCleanName(this Character character)
         {
             return character.name.Replace("(Clone)", "").Trim();
+        }
+
+        public static bool SetEvolution(this Character character, Dictionary<int[], Stage> evolutions)
+        {
+
+            if (character.IsPlayer()) return false;
+
+            ZNetView netView = character.GetComponent<ZNetView>();
+            if (netView == null) return false;
+
+            try
+            {
+                var binFormatter = new BinaryFormatter();
+                var mStream = new MemoryStream();
+                binFormatter.Serialize(mStream, evolutions);
+                netView.GetZDO()?.Set($"Areas EvolutionSetter", mStream.ToArray());
+                mStream.Close();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Main.GLog.LogError($"Critter SetEvolutions failed for critter \"Lv.{character.GetCleanName()}\"\n{e.Message}\n{e.StackTrace}");
+                return false;
+            }
+
+        }
+
+        public static Dictionary<int[], Stage> GetEvolution(this Character character)
+        {
+
+            if (character.IsPlayer()) return null;
+
+            ZNetView netView = character.GetComponent<ZNetView>();
+            if (netView == null) return null;
+
+            Byte[] array = netView.GetZDO().GetByteArray("Areas EvolutionSetter");
+            if (array == null) return null;
+            if (array.Length < 1) return null;
+
+            try
+            {
+                var mStream = new MemoryStream();
+                var binFormatter = new BinaryFormatter();
+                mStream.Write(array, 0, array.Length);
+                mStream.Position = 0;
+                var evolutions = binFormatter.Deserialize(mStream) as Dictionary<int[], Stage>;
+                mStream.Close();
+                return evolutions;
+            }
+            catch (Exception e)
+            {
+                Main.GLog.LogError($"Critter GetEvolution failed for critter \"Lv.{character.GetCleanName()}\"\n{e.Message}\n{e.StackTrace}");
+                return null;
+            }
 
         }
 
@@ -132,7 +159,6 @@ namespace Areas
             long currentSecond = (long)ZNet.instance.GetTimeSeconds();
             long regenAtSecond = dg.GetComponent<ZNetView>().GetZDO().GetLong("Areas RegenAtSecond");
             long remainder = regenAtSecond - currentSecond;
-
             return remainder < 0L ? 0L : remainder;
         }
 

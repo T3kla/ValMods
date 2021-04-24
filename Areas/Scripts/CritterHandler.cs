@@ -13,7 +13,6 @@ namespace Areas
     public static class CritterHandler
     {
 
-        public static Dictionary<(string, string), Material> CT_MatDic = new Dictionary<(string, string), Material>();
         public static HashSet<Transform> CheckedCritters = new HashSet<Transform>();
 
         public static MethodInfo CT_SetHolderInfo = AccessTools.Method(typeof(CritterHandler), nameof(CritterHandler.CT_SetHolder), new Type[] { typeof(GameObject) });
@@ -22,7 +21,7 @@ namespace Areas
 
         public static Dictionary<string, bool> KilledBosses = new Dictionary<string, bool>();
 
-        public static void ModifySpawned_CT()
+        public static void ModifySpawned()
         {
 
             if (CT_Holder == null) return;
@@ -36,31 +35,18 @@ namespace Areas
             if (!Globals.CTMods.ContainsKey(area.cfg)) { CT_Holder = null; return; }
             if (!Globals.CTMods[area.cfg].ContainsKey(name)) { CT_Holder = null; return; }
 
-            CTMods mods = Globals.CTMods[area.cfg][name];
+            CTData data = Globals.CTMods[area.cfg][name];
 
-            if (mods.custom?.scale_by_boss?.Count > 0) RefreshKilledBosses();
-            if (mods.character != null) Patch_Character(critter, mods.character);
-            if (mods.base_ai != null) Patch_BaseAI(critter.GetComponent<BaseAI>(), mods.base_ai);
-            if (mods.monster_ai != null) Patch_MonsterAI(critter.GetComponent<MonsterAI>(), mods.monster_ai);
-            if (mods.custom != null) Patch_MonsterAI(critter.GetComponent<MonsterAI>(), mods.monster_ai);
+            if (data.custom?.scale_by_boss?.Count > 0) RefreshKilledBosses();
+            if (data.character != null) Patch_Character(critter, data.character);
+            if (data.base_ai != null) Patch_BaseAI(critter.GetComponent<BaseAI>(), data.base_ai);
+            if (data.monster_ai != null) Patch_MonsterAI(critter.GetComponent<MonsterAI>(), data.monster_ai);
+            if (data.custom != null) Patch_Custom(critter, data.custom);
 
             Main.GLog.LogInfo($"Modifying Critter \"Lv.{critter.GetLevel()} {name}\" in area \"{area.name}\" with config \"{area.cfg}\"");
 
             CheckedCritters.Add(critter.transform);
             CT_Holder = null;
-
-        }
-
-        private static void Patch_Custom(Character critter, CTCustomData data)
-        {
-
-            Assign_CT_Health(critter, data);
-            Assign_CT_Damage(critter, data);
-
-            if (data.evolutions?.Count > 0) Assign_CT_Evolutions(critter, data);
-            if (data.size.HasValue) Assign_CT_Size(critter, data.size.Value);
-            if (data.color != null) Assign_CT_Color(critter, data.color, true);
-            if (data.level_fixed.HasValue || data.level_max.HasValue) Assign_CT_Level(critter, data);
 
         }
 
@@ -171,6 +157,16 @@ namespace Areas
             ai.m_consumeHeal = data.consume_heal.HasValue ? data.consume_heal.Value : ai.m_consumeHeal;
         }
 
+        private static void Patch_Custom(Character critter, CTCustomData data)
+        {
+
+            Assign_CT_Health(critter, data);
+            Assign_CT_Damage(critter, data);
+            Assign_CT_Evolutions(critter, data.evolution);
+            Assign_CT_Level(critter, data);
+
+        }
+
         private static void Assign_CT_Health(Character critter, CTCustomData data)
         {
 
@@ -196,59 +192,83 @@ namespace Areas
 
         }
 
-        private static void Assign_CT_Evolutions(Character critter, CTCustomData data)
+        private static void Assign_CT_Evolutions(Character critter, Dictionary<int[], Stage> evolution)
         {
-            if (data.evolutions == null) return;
-            if (data.evolutions.Count < 1) return;
 
-            ZNetView netView = critter.GetComponent<ZNetView>();
-            if (netView == null) return;
+            if (evolution == null) return;
+            if (evolution.Count < 1) return;
 
-            var binFormatter = new BinaryFormatter();
-            var mStream = new MemoryStream();
-            binFormatter.Serialize(mStream, data.evolutions);
-            netView.GetZDO()?.Set($"Areas EvolutionSetter", mStream.ToArray());
-            mStream.Close();
+            critter.SetEvolution(evolution);
 
         }
 
-        private static void Assign_CT_Size(Character critter, float modifier)
+        public static void Apply_CT_Evolution(Character critter)
         {
 
-            critter.transform.localScale *= Mathf.Clamp(modifier, 0.1f, 50f);
-            Physics.SyncTransforms();
+            var evolution = critter.GetEvolution();
+            if (evolution == null) return;
+            int level = critter.GetLevel();
+            Stage stage = null;
+            int[] interval = null;
 
-        }
+            foreach (var stg in evolution)
+                if (level >= stg.Key[0] && level <= stg.Key[1]) { interval = stg.Key; stage = stg.Value; break; }
+            if (stage == null) return;
 
-        public static void Assign_CT_Color(Character critter, string hexColorStr, bool assignZDO = false)
-        {
+            // Declaration
+            Renderer renderer = new Renderer();
+            LevelEffects levelEffects = critter.GetComponentInChildren<LevelEffects>();
+            LevelEffects.LevelSetup levelSetup = null;
+            if (stage.stage.HasValue && levelEffects != null)
+                if (stage.stage == 2 || stage.stage == 3)
+                    levelSetup = levelEffects.m_levelSetups[stage.stage.Value - 2];
 
-            Material newMat;
-            if (!CT_MatDic.TryGetValue((critter.GetCleanName(), hexColorStr), out newMat)) return;
-
-            if (assignZDO)
+            // Fill missing Stage parameters with vanilla LevelSetup if found
+            if (levelSetup != null)
             {
-                ZNetView znView = critter.GetComponent<ZNetView>();
-                if (znView != null) { znView.GetZDO().Set("Areas CritterPaint", hexColorStr); }
+                if (!stage.h.HasValue) { stage.h = levelSetup.m_hue; }
+                if (!stage.s.HasValue) { stage.s = levelSetup.m_saturation; }
+                if (!stage.v.HasValue) { stage.v = levelSetup.m_value; }
+                if (!stage.scale.HasValue) { stage.scale = levelSetup.m_scale; }
             }
 
-            Renderer renderer = null;
+            // Apply Scale
+            if (stage.scale.HasValue) critter.transform.localScale *= Mathf.Clamp(stage.scale.Value, 0.1f, 50f);
 
-            LevelEffects levelEffects = critter.GetComponentInChildren<LevelEffects>();
-            if (levelEffects != null)
+            // Apply stage gameobjects
+            GameObject baseDecor = levelEffects?.m_baseEnableObject;
+            if (stage.stage.HasValue && stage.stage.Value > 1)
             {
-                if (levelEffects.m_mainRender != null)
-                    renderer = levelEffects.m_mainRender;
+                GameObject stageDecor = levelSetup?.m_enableObject;
+                if (stageDecor != null) stageDecor.SetActive(true);
+                if (baseDecor != null) baseDecor.SetActive(false);
             }
             else
             {
-                renderer = critter.GetComponentInChildren<SkinnedMeshRenderer>();
+                if (baseDecor != null) baseDecor.SetActive(true);
             }
+
+            // Find Renderer
+            if (levelEffects?.m_mainRender != null) renderer = levelEffects.m_mainRender;
+            if (renderer == null) renderer = critter.GetComponentInChildren<SkinnedMeshRenderer>();
             if (renderer == null) return;
 
-            List<Material> newArray = new List<Material>(renderer.materials);
-            newArray.Add(newMat);
-            renderer.materials = newArray.ToArray();
+            // Assign/Create Material
+            string key = $"{critter.GetCleanName()} [{interval[0]}-{interval[1]}]";
+            Material mat;
+            if (LevelEffects.m_materials.TryGetValue(key, out var value))
+            {
+                mat = new Material(value);
+            }
+            else
+            {
+                mat = new Material(renderer.sharedMaterials[0]);
+                if (stage.h.HasValue) mat.SetFloat("_Hue", stage.h.Value);
+                if (stage.s.HasValue) mat.SetFloat("_Saturation", stage.s.Value);
+                if (stage.v.HasValue) mat.SetFloat("_Value", stage.v.Value);
+                LevelEffects.m_materials.Add(key, mat);
+            }
+            renderer.sharedMaterials = new Material[] { mat };
 
         }
 
@@ -288,6 +308,9 @@ namespace Areas
 
             }
 
+            LevelEffects levelEffects = critter.GetComponentInChildren<LevelEffects>();
+            if (levelEffects == null) Apply_CT_Evolution(critter);
+
         }
 
         private static float ByDay(CTCustomData mods, string selector, bool multiply = false)
@@ -295,13 +318,12 @@ namespace Areas
 
             float result = multiply ? 1f : 0f;
 
-            ByDay byDay;
             if (mods.scale_by_day != null)
-                if (mods.scale_by_day.TryGetValue(selector, out byDay))
+                if (mods.scale_by_day.TryGetValue(selector, out var value))
                     if (!multiply)
-                        result += Mathf.FloorToInt(EnvMan.instance.GetDay(ZNet.instance.GetTimeSeconds()) / byDay.days) * byDay.value;
+                        result += Mathf.FloorToInt(EnvMan.instance.GetDay(ZNet.instance.GetTimeSeconds()) / value.days) * value.value;
                     else
-                        result *= Mathf.Clamp(Mathf.FloorToInt(EnvMan.instance.GetDay(ZNet.instance.GetTimeSeconds()) / byDay.days) * byDay.value, 1, 100);
+                        result *= Mathf.Clamp(Mathf.FloorToInt(EnvMan.instance.GetDay(ZNet.instance.GetTimeSeconds()) / value.days) * value.value, 1, 100);
 
             return result;
 
@@ -334,33 +356,6 @@ namespace Areas
 
         }
 
-        public static void Generate_CTMatDic()
-        {
-
-            foreach (var cfg in Globals.CTMods)
-                foreach (var critter in cfg.Value)
-                {
-                    string name = critter.Key;
-                    if (string.IsNullOrEmpty(critter.Value.custom.color)) continue;
-                    Color color;
-                    if (!ColorUtility.TryParseHtmlString(critter.Value.custom.color, out color))
-                    {
-                        critter.Value.custom.color = null;
-                        continue;
-                    }
-
-                    Material newMat = new Material(Shader.Find("Standard"));
-                    newMat.color = color;
-                    newMat.SetFloat("_Smoothness", 0f);
-                    newMat.ToFadeMode();
-
-                    CT_MatDic.Add((name, critter.Value.custom.color), newMat);
-                }
-
-            Main.GLog.LogInfo($"CT_MatDic generated with count: \"{CT_MatDic.Count}\"");
-
-        }
-
         private static void RefreshKilledBosses()
         {
 
@@ -380,7 +375,6 @@ namespace Areas
 
             KilledBosses = new Dictionary<string, bool>();
             CT_Holder = null;
-            CT_MatDic.Clear();
             CheckedCritters.Clear();
 
         }

@@ -55,10 +55,10 @@ namespace Areas
         }
 
         public static Dictionary<string, Area> Areas = new Dictionary<string, Area>();
-        public static Dictionary<string, Dictionary<string, CTMods>> CTMods = new Dictionary<string, Dictionary<string, CTMods>>();
-        public static Dictionary<string, Dictionary<int, SSMods>> SSMods = new Dictionary<string, Dictionary<int, SSMods>>();
-        public static Dictionary<string, Dictionary<string, CSMods>> CSMods = new Dictionary<string, Dictionary<string, CSMods>>();
-        public static Dictionary<string, Dictionary<string, SAMods>> SAMods = new Dictionary<string, Dictionary<string, SAMods>>();
+        public static Dictionary<string, Dictionary<string, CTData>> CTMods = new Dictionary<string, Dictionary<string, CTData>>();
+        public static Dictionary<string, Dictionary<int, SSData>> SSMods = new Dictionary<string, Dictionary<int, SSData>>();
+        public static Dictionary<string, Dictionary<string, CSData>> CSMods = new Dictionary<string, Dictionary<string, CSData>>();
+        public static Dictionary<string, Dictionary<string, SAData>> SAMods = new Dictionary<string, Dictionary<string, SAData>>();
 
     }
 

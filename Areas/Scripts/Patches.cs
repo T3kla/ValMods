@@ -138,14 +138,6 @@ namespace Areas.Patches
             if (__instance.IsPlayer()) return;
             if (CritterHandler.CheckedCritters.Contains(__instance.transform)) return;
 
-            string name = __instance.GetCleanName();
-
-            ZNetView znView = __instance.GetComponent<ZNetView>();
-            if (znView == null) { CritterHandler.CheckedCritters.Add(__instance.transform); return; }
-
-            string hexColorStr = znView.GetZDO().GetString("Areas CritterPaint");
-            if (!string.IsNullOrEmpty(hexColorStr)) CritterHandler.Assign_CT_Color(__instance, hexColorStr);
-
             CritterHandler.CheckedCritters.Add(__instance.transform);
 
         }
@@ -181,30 +173,12 @@ namespace Areas.Patches
 
 
         // ----------------------------------------------------------------------------------------------------------------------------------- CRITTER EVOLUTIONS
-        [HarmonyPrefix]
+        [HarmonyPostfix]
         [HarmonyPatch(typeof(LevelEffects), nameof(LevelEffects.SetupLevelVisualization))]
         public static void LevelEffects_SetupLevelVisualization_Pre(LevelEffects __instance, ref int level)
         {
 
-            Character character = __instance.m_character;
-            if (character.IsPlayer()) return;
-
-            ZNetView netView = character.GetComponent<ZNetView>();
-            if (netView == null) return;
-
-            Byte[] array = netView.GetZDO().GetByteArray("Areas EvolutionSetter");
-            if (array == null) return;
-            if (array.Length < 1) return;
-
-            var mStream = new MemoryStream();
-            var binFormatter = new BinaryFormatter();
-            mStream.Write(array, 0, array.Length);
-            mStream.Position = 0;
-            var evolutions = binFormatter.Deserialize(mStream) as Dictionary<int, int[]>;
-            mStream.Close();
-
-            foreach (var stage in evolutions)
-                if (level >= stage.Value[0] && level <= stage.Value[1]) { level = stage.Key; break; }
+            CritterHandler.Apply_CT_Evolution(__instance.m_character);
 
         }
 
@@ -295,7 +269,7 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SpawnSystem), nameof(SpawnSystem.Spawn))]
-        public static void SpawnSystem_Spawn_Post(SpawnSystem __instance) { CritterHandler.ModifySpawned_CT(); }
+        public static void SpawnSystem_Spawn_Post(SpawnSystem __instance) { CritterHandler.ModifySpawned(); }
 
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(CreatureSpawner), nameof(CreatureSpawner.Spawn))]
@@ -337,7 +311,7 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CreatureSpawner), nameof(CreatureSpawner.Spawn))]
-        public static void CreatureSpawner_Spawn_Post(CreatureSpawner __instance) { CritterHandler.ModifySpawned_CT(); }
+        public static void CreatureSpawner_Spawn_Post(CreatureSpawner __instance) { CritterHandler.ModifySpawned(); }
 
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(SpawnArea), nameof(SpawnArea.SpawnOne))]
@@ -379,7 +353,7 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SpawnArea), nameof(SpawnArea.SpawnOne))]
-        public static void SpawnArea_SpawnOne_Post(SpawnArea __instance) { CritterHandler.ModifySpawned_CT(); }
+        public static void SpawnArea_SpawnOne_Post(SpawnArea __instance) { CritterHandler.ModifySpawned(); }
 
 
         // ----------------------------------------------------------------------------------------------------------------------------------- MODIFY SPAWNERS

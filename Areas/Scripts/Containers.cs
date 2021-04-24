@@ -7,25 +7,20 @@ namespace Areas.Containers
 
     public class Area
     {
-
         public string name { get; set; }
         public string cfg { get; set; }
         public int layer { get; set; }
         public Vector3 centre { get; set; }
         public Vector3 radius { get; set; }
-
     }
 
-    public class CTMods
+    public class CTData
     {
-
         public CTCustomData custom;
         public CTCharacterData character;
         public CTBaseAIData base_ai;
         public CTMonsterAIData monster_ai;
-
     }
-
 
     public class CTCustomData
     {
@@ -35,18 +30,25 @@ namespace Areas.Containers
         public int? level_fixed { get; set; }
         public float? health_multi { get; set; }
         public float? damage_multi { get; set; }
-        public float? size { get; set; }
-        public string color { get; set; }
-        public Dictionary<int, int[]> evolutions { get; set; }
-        public Dictionary<string, ByDay> scale_by_day { get; set; }
+        public Dictionary<int[], Stage> evolution { get; set; }         // Not in Wiki
+        public Dictionary<string, ByDay> scale_by_day { get; set; }     // Not in Wiki
         public Dictionary<string, Dictionary<string, float>> scale_by_boss { get; set; }
+    }
 
+    [System.Serializable]
+    public class Stage
+    {
+        public int? stage { get; set; }                                 // Not in Wiki
+        public float? scale { get; set; }                               // Not in Wiki
+        public float? h { get; set; }                                   // Not in Wiki
+        public float? s { get; set; }                                   // Not in Wiki
+        public float? v { get; set; }                                   // Not in Wiki
     }
 
     public class ByDay
     {
-        public int days { get; set; }
-        public float value { get; set; }
+        public int days { get; set; }                                   // Not in Wiki
+        public float value { get; set; }                                // Not in Wiki
     }
 
     public class CTCharacterData
@@ -151,68 +153,50 @@ namespace Areas.Containers
         public float? consume_heal { get; set; }
     }
 
-    public class SSMods
+    public class SSData
     {
-
         public bool? enabled { get; set; }
         // public Heightmap.Biome? biome{ get; set; }
         // public Heightmap.BiomeArea? biome_area{ get; set; }
-
         public int? max_spawned { get; set; }
         public float? spawn_interval { get; set; } // How often do it spawn
         public float? spawn_chance { get; set; } // Chanse to spawn each spawn interval
         public float? spawn_distance { get; set; } // Minimum distance to another instance
-
         public float? spawn_radius_min { get; set; } // 0 for global settings
         public float? spawn_radius_max { get; set; }
-
         public string required_global_key { get; set; } // only spawn if this key is set
-
         // public List<string> requiredEnvironments = new List<string>(){ get; set; } // only spawn if this environment is active
-
         public int? group_size_min { get; set; }
         public int? group_size_max { get; set; }
         public int? group_radius { get; set; }
-
         public bool? spawn_at_day { get; set; }
         public bool? spawn_at_night { get; set; }
-
         public int? min_altitude { get; set; }
         public int? max_altitude { get; set; }
-
         public float? min_tilt { get; set; }
         public float? max_tilt { get; set; }
-
         public bool? in_forest { get; set; }
         public bool? outside_forest { get; set; }
-
         public float? min_ocean_depth { get; set; }
         public float? max_ocean_depth { get; set; }
-
         public bool? hunt_player { get; set; }
         public float? ground_offset { get; set; }
-
     }
 
-    public class CSMods
+    public class CSData
     {
-
         public float? respawn_time_minutes { get; set; }
-
         public float? trigger_distance { get; set; }
         public float? trigger_noise { get; set; }
-
         public bool? spawn_at_day { get; set; }
         public bool? spawn_at_night { get; set; }
         public bool? require_spawn_area { get; set; }
         public bool? spawn_in_player_base { get; set; }
         public bool? set_patrol_spawn_point { get; set; }
-
     }
 
-    public class SAMods
+    public class SAData
     {
-
         public float? spawn_interval_sec { get; set; }
         public float? trigger_distance { get; set; }
         public bool? set_patrol_spawn_point { get; set; }
@@ -222,7 +206,6 @@ namespace Areas.Containers
         public int? max_near { get; set; }
         public int? max_total { get; set; }
         public bool? on_ground_only { get; set; }
-
     }
 
 }

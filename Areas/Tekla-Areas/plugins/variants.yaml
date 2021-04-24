@@ -1,0 +1,16 @@
+MegaBoar:
+    original: "Boar"
+    character:
+        boss: true
+        bossEvent: "defeated MegaBoar"
+        speed: 300
+    base_ai: null
+    monster_ai: null
+
+Greyling:
+    custom:
+        level_fixed: 2
+
+Troll:
+    custom:
+        level_fixed: 3

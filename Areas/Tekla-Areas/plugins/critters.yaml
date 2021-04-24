@@ -2,16 +2,15 @@ cfg_0:
     Boar:
         custom:
             level_min: 1
-            level_max: 20
-            level_chance: 75
-            health_multi: 1.2
+            level_max: 4
+            level_chance: 70
+            health_multi: 1
             damage_multi: 0.5
-            size: 1.2
-            color: "#FF001824"
-            evolutions:
-                1: "1-5"
-                2: "6-10"
-                3: "11-20"
+            evolution:
+                [1, 1]: { stage: 1, scale: 1, h: 0, s: 0.2, v: 0.05 }
+                [2, 2]: { stage: 1, scale: 1.1, h: -0.1, s: 0.2, v: 0.05 }
+                [3, 3]: { stage: 2, scale: 1.2, h: 0.1, s: 0.2, v: 0.05 }
+                [4, 4]: { stage: 3, scale: 1.4, h: 0.3, s: 0.2, v: 0.05 }
             scale_by_day:
                 level_min: { days: 60, value: 1 }
                 level_max: { days: 60, value: 1 }

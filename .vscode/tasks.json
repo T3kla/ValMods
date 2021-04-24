@@ -4,6 +4,14 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Debug Areas",
+            "command": "C:/Program Files (x86)/Steam/steamapps/common/Valheim/valheim.exe",
+            "problemMatcher": [],
+            "dependsOn": [
+                "Build Areas"
+            ]
+        },
+        {
             "label": "Build Solution",
             "type": "shell",
             "command": "dotnet",
