@@ -1,9 +1,18 @@
 MegaBoar:
     original: "Boar"
+    damage_multi: 1
+    evolution:
+        [1, 1]: { stage: 1, scale: 1.8, h: 0, s: 0.2, v: 0.05 }
+        [2, 2]: { stage: 1, scale: 2, h: -0.1, s: 0.2, v: 0.05 }
+        [3, 3]: { stage: 2, scale: 2.2, h: 0.1, s: 0.2, v: 0.05 }
+    localization:
+        - ["English", "Mega-Boar"]
+        - ["Spanish", "Mega-Cerdo"]
     character:
-        boss: true
-        bossEvent: "defeated MegaBoar"
-        speed: 300
+        speed: 200
+        turn_speed:
+        run_speed:
+        health: 200
     base_ai: null
     monster_ai: null
 

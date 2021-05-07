@@ -1,6 +1,6 @@
 using BepInEx.Configuration;
 
-namespace BuidlingUnleashed
+namespace BuildingUnleashed
 {
 
     public static class Globals

@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections.Generic;
-using BuidlingUnleashed;
+using BuildingUnleashed;
 using UnityEngine;
 using HarmonyLib;
 
