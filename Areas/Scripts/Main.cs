@@ -3,18 +3,21 @@ using System.Collections.Generic;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
+using BepInEx.Configuration;
 using HarmonyLib;
-using ModConfigEnforcer;
 using Areas.Containers;
 using Areas.TYaml;
+using Jotunn.Utils;
 
 namespace Areas
 {
 
     public delegate void DVoid();
+    public enum EDS { Local, Remote, Current }
 
     [BepInPlugin(GUID, NAME, VERSION)]
-    [BepInDependency("pfhoenix.modconfigenforcer", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(Jotunn.Main.ModGuid, BepInDependency.DependencyFlags.HardDependency)]
+    [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
     public class Main : BaseUnityPlugin
     {
 
@@ -47,21 +50,21 @@ namespace Areas
 
             Instance = this;
             Globals.Path.Assembly = Path.GetDirectoryName(assembly.Location);
-            Local_ReadFromDisk();
+            LoadDataFromDisk();
 
-            OnDataLoaded += SpawnerHandler.Set_SSDataDicFlag;
+            OnDataLoaded += SpawnerHandler.OnDataLoaded;
+            OnDataLoaded += VariantsHandler.OnDataLoaded;
 
-            OnDataReset += CritterHandler.ResetData;
-            OnDataReset += SpawnerHandler.ResetData;
-
-            ConfigManager.RegisterMod(GUID, Config);
+            OnDataReset += CritterHandler.OnDataReset;
+            OnDataReset += SpawnerHandler.OnDataReset;
+            OnDataLoaded += VariantsHandler.OnDataReset;
 
             Configs();
 
-            if (Globals.Config.Debug.Value)
+            CommandHandler.Awake();
+
+            if (Globals.Config.LoggerEnable.Value)
                 BepInEx.Logging.Logger.Sources.Add(GLog);
-            else
-                BepInEx.Logging.Logger.Sources.Remove(GLog);
 
             harmony.PatchAll(assembly);
 
@@ -70,109 +73,99 @@ namespace Areas
         public void Configs()
         {
 
-            Globals.Config.Loot = ConfigManager.RegisterModConfigVariable<int>(GUID,
-                "Loot Fix", 10,
-                "General", "Number of levels it takes to get the next vanilla level reward. Only works for LvL3+. For example a value of 5 will result in: LvL5 monster = LvL4 reward, LvL10 monster = LvL5 reward, LvL15 monster = LvL6 reward.",
-                false);
+            Config.SaveOnConfigSet = true;
+
+            Globals.Config.LootEnable = Config.Bind("Loot Fix", "Enable", true,
+                new ConfigDescription("Enables or disables debugging logs.",
+                null,
+                new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            Globals.Config.LootFix = Config.Bind("Loot Fix", "value", 10,
+                new ConfigDescription("Number of levels it takes to get the next vanilla level reward. Only for Lv.3+. For example \"5\" will result in: [Lv.5 monster = Lv.4 reward] [Lv.10 monster = Lv.5 reward] [Lv.15 monster = Lv.6 reward]",
+                new AcceptableValueRange<int>(1, 50),
+                new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
 
-            Globals.Config.DungeonRegenEnable = ConfigManager.RegisterModConfigVariable<bool>(GUID,
-                "Enable", false,
-                "Dungeon Regen", "Enables or disables Dungeon Regeneration.",
-                false);
+            Globals.Config.DungeonRegenEnable = Config.Bind(
+                "Dungeon Regen", "Enable", false,
+                new ConfigDescription("Enables or disables Dungeon Regeneration.",
+                null,
+                new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Globals.Config.DungeonRegenCooldown = ConfigManager.RegisterModConfigVariable<long>(GUID,
-                "Cooldown", 60,
-                "Dungeon Regen", "Set the amount of minutes it takes each dungeon to try to regenerate.",
-                false);
+            Globals.Config.DungeonRegenCooldown = Config.Bind(
+                "Dungeon Regen", "Cooldown", 60,
+                new ConfigDescription("Set the amount of minutes it takes each dungeon to try to regenerate.",
+                null,
+                new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Globals.Config.DungeonRegenAllowedThemes = ConfigManager.RegisterModConfigVariable<string>(GUID,
-                "Themes", "Crypt, SunkenCrypt, Cave, ForestCrypt",
-                "Dungeon Regen", "Set allowed dungeon themes to regen. Possible themes are: Crypt, SunkenCrypt, Cave, ForestCrypt",
-                false);
+            Globals.Config.DungeonRegenAllowedThemes = Config.Bind(
+                "Dungeon Regen", "Themes", "Crypt, SunkenCrypt, Cave, ForestCrypt",
+                new ConfigDescription("Set allowed dungeon themes to regen. Possible themes are: Crypt, SunkenCrypt, Cave, ForestCrypt",
+                null,
+                new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Globals.Config.DungeonRegenPlayerProtection = ConfigManager.RegisterModConfigVariable<bool>(GUID,
-                "Player Protection", true,
-                "Dungeon Regen", "If enabled, Dungeons won't regen while players are inside.",
-                false);
+            Globals.Config.DungeonRegenPlayerProtection = Config.Bind(
+                "Dungeon Regen", "Player Protection", true,
+                new ConfigDescription("If enabled, Dungeons won't regen while players are inside.",
+                null,
+                new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
 
-            Globals.Config.Debug = ConfigManager.RegisterModConfigVariable<bool>(GUID,
-                "Enable", true,
-                "Logger", "Enables or disables debugging logs.",
-                true);
+            Globals.Config.LoggerEnable = Config.Bind(
+                "Logger", "Enable", true,
+                new ConfigDescription("Enables or disables debugging logs.",
+                null,
+                new ConfigurationManagerAttributes { IsAdminOnly = false }));
 
         }
 
 
         // ----------------------------------------------------------------------------------------------------------------------------------- LOCAL
-        private void Local_ReadFromDisk()
+        private void LoadDataFromDisk()
         {
-            if (File.Exists(Globals.Path.Areas)) Globals.LocalRaw.Areas = File.ReadAllText(Globals.Path.Areas);
-            if (File.Exists(Globals.Path.CTData)) Globals.LocalRaw.CTData = File.ReadAllText(Globals.Path.CTData);
-            if (File.Exists(Globals.Path.SSData)) Globals.LocalRaw.SSData = File.ReadAllText(Globals.Path.SSData);
-            if (File.Exists(Globals.Path.CSData)) Globals.LocalRaw.CSData = File.ReadAllText(Globals.Path.CSData);
-            if (File.Exists(Globals.Path.SAData)) Globals.LocalRaw.SAData = File.ReadAllText(Globals.Path.SAData);
+            if (File.Exists(Globals.Path.Areas)) Globals.RawLocalData.Areas = File.ReadAllText(Globals.Path.Areas);
+            if (File.Exists(Globals.Path.CTData)) Globals.RawLocalData.CTData = File.ReadAllText(Globals.Path.CTData);
+            if (File.Exists(Globals.Path.VAData)) Globals.RawLocalData.VAData = File.ReadAllText(Globals.Path.VAData);
+            if (File.Exists(Globals.Path.SSData)) Globals.RawLocalData.SSData = File.ReadAllText(Globals.Path.SSData);
+            if (File.Exists(Globals.Path.CSData)) Globals.RawLocalData.CSData = File.ReadAllText(Globals.Path.CSData);
+            if (File.Exists(Globals.Path.SAData)) Globals.RawLocalData.SAData = File.ReadAllText(Globals.Path.SAData);
         }
 
-        public static void Local_LoadData()
+        public static void LoadData(EDS source)
         {
-            Main.GLog.LogInfo($"Instance is loading Local Data");
-            Globals.Areas = Serialization.Deserialize<Dictionary<string, Area>>(Globals.LocalRaw.Areas);
-            Globals.CTMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CTData>>>(Globals.LocalRaw.CTData);
-            Globals.SSMods = Serialization.Deserialize<Dictionary<string, Dictionary<int, SSData>>>(Globals.LocalRaw.SSData);
-            Globals.CSMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CSData>>>(Globals.LocalRaw.CSData);
-            Globals.SAMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, SAData>>>(Globals.LocalRaw.SAData);
+            RawData data = source == EDS.Remote ? Globals.RawRemoteData : Globals.RawLocalData;
+
+            Main.GLog.LogInfo($"Instance is loading {source.ToString()} Data");
+            Globals.CurrentData.Areas = Serialization.Deserialize<Dictionary<string, Area>>(data.Areas);
+            Globals.CurrentData.CTMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CTData>>>(data.CTData);
+            Globals.CurrentData.VAMods = Serialization.Deserialize<Dictionary<string, VAData>>(data.VAData);
+            Globals.CurrentData.SSMods = Serialization.Deserialize<Dictionary<string, Dictionary<int, SSData>>>(data.SSData);
+            Globals.CurrentData.CSMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CSData>>>(data.CSData);
+            Globals.CurrentData.SAMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, SAData>>>(data.SAData);
 
             if (OnDataLoaded != null) OnDataLoaded.Invoke();
         }
 
-        public static void Local_ResetData()
+
+        public static void ResetData(EDS source)
         {
-            Main.GLog.LogInfo($"Instance is reseting Local Data");
-            Globals.LocalRaw.Areas = "{}";
-            Globals.LocalRaw.CTData = "{}";
-            Globals.LocalRaw.SSData = "{}";
-            Globals.LocalRaw.CSData = "{}";
-            Globals.LocalRaw.SAData = "{}";
-        }
+            Main.GLog.LogInfo($"Instance is resetting {source.ToString()} Data");
 
-
-        // ----------------------------------------------------------------------------------------------------------------------------------- REMOTE
-        public static void Remote_LoadData()
-        {
-            Main.GLog.LogInfo($"Instance is loading Remote Data");
-            Globals.Areas = Serialization.Deserialize<Dictionary<string, Area>>(Globals.RemoteRaw.Areas);
-            Globals.CTMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CTData>>>(Globals.RemoteRaw.CTData);
-            Globals.SSMods = Serialization.Deserialize<Dictionary<string, Dictionary<int, SSData>>>(Globals.RemoteRaw.SSData);
-            Globals.CSMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CSData>>>(Globals.RemoteRaw.CSData);
-            Globals.SAMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, SAData>>>(Globals.RemoteRaw.SAData);
-
-            if (OnDataLoaded != null) OnDataLoaded.Invoke();
-        }
-
-        public static void Remote_ResetData()
-        {
-            Main.GLog.LogInfo($"Instance is reseting Remote Data");
-            Globals.RemoteRaw.Areas = "{}";
-            Globals.RemoteRaw.CTData = "{}";
-            Globals.RemoteRaw.SSData = "{}";
-            Globals.RemoteRaw.CSData = "{}";
-            Globals.RemoteRaw.SAData = "{}";
-        }
-
-
-        // ----------------------------------------------------------------------------------------------------------------------------------- CURRENT
-        public static void Current_ResetData()
-        {
-            Main.GLog.LogInfo($"Instance is reseting Current Data");
-            Globals.Areas = new Dictionary<string, Area>();
-            Globals.CTMods = new Dictionary<string, Dictionary<string, CTData>>();
-            Globals.SSMods = new Dictionary<string, Dictionary<int, SSData>>();
-            Globals.CSMods = new Dictionary<string, Dictionary<string, CSData>>();
-            Globals.SAMods = new Dictionary<string, Dictionary<string, SAData>>();
-
-            if (OnDataReset != null) OnDataReset.Invoke();
+            switch (source)
+            {
+                case EDS.Local:
+                    Globals.RawLocalData = new RawData();
+                    break;
+                case EDS.Remote:
+                    Globals.RawRemoteData = new RawData();
+                    break;
+                case EDS.Current:
+                    Globals.CurrentData = new Data();
+                    if (OnDataReset != null) OnDataReset.Invoke();
+                    break;
+                default:
+                    break;
+            }
         }
 
     }

@@ -6,8 +6,6 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using static CharacterDrop;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Areas.Patches
 {
@@ -65,7 +63,7 @@ namespace Areas.Patches
         }
 
 
-        // ----------------------------------------------------------------------------------------------------------------------------------- RCP SUFF
+        // ----------------------------------------------------------------------------------------------------------------------------------- RCP STUFF
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Game), nameof(Game.Start))]
         // Register RPC calls as soon as possible
@@ -90,7 +88,7 @@ namespace Areas.Patches
             {
                 case ZNetType.Local:
                 case ZNetType.Server:
-                    Main.Local_LoadData();
+                    Main.LoadData(EDS.Local);
                     break;
 
                 case ZNetType.Client:
@@ -106,10 +104,9 @@ namespace Areas.Patches
         public static void ZNet_OnDestroy_Post(ZNet __instance)
         {
 
-            Main.Remote_ResetData();
-            Main.Current_ResetData();
+            Main.ResetData(EDS.Current);
 
-            DungeonHandler.Task_DescheduleAll();
+            DungeonHandler.Task_UnscheduleAll();
 
         }
 
@@ -161,12 +158,9 @@ namespace Areas.Patches
         {
 
             Character attacker = hit.GetAttacker();
-            if (attacker.IsPlayer()) return;
+            if (attacker == null) return;
 
-            ZNetView netView = attacker.GetComponent<ZNetView>();
-            if (netView == null) return;
-
-            float multi = netView.GetZDO().GetFloat("Areas CritterDmgMultiplier", 1f);
+            float multi = attacker.GetDamageMulti();
             hit.ApplyModifier(multi);
 
         }
@@ -188,6 +182,9 @@ namespace Areas.Patches
         [HarmonyPatch(typeof(CharacterDrop), nameof(CharacterDrop.GenerateDropList))]
         public static void CharacterDrop_GenerateDropList_Post(CharacterDrop __instance, ref List<KeyValuePair<GameObject, int>> __result)
         {
+
+            if (!Globals.Config.LootEnable.Value) return;
+
             List<KeyValuePair<GameObject, int>> list = new List<KeyValuePair<GameObject, int>>();
 
             int lvlReward = 1;
@@ -200,7 +197,7 @@ namespace Areas.Patches
                     lvlReward = Mathf.FloorToInt(Mathf.Max(1, 2 * (lvl - 1)));
                 else
                 {
-                    int adjustLvl = Mathf.FloorToInt((1 / Globals.Config.Loot.Value) * lvl + 3);
+                    int adjustLvl = Mathf.FloorToInt((1 / Globals.Config.LootFix.Value) * lvl + 3);
                     lvlReward = Mathf.FloorToInt(Mathf.Max(1, 2 * (adjustLvl - 1)));
                 }
 
@@ -225,29 +222,30 @@ namespace Areas.Patches
             }
 
             __result = list;
+
         }
 
 
         // ----------------------------------------------------------------------------------------------------------------------------------- CRITTER CAPTURE
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(SpawnSystem), nameof(SpawnSystem.Spawn))]
-        private static IEnumerable<CodeInstruction> SpawnSystem_Spawn_Trpl(IEnumerable<CodeInstruction> instructions)
+        private static IEnumerable<CodeInstruction> SpawnSystem_Spawn_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
 
-            List<CodeInstruction> instr = new List<CodeInstruction>(instructions);
+            List<CodeInstruction> ins = new List<CodeInstruction>(instructions);
             List<CodeInstruction> codes = new List<CodeInstruction>();
 
-            for (var i = 0; i < instr.Count; i++)
+            for (var i = 0; i < ins.Count; i++)
             {
-                MethodInfo method = instr[i].operand as MethodInfo;
+                MethodInfo method = ins[i].operand as MethodInfo;
                 string str = method?.Name;
 
                 if (str == "Instantiate")
                 {
                     // i   = call to instantiate
-                    codes.Add(instr[i]);
+                    codes.Add(ins[i]);
                     // i+1 = stloc.0 storages gameobject in stloc.0
-                    codes.Add(instr[i + 1]);
+                    codes.Add(ins[i + 1]);
                     // i+2 = ldloc.0 loads from stloc.0 which should be the gameobject
                     codes.Add(new CodeInstruction(OpCodes.Ldloc_0));
                     // i+3 = call the modify critter info where the first arg is ldloc.0
@@ -259,7 +257,7 @@ namespace Areas.Patches
                     continue;
                 }
 
-                codes.Add(instr[i]);
+                codes.Add(ins[i]);
 
             }
 
@@ -269,27 +267,27 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SpawnSystem), nameof(SpawnSystem.Spawn))]
-        public static void SpawnSystem_Spawn_Post(SpawnSystem __instance) { CritterHandler.ModifySpawned(); }
+        public static void SpawnSystem_Spawn_Post(SpawnSystem __instance) { CritterHandler.ModifyHolden(); }
 
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(CreatureSpawner), nameof(CreatureSpawner.Spawn))]
-        private static IEnumerable<CodeInstruction> CreatureSpawner_Spawn_Trpl(IEnumerable<CodeInstruction> instructions)
+        private static IEnumerable<CodeInstruction> CreatureSpawner_Spawn_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
 
-            List<CodeInstruction> instr = new List<CodeInstruction>(instructions);
+            List<CodeInstruction> ins = new List<CodeInstruction>(instructions);
             List<CodeInstruction> codes = new List<CodeInstruction>();
 
-            for (var i = 0; i < instr.Count; i++)
+            for (var i = 0; i < ins.Count; i++)
             {
-                MethodInfo method = instr[i].operand as MethodInfo;
+                MethodInfo method = ins[i].operand as MethodInfo;
                 string str = method?.Name;
 
                 if (str == "Instantiate")
                 {
                     // i   = call to instantiate
-                    codes.Add(instr[i]);
+                    codes.Add(ins[i]);
                     // i+1 = stloc.3 storages gameobject in stloc.3
-                    codes.Add(instr[i + 1]);
+                    codes.Add(ins[i + 1]);
                     // i+2 = ldloc.3 loads from stloc.3 which should be the gameobject
                     codes.Add(new CodeInstruction(OpCodes.Ldloc_3));
                     // i+3 = call the modify critter info where the first arg is ldloc.3
@@ -301,7 +299,7 @@ namespace Areas.Patches
                     continue;
                 }
 
-                codes.Add(instr[i]);
+                codes.Add(ins[i]);
 
             }
 
@@ -311,27 +309,27 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CreatureSpawner), nameof(CreatureSpawner.Spawn))]
-        public static void CreatureSpawner_Spawn_Post(CreatureSpawner __instance) { CritterHandler.ModifySpawned(); }
+        public static void CreatureSpawner_Spawn_Post(CreatureSpawner __instance) { CritterHandler.ModifyHolden(); }
 
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(SpawnArea), nameof(SpawnArea.SpawnOne))]
-        private static IEnumerable<CodeInstruction> SpawnArea_SpawnOne_Trpl(IEnumerable<CodeInstruction> instructions)
+        private static IEnumerable<CodeInstruction> SpawnArea_SpawnOne_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
 
-            List<CodeInstruction> instr = new List<CodeInstruction>(instructions);
+            List<CodeInstruction> ins = new List<CodeInstruction>(instructions);
             List<CodeInstruction> codes = new List<CodeInstruction>();
 
-            for (var i = 0; i < instr.Count; i++)
+            for (var i = 0; i < ins.Count; i++)
             {
-                MethodInfo method = instr[i].operand as MethodInfo;
+                MethodInfo method = ins[i].operand as MethodInfo;
                 string str = method?.Name;
 
                 if (str == "Instantiate")
                 {
                     // i   = call to instantiate
-                    codes.Add(instr[i]);
+                    codes.Add(ins[i]);
                     // i+1 = stloc.s V_4 storages gameobject in stloc.s V_4
-                    codes.Add(instr[i + 1]);
+                    codes.Add(ins[i + 1]);
                     // i+2 = ldloc.s V_4 loads from stloc.s V_4 which should be the gameobject
                     codes.Add(new CodeInstruction(OpCodes.Ldloc_S, 4));
                     // i+3 = call the modify critter info where the first arg is ldloc.s V_4
@@ -343,7 +341,7 @@ namespace Areas.Patches
                     continue;
                 }
 
-                codes.Add(instr[i]);
+                codes.Add(ins[i]);
 
             }
 
@@ -353,7 +351,24 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SpawnArea), nameof(SpawnArea.SpawnOne))]
-        public static void SpawnArea_SpawnOne_Post(SpawnArea __instance) { CritterHandler.ModifySpawned(); }
+        public static void SpawnArea_SpawnOne_Post(SpawnArea __instance) { CritterHandler.ModifyHolden(); }
+
+
+        // ----------------------------------------------------------------------------------------------------------------------------------- RAGDOLL SETUP
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Ragdoll), nameof(Ragdoll.Setup))]
+        public static void Ragdoll_Setup_Patch(Ragdoll __instance, CharacterDrop characterDrop)
+        {
+
+            if (characterDrop.m_character.IsPlayer()) return;
+
+            LevelEffects levelEffects = characterDrop.GetComponentInChildren<LevelEffects>();
+            var renderer = levelEffects?.m_mainRender ?? characterDrop.GetComponentInChildren<SkinnedMeshRenderer>();
+            if (renderer != null) __instance.m_mainModel.materials = new Material[] { renderer.material };
+
+            __instance.transform.localScale = characterDrop.m_character.transform.localScale;
+
+        }
 
 
         // ----------------------------------------------------------------------------------------------------------------------------------- MODIFY SPAWNERS

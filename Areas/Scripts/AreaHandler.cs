@@ -66,7 +66,7 @@ namespace Areas
             string area = null;
             int layer = -1;
 
-            foreach (var a in Globals.Areas)
+            foreach (var a in Globals.CurrentData.Areas)
             {
                 float dis = Vector2.Distance(pos, a.Value.centre);
 
@@ -77,7 +77,7 @@ namespace Areas
                 layer = a.Value.layer;
             }
 
-            return area != null ? Globals.Areas[area] : null;
+            return area != null ? Globals.CurrentData.Areas[area] : null;
 
         }
 

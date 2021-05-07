@@ -10,7 +10,7 @@ namespace Areas.TYaml
     {
 
         /// <summary> Deserialize any object into the specified type. </summary>
-        /// <return> If deseralization fails, default type will be returned. </return>
+        /// <return> If deserialization fails, default type will be returned. </return>
         public static T Deserialize<T>(string value)
         {
             try
@@ -35,7 +35,7 @@ namespace Areas.TYaml
         }
 
         /// <summary> Serialize any object found in the given path into a string. </summary>
-        /// <return> If seralization fails, empty string "" will be returned. </return>
+        /// <return> If serialization fails, empty string "" will be returned. </return>
         public static string Serialize(object obj)
         {
             try
@@ -76,7 +76,7 @@ namespace Areas.TYaml
         }
 
         /// <summary> Serialize any object found in the given path into a string. </summary>
-        /// <return> If seralization fails, empty string "" will be returned. </return>
+        /// <return> If serialization fails, empty string "" will be returned. </return>
         public static void SerializeFile(object obj, string fileName, string path)
         {
             try

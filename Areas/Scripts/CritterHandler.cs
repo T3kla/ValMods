@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using HarmonyLib;
 using Areas.Containers;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
 
 namespace Areas
 {
@@ -21,22 +19,23 @@ namespace Areas
 
         public static Dictionary<string, bool> KilledBosses = new Dictionary<string, bool>();
 
-        public static void ModifySpawned()
+        public static void ModifyHolden()
         {
 
             if (CT_Holder == null) return;
             Character critter = CT_Holder.GetComponent<Character>();
-            if (critter == null) { CT_Holder = null; return; }
+            CT_Holder = null;
+
+            if (critter == null) return;
 
             string name = critter.GetCleanName();
 
             Area area = AreaHandler.GetArea(critter.transform.position);
-            if (area == null) { CT_Holder = null; return; }
-            if (!Globals.CTMods.ContainsKey(area.cfg)) { CT_Holder = null; return; }
-            if (!Globals.CTMods[area.cfg].ContainsKey(name)) { CT_Holder = null; return; }
+            if (area == null) return;
+            if (!Globals.CurrentData.CTMods.ContainsKey(area.cfg)) return;
+            if (!Globals.CurrentData.CTMods[area.cfg].ContainsKey(name)) return;
 
-            CTData data = Globals.CTMods[area.cfg][name];
-
+            CTData data = Globals.CurrentData.CTMods[area.cfg][name];
             if (data.custom?.scale_by_boss?.Count > 0) RefreshKilledBosses();
             if (data.character != null) Patch_Character(critter, data.character);
             if (data.base_ai != null) Patch_BaseAI(critter.GetComponent<BaseAI>(), data.base_ai);
@@ -46,12 +45,37 @@ namespace Areas
             Main.GLog.LogInfo($"Modifying Critter \"Lv.{critter.GetLevel()} {name}\" in area \"{area.name}\" with config \"{area.cfg}\"");
 
             CheckedCritters.Add(critter.transform);
-            CT_Holder = null;
 
         }
 
-        private static void Patch_Character(Character critter, CTCharacterData data)
+        public static void ModifyGiven(Character critter, string cfg = null)
         {
+
+            if (critter == null) return;
+
+            string name = critter.GetCleanName();
+            string config = cfg ?? AreaHandler.GetArea(critter.transform.position)?.cfg;
+            if (config == null) return;
+
+            if (!Globals.CurrentData.CTMods.ContainsKey(config)) return;
+            if (!Globals.CurrentData.CTMods[config].ContainsKey(name)) return;
+
+            CTData data = Globals.CurrentData.CTMods[config][name];
+            if (data.custom?.scale_by_boss?.Count > 0) RefreshKilledBosses();
+            Patch_Character(critter, data.character);
+            Patch_BaseAI(critter.GetComponent<BaseAI>(), data.base_ai);
+            Patch_MonsterAI(critter.GetComponent<MonsterAI>(), data.monster_ai);
+            Patch_Custom(critter, data.custom);
+
+            Main.GLog.LogInfo($"Modifying Critter \"Lv.{critter.GetLevel()} {name}\" with config \"{config}\"");
+
+            CheckedCritters.Add(critter.transform);
+
+        }
+
+        public static void Patch_Character(Character critter, CTCharacterData data)
+        {
+            if (critter == null || data == null) return;
             critter.m_crouchSpeed = data.crouch_speed.HasValue ? data.crouch_speed.Value : critter.m_crouchSpeed;
             critter.m_walkSpeed = data.walk_speed.HasValue ? data.walk_speed.Value : critter.m_walkSpeed;
             critter.m_speed = data.speed.HasValue ? data.speed.Value : critter.m_speed;
@@ -81,8 +105,9 @@ namespace Areas
             critter.m_staggerDamageFactor = data.stagger_damage_factor.HasValue ? data.stagger_damage_factor.Value : critter.m_staggerDamageFactor;
         }
 
-        private static void Patch_BaseAI(BaseAI ai, CTBaseAIData data)
+        public static void Patch_BaseAI(BaseAI ai, CTBaseAIData data)
         {
+            if (ai == null || data == null) return;
             ai.m_viewRange = data.view_range.HasValue ? data.view_range.Value : ai.m_viewRange;
             ai.m_viewAngle = data.view_angle.HasValue ? data.view_angle.Value : ai.m_viewAngle;
             ai.m_hearRange = data.hear_range.HasValue ? data.hear_range.Value : ai.m_hearRange;
@@ -128,8 +153,9 @@ namespace Areas
                 }
         }
 
-        private static void Patch_MonsterAI(MonsterAI ai, CTMonsterAIData data)
+        public static void Patch_MonsterAI(MonsterAI ai, CTMonsterAIData data)
         {
+            if (ai == null || data == null) return;
             ai.m_alertRange = data.alert_range.HasValue ? data.alert_range.Value : ai.m_alertRange;
             ai.m_fleeIfHurtWhenTargetCantBeReached = data.flee_if_hurt_when_target_cant_be_reached.HasValue ? data.flee_if_hurt_when_target_cant_be_reached.Value : ai.m_fleeIfHurtWhenTargetCantBeReached;
             ai.m_fleeIfNotAlerted = data.flee_if_not_alerted.HasValue ? data.flee_if_not_alerted.Value : ai.m_fleeIfNotAlerted;
@@ -157,9 +183,10 @@ namespace Areas
             ai.m_consumeHeal = data.consume_heal.HasValue ? data.consume_heal.Value : ai.m_consumeHeal;
         }
 
-        private static void Patch_Custom(Character critter, CTCustomData data)
+        public static void Patch_Custom(Character critter, CTCustomData data)
         {
 
+            if (critter == null || data == null) return;
             Assign_CT_Health(critter, data);
             Assign_CT_Damage(critter, data);
             Assign_CT_Evolutions(critter, data.evolution);
@@ -181,18 +208,15 @@ namespace Areas
         private static void Assign_CT_Damage(Character critter, CTCustomData data)
         {
 
-            ZNetView netView = critter.GetComponent<ZNetView>();
-            if (netView == null) return;
-
             float multi = data.damage_multi.HasValue ? data.damage_multi.Value : 1;
             multi *= ByDay(data, "damage_multi", true);
             multi *= ByBoss(data, "damage_multi", true);
 
-            netView.GetZDO()?.Set("Areas CritterDmgMultiplier", multi);
+            critter.SetDamageMulti(multi);
 
         }
 
-        private static void Assign_CT_Evolutions(Character critter, Dictionary<int[], Stage> evolution)
+        public static void Assign_CT_Evolutions(Character critter, Dictionary<int[], Stage> evolution)
         {
 
             if (evolution == null) return;
@@ -215,7 +239,7 @@ namespace Areas
                 if (level >= stg.Key[0] && level <= stg.Key[1]) { interval = stg.Key; stage = stg.Value; break; }
             if (stage == null) return;
 
-            // Declaration
+            // Declarations
             Renderer renderer = new Renderer();
             LevelEffects levelEffects = critter.GetComponentInChildren<LevelEffects>();
             LevelEffects.LevelSetup levelSetup = null;
@@ -235,7 +259,7 @@ namespace Areas
             // Apply Scale
             if (stage.scale.HasValue) critter.transform.localScale *= Mathf.Clamp(stage.scale.Value, 0.1f, 50f);
 
-            // Apply stage gameobjects
+            // Apply Decoration Gameobjects if found
             GameObject baseDecor = levelEffects?.m_baseEnableObject;
             if (stage.stage.HasValue && stage.stage.Value > 1)
             {
@@ -249,11 +273,10 @@ namespace Areas
             }
 
             // Find Renderer
-            if (levelEffects?.m_mainRender != null) renderer = levelEffects.m_mainRender;
-            if (renderer == null) renderer = critter.GetComponentInChildren<SkinnedMeshRenderer>();
+            renderer = levelEffects?.m_mainRender ?? critter.GetComponentInChildren<SkinnedMeshRenderer>();
             if (renderer == null) return;
 
-            // Assign/Create Material
+            // Apply/Create Material
             string key = $"{critter.GetCleanName()} [{interval[0]}-{interval[1]}]";
             Material mat;
             if (LevelEffects.m_materials.TryGetValue(key, out var value))
@@ -272,10 +295,10 @@ namespace Areas
 
         }
 
-        private static void Assign_CT_Level(Character critter, CTCustomData data)
+        public static void Assign_CT_Level(Character critter, CTCustomData data)
         {
 
-            if (data.level_fixed.HasValue)
+            if (data != null && data.level_fixed.HasValue)
             {
 
                 int lvlFixed = data.level_fixed.Value;
@@ -288,6 +311,8 @@ namespace Areas
             }
             else
             {
+
+                if (data == null) data = new CTCustomData();
 
                 int lvlMin = data.level_min.HasValue ? data.level_min.Value : 1;
                 int lvlMax = data.level_max.HasValue ? data.level_max.Value : 3;
@@ -309,7 +334,7 @@ namespace Areas
             }
 
             LevelEffects levelEffects = critter.GetComponentInChildren<LevelEffects>();
-            if (levelEffects == null) Apply_CT_Evolution(critter);
+            if (levelEffects == null) Apply_CT_Evolution(critter); // if it does have, its check will trigger apply evolution
 
         }
 
@@ -370,12 +395,38 @@ namespace Areas
 
         }
 
-        public static void ResetData()
+        public static void OnDataReset()
         {
 
             KilledBosses = new Dictionary<string, bool>();
             CT_Holder = null;
             CheckedCritters.Clear();
+
+        }
+
+        public static Character Spawn(GameObject critter, Vector3 position, Quaternion rotation, bool patrol = false)
+        {
+
+            if (ZoneSystem.instance.FindFloor(position, out var height))
+                position.y = height + 0.25f;
+
+            GameObject newCritter = UnityEngine.Object.Instantiate(critter, position, rotation);
+
+            ZNetView zNetView = newCritter.GetComponent<ZNetView>();
+            ZDO zDO = zNetView.GetZDO();
+            Character character = newCritter.GetComponent<Character>();
+            BaseAI baseAI = newCritter.GetComponent<BaseAI>();
+
+            if (baseAI != null && patrol)
+                baseAI.SetPatrolPoint();
+
+            zDO?.SetPGWVersion(zDO.GetPGWVersion());
+            zDO?.Set("spawn_id", zDO.m_uid);
+            zDO?.Set("alive_time", ZNet.instance.GetTime().Ticks);
+
+            CritterHandler.Assign_CT_Level(character, null);
+
+            return character;
 
         }
 

@@ -12,11 +12,11 @@ namespace Areas.NetCode
             ZPackage zpg = new ZPackage();
 
             ZRpc.Serialize(new object[] {
-                Globals.LocalRaw.Areas,
-                Globals.LocalRaw.CTData,
-                Globals.LocalRaw.SSData,
-                Globals.LocalRaw.CSData,
-                Globals.LocalRaw.SAData
+                Globals.RawLocalData.Areas,
+                Globals.RawLocalData.CTData,
+                Globals.RawLocalData.SSData,
+                Globals.RawLocalData.CSData,
+                Globals.RawLocalData.SAData
             }, ref zpg);
 
             zpg.SetPos(0);
@@ -32,19 +32,19 @@ namespace Areas.NetCode
             if (type == ZNetType.Server) { return; }
             if (type == ZNetType.Local) { return; }
 
-            Globals.RemoteRaw.Areas = zpg.ReadString();
-            Globals.RemoteRaw.CTData = zpg.ReadString();
-            Globals.RemoteRaw.SSData = zpg.ReadString();
-            Globals.RemoteRaw.CSData = zpg.ReadString();
-            Globals.RemoteRaw.SAData = zpg.ReadString();
+            Globals.RawRemoteData.Areas = zpg.ReadString();
+            Globals.RawRemoteData.CTData = zpg.ReadString();
+            Globals.RawRemoteData.SSData = zpg.ReadString();
+            Globals.RawRemoteData.CSData = zpg.ReadString();
+            Globals.RawRemoteData.SAData = zpg.ReadString();
 
-            Main.GLog.LogInfo($"Recieved data as Areas count is \"{Globals.RemoteRaw.Areas.Length}\"");
-            Main.GLog.LogInfo($"Recieved data as CTData count is \"{Globals.RemoteRaw.CTData.Length}\"");
-            Main.GLog.LogInfo($"Recieved data as SSData count is \"{Globals.RemoteRaw.SSData.Length}\"");
-            Main.GLog.LogInfo($"Recieved data as CSData count is \"{Globals.RemoteRaw.CSData.Length}\"");
-            Main.GLog.LogInfo($"Recieved data as SAData count is \"{Globals.RemoteRaw.SAData.Length}\"");
+            Main.GLog.LogInfo($"Received data as Areas count is \"{Globals.RawRemoteData.Areas.Length}\"");
+            Main.GLog.LogInfo($"Received data as CTData count is \"{Globals.RawRemoteData.CTData.Length}\"");
+            Main.GLog.LogInfo($"Received data as SSData count is \"{Globals.RawRemoteData.SSData.Length}\"");
+            Main.GLog.LogInfo($"Received data as CSData count is \"{Globals.RawRemoteData.CSData.Length}\"");
+            Main.GLog.LogInfo($"Received data as SAData count is \"{Globals.RawRemoteData.SAData.Length}\"");
 
-            Main.Remote_LoadData();
+            Main.LoadData(EDS.Remote);
 
         }
 

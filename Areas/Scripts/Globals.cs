@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using ModConfigEnforcer;
 using Areas.Containers;
+using BepInEx.Configuration;
 
 namespace Areas
 {
@@ -14,51 +14,32 @@ namespace Areas
             public static string Assembly;
             public static string Areas { get { return $@"{Assembly}\areas.yaml"; } }
             public static string CTData { get { return $@"{Assembly}\critters.yaml"; } }
+            public static string VAData { get { return $@"{Assembly}\variants.yaml"; } } // SpawnArea
             public static string SSData { get { return $@"{Assembly}\ss_data.yaml"; } } // SpawnSystem
             public static string CSData { get { return $@"{Assembly}\cs_data.yaml"; } } // CreatureSystem
             public static string SAData { get { return $@"{Assembly}\sa_data.yaml"; } } // SpawnArea
 
         }
 
-        public static class LocalRaw
-        {
-
-            public static string Areas = "";
-            public static string CTData = "";
-            public static string SSData = "";
-            public static string CSData = "";
-            public static string SAData = "";
-
-        }
-
-        public static class RemoteRaw
-        {
-
-            public static string Areas = "";
-            public static string CTData = "";
-            public static string SSData = "";
-            public static string CSData = "";
-            public static string SAData = "";
-
-        }
-
         public static class Config
         {
 
-            public static ConfigVariable<int> Loot;
-            public static ConfigVariable<bool> DungeonRegenEnable;
-            public static ConfigVariable<long> DungeonRegenCooldown;
-            public static ConfigVariable<string> DungeonRegenAllowedThemes;
-            public static ConfigVariable<bool> DungeonRegenPlayerProtection;
-            public static ConfigVariable<bool> Debug;
+            public static ConfigEntry<bool> LootEnable;
+            public static ConfigEntry<int> LootFix;
+
+            public static ConfigEntry<bool> DungeonRegenEnable;
+            public static ConfigEntry<int> DungeonRegenCooldown;
+            public static ConfigEntry<string> DungeonRegenAllowedThemes;
+            public static ConfigEntry<bool> DungeonRegenPlayerProtection;
+
+            public static ConfigEntry<bool> LoggerEnable;
 
         }
 
-        public static Dictionary<string, Area> Areas = new Dictionary<string, Area>();
-        public static Dictionary<string, Dictionary<string, CTData>> CTMods = new Dictionary<string, Dictionary<string, CTData>>();
-        public static Dictionary<string, Dictionary<int, SSData>> SSMods = new Dictionary<string, Dictionary<int, SSData>>();
-        public static Dictionary<string, Dictionary<string, CSData>> CSMods = new Dictionary<string, Dictionary<string, CSData>>();
-        public static Dictionary<string, Dictionary<string, SAData>> SAMods = new Dictionary<string, Dictionary<string, SAData>>();
+        public static RawData RawLocalData = new RawData();
+        public static RawData RawRemoteData = new RawData();
+
+        public static Data CurrentData = new Data();
 
     }
 

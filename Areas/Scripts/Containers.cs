@@ -5,6 +5,30 @@ using UnityEngine;
 namespace Areas.Containers
 {
 
+    public class RawData
+    {
+
+        public string Areas = "";
+        public string CTData = "";
+        public string VAData = "";
+        public string SSData = "";
+        public string CSData = "";
+        public string SAData = "";
+
+    }
+
+    public class Data
+    {
+
+        public Dictionary<string, Area> Areas = new Dictionary<string, Area>();
+        public Dictionary<string, Dictionary<string, CTData>> CTMods = new Dictionary<string, Dictionary<string, CTData>>();
+        public Dictionary<string, VAData> VAMods = new Dictionary<string, VAData>();
+        public Dictionary<string, Dictionary<int, SSData>> SSMods = new Dictionary<string, Dictionary<int, SSData>>();
+        public Dictionary<string, Dictionary<string, CSData>> CSMods = new Dictionary<string, Dictionary<string, CSData>>();
+        public Dictionary<string, Dictionary<string, SAData>> SAMods = new Dictionary<string, Dictionary<string, SAData>>();
+
+    }
+
     public class Area
     {
         public string name { get; set; }
@@ -16,10 +40,21 @@ namespace Areas.Containers
 
     public class CTData
     {
-        public CTCustomData custom;
-        public CTCharacterData character;
-        public CTBaseAIData base_ai;
-        public CTMonsterAIData monster_ai;
+        public CTCustomData custom { get; set; }
+        public CTCharacterData character { get; set; }
+        public CTBaseAIData base_ai { get; set; }
+        public CTMonsterAIData monster_ai { get; set; }
+    }
+
+    public class VAData
+    {
+        public string original { get; set; }
+        public float? damage_multi { get; set; }
+        public List<string[]> localization { get; set; }
+        public Dictionary<int[], Stage> evolution { get; set; }
+        public CTCharacterData character { get; set; }
+        public CTBaseAIData base_ai { get; set; }
+        public CTMonsterAIData monster_ai { get; set; }
     }
 
     public class CTCustomData
@@ -160,7 +195,7 @@ namespace Areas.Containers
         // public Heightmap.BiomeArea? biome_area{ get; set; }
         public int? max_spawned { get; set; }
         public float? spawn_interval { get; set; } // How often do it spawn
-        public float? spawn_chance { get; set; } // Chanse to spawn each spawn interval
+        public float? spawn_chance { get; set; } // Chance to spawn each spawn interval
         public float? spawn_distance { get; set; } // Minimum distance to another instance
         public float? spawn_radius_min { get; set; } // 0 for global settings
         public float? spawn_radius_max { get; set; }

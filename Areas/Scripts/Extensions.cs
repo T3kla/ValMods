@@ -108,6 +108,33 @@ namespace Areas
 
         }
 
+        public static bool SetDamageMulti(this Character character, float multi)
+        {
+
+            if (character.IsPlayer()) return false;
+
+            ZNetView netView = character.GetComponent<ZNetView>();
+            if (netView == null) return false;
+
+            netView.GetZDO()?.Set("Areas CritterDmgMultiplier", multi);
+            return true;
+
+        }
+
+        public static float GetDamageMulti(this Character character)
+        {
+
+            if (character.IsPlayer()) return 1f;
+
+            ZNetView netView = character.GetComponent<ZNetView>();
+            if (netView == null) return 1f;
+
+            float multi = netView.GetZDO().GetFloat("Areas CritterDmgMultiplier", 1f);
+
+            return multi;
+
+        }
+
     }
 
     public static class SpawnerSystemExtensions
@@ -160,6 +187,22 @@ namespace Areas
             long regenAtSecond = dg.GetComponent<ZNetView>().GetZDO().GetLong("Areas RegenAtSecond");
             long remainder = regenAtSecond - currentSecond;
             return remainder < 0L ? 0L : remainder;
+        }
+
+    }
+
+    public static class DicExtensions
+    {
+
+        public static int RemoveAll<T, T2>(this Dictionary<T, T2> dictionary, IEnumerable<T> keys)
+        {
+            int count = 0;
+
+            foreach (var key in keys)
+                if (dictionary.Remove(key))
+                    count++;
+
+            return count;
         }
 
     }

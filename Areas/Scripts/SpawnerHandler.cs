@@ -8,46 +8,45 @@ namespace Areas
     public static class SpawnerHandler
     {
 
-        private static Dictionary<string, List<SpawnSystem.SpawnData>> SS_DataDic = new Dictionary<string, List<SpawnSystem.SpawnData>>();
         private static bool SS_DataDicFlag = false;
-
-        private static HashSet<Transform> SS_List = new HashSet<Transform>();
-        private static HashSet<Transform> CS_List = new HashSet<Transform>();
-        private static HashSet<Transform> SA_List = new HashSet<Transform>();
+        private static Dictionary<string, List<SpawnSystem.SpawnData>> SS_DataDic = new Dictionary<string, List<SpawnSystem.SpawnData>>();
+        private static HashSet<GameObject> SS_List = new HashSet<GameObject>();
+        private static HashSet<GameObject> CS_List = new HashSet<GameObject>();
+        private static HashSet<GameObject> SA_List = new HashSet<GameObject>();
 
         public static void Modify_SS(SpawnSystem ss)
         {
 
             if (SS_DataDicFlag) Generate_SSDataDic(ss);
 
-            if (SS_List.Contains(ss.transform)) return;
+            if (SS_List.Contains(ss.gameObject)) return;
+            SS_List.Add(ss.gameObject);
 
             Area area = AreaHandler.GetArea(ss.transform.position);
             if (area == null) return;
-            if (!Globals.SSMods.ContainsKey(area.cfg)) return;
-            if (Globals.SSMods[area.cfg].Values.Count < 1) return;
-
-            Dictionary<int, SSData> ssmods = Globals.SSMods[area.cfg];
-            Main.GLog.LogInfo($"Modifying SpawnSystem \"{ss.GetCleanName()}\"");
-
-            if (SS_DataDic.ContainsKey(area.cfg)) { ss.m_spawners = SS_DataDic[area.cfg]; return; }
-            SS_List.Add(ss.transform);
+            if (string.IsNullOrEmpty(area.cfg)) return;
+            if (SS_DataDic.ContainsKey(area.cfg))
+            {
+                Main.GLog.LogInfo($"Modifying SpawnSystem \"{ss.GetCleanName()}\"");
+                ss.m_spawners = SS_DataDic[area.cfg];
+            }
 
         }
 
         public static void Modify_CS(CreatureSpawner cs)
         {
 
-            if (CS_List.Contains(cs.transform)) return;
+            if (CS_List.Contains(cs.gameObject)) return;
+            CS_List.Add(cs.gameObject);
 
             string name = cs.GetCleanName();
 
             Area area = AreaHandler.GetArea(cs.transform.position);
             if (area == null) return;
-            if (!Globals.CSMods.ContainsKey(area.cfg)) return;
-            if (!Globals.CSMods[area.cfg].ContainsKey(name)) return;
+            if (!Globals.CurrentData.CSMods.ContainsKey(area.cfg)) return;
+            if (!Globals.CurrentData.CSMods[area.cfg].ContainsKey(name)) return;
 
-            CSData mod = Globals.CSMods[area.cfg][name];
+            CSData mod = Globals.CurrentData.CSMods[area.cfg][name];
             Main.GLog.LogInfo($"Modifying CreatureSpawner \"{name}\" in area \"{area.name}\"");
 
             // ----------------------------------------------------------------------------------------------------------------------------------- MODS
@@ -60,23 +59,22 @@ namespace Areas
             cs.m_spawnInPlayerBase = mod.spawn_in_player_base.HasValue ? mod.spawn_in_player_base.Value : cs.m_spawnInPlayerBase;
             cs.m_setPatrolSpawnPoint = mod.set_patrol_spawn_point.HasValue ? mod.set_patrol_spawn_point.Value : cs.m_setPatrolSpawnPoint;
 
-            CS_List.Add(cs.transform);
-
         }
 
         public static void Modify_SA(SpawnArea sa)
         {
 
-            if (SA_List.Contains(sa.transform)) return;
+            if (SA_List.Contains(sa.gameObject)) return;
+            SA_List.Add(sa.gameObject);
 
             string name = sa.GetCleanName();
 
             Area area = AreaHandler.GetArea(sa.transform.position);
             if (area == null) return;
-            if (!Globals.CSMods.ContainsKey(area.cfg)) return;
-            if (!Globals.CSMods[area.cfg].ContainsKey(name)) return;
+            if (!Globals.CurrentData.CSMods.ContainsKey(area.cfg)) return;
+            if (!Globals.CurrentData.CSMods[area.cfg].ContainsKey(name)) return;
 
-            SAData mod = Globals.SAMods[area.cfg][name];
+            SAData mod = Globals.CurrentData.SAMods[area.cfg][name];
             Main.GLog.LogInfo($"Modifying SpawnArea: \"{name}\" in area \"{area.name}\"");
 
             // ----------------------------------------------------------------------------------------------------------------------------------- MODS
@@ -90,13 +88,9 @@ namespace Areas
             sa.m_maxTotal = mod.max_total.HasValue ? mod.max_total.Value : sa.m_maxTotal;
             sa.m_onGroundOnly = mod.on_ground_only.HasValue ? mod.on_ground_only.Value : sa.m_onGroundOnly;
 
-
-            // ----------------------------------------------------------------------------------------------------------------------------------- EXIT
-            SA_List.Add(sa.transform);
-
         }
 
-        public static void Set_SSDataDicFlag()
+        public static void OnDataLoaded()
         {
             SS_DataDicFlag = true;
         }
@@ -123,9 +117,9 @@ namespace Areas
 
             if (ss == null) return;
 
-            foreach (var cfg in Globals.SSMods)
+            foreach (var cfg in Globals.CurrentData.SSMods)
             {
-                List<SpawnSystem.SpawnData> newList = new List<SpawnSystem.SpawnData>(ss.m_spawners);
+                var newList = new List<SpawnSystem.SpawnData>(ss.m_spawners);
                 ModifySSList(ref newList, cfg.Value);
                 SS_DataDic.Add(cfg.Key, newList);
             }
@@ -136,7 +130,7 @@ namespace Areas
 
         }
 
-        public static void ResetData()
+        public static void OnDataReset()
         {
 
             SS_DataDic.Clear();
