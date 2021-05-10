@@ -57,7 +57,7 @@ namespace Areas
 
             OnDataReset += CritterHandler.OnDataReset;
             OnDataReset += SpawnerHandler.OnDataReset;
-            OnDataLoaded += VariantsHandler.OnDataReset;
+            OnDataReset += VariantsHandler.OnDataReset;
 
             Configs();
 

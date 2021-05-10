@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
 using Areas.Containers;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Areas
 {
@@ -40,7 +42,7 @@ namespace Areas
 
                 if (player == null) { Main.GLog.LogWarning($"ZoneLookup Break because player == null"); break; }
 
-                Area newArea = GetArea(player.transform.position) ?? new Area { name = "" };
+                Area newArea = GetArea(player.transform.position.ToXZ()) ?? new Area { name = "" };
 
                 if (newArea.name != PlayerCurrentArea.name)
                 {
@@ -59,25 +61,54 @@ namespace Areas
 
         }
 
-        public static Area GetArea(Vector3 pos3D)
+        public static Area GetArea(Vector2 pos)
         {
 
-            Vector2 pos = new Vector2(pos3D.x, pos3D.z);
-            string area = null;
-            int layer = -1;
+            var areas = GetAreas(pos);
+            return areas.Count() > 1 ? areas.ElementAt(0) : null;
 
-            foreach (var a in Globals.CurrentData.Areas)
-            {
-                float dis = Vector2.Distance(pos, a.Value.centre);
+        }
 
-                if (dis < a.Value.radius.x || dis > a.Value.radius.z) continue;
-                if (a.Value.layer <= layer) continue;
+        public static IEnumerable<Area> GetAreas(Vector2 pos)
+        {
 
-                area = a.Key;
-                layer = a.Value.layer;
-            }
+            bool CheckDis(float dis, Vector2 rad) => (dis > rad.x && dis < rad.y) ? true : false;
 
-            return area != null ? Globals.CurrentData.Areas[area] : null;
+            return from a in Globals.CurrentData.Areas
+                   where CheckDis(Vector2.Distance(pos, a.Value.centre.ToVector2()), a.Value.radius.ToVector2())
+                   orderby a.Value.layer descending
+                   select a.Value;
+
+        }
+
+        public static CTData GetCTDataFromPos(string name, Vector2 pos, out string area, out string cfg)
+        {
+
+            area = "";
+            cfg = "";
+
+            var areas = GetAreas(pos).ToList();
+            if (areas.Count < 0) return null;
+
+            CTData data = null;
+            foreach (var a in areas)
+                if (Globals.CurrentData.CTMods.ContainsKey(a.cfg))
+                    if (Globals.CurrentData.CTMods[a.cfg].TryGetValue(name, out data) || !a.passthrough)
+                    { area = a.name; cfg = a.cfg; break; }
+
+            return data;
+
+        }
+
+        public static CTData GetCTDataFromCfg(string name, string cfg)
+        {
+
+            CTData data = null;
+            foreach (var a in Globals.CurrentData.CTMods)
+                if (Globals.CurrentData.CTMods[cfg]?.TryGetValue(name, out data) == true)
+                    break;
+
+            return data;
 
         }
 

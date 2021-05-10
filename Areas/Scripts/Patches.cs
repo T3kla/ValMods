@@ -14,6 +14,16 @@ namespace Areas.Patches
     public static class Patches
     {
 
+        // ----------------------------------------------------------------------------------------------------------------------------------- LANGUAGE CHANGE
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Localization), nameof(Localization.SetupLanguage))]
+        public static void Localization_SetupLanguage_Post(Localization __instance, ref string language)
+        {
+
+            VariantsHandler.OnLanguageChanged(language);
+
+        }
+
         // ----------------------------------------------------------------------------------------------------------------------------------- PLAYER
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned))]
@@ -357,7 +367,7 @@ namespace Areas.Patches
         // ----------------------------------------------------------------------------------------------------------------------------------- RAGDOLL SETUP
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Ragdoll), nameof(Ragdoll.Setup))]
-        public static void Ragdoll_Setup_Patch(Ragdoll __instance, CharacterDrop characterDrop)
+        public static void Ragdoll_Setup_Post(Ragdoll __instance, CharacterDrop characterDrop)
         {
 
             if (characterDrop.m_character.IsPlayer()) return;

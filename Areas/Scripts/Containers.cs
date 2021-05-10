@@ -34,8 +34,9 @@ namespace Areas.Containers
         public string name { get; set; }
         public string cfg { get; set; }
         public int layer { get; set; }
-        public Vector3 centre { get; set; }
-        public Vector3 radius { get; set; }
+        public bool passthrough { get; set; }
+        public float[] centre { get; set; }
+        public float[] radius { get; set; }
     }
 
     public class CTData
@@ -46,15 +47,10 @@ namespace Areas.Containers
         public CTMonsterAIData monster_ai { get; set; }
     }
 
-    public class VAData
+    public class VAData : CTData
     {
         public string original { get; set; }
-        public float? damage_multi { get; set; }
         public List<string[]> localization { get; set; }
-        public Dictionary<int[], Stage> evolution { get; set; }
-        public CTCharacterData character { get; set; }
-        public CTBaseAIData base_ai { get; set; }
-        public CTMonsterAIData monster_ai { get; set; }
     }
 
     public class CTCustomData

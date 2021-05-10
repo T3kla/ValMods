@@ -2,15 +2,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using Jotunn.Managers;
 using Jotunn.Configs;
+using Areas.Containers;
+using System.Linq;
 
 namespace Areas
 {
 
+    public struct LocBlock
+    {
+        public string language, token, value;
+
+        public LocBlock(string language, string token, string value)
+        {
+            this.language = language;
+            this.token = token;
+            this.value = value;
+        }
+    }
+
     public static class VariantsHandler
     {
 
-        public static Dictionary<string, GameObject> Variants = new Dictionary<string, GameObject>();
-        public static HashSet<string> Tokens = new HashSet<string>();
+        private static HashSet<string> AddedPrefabs = new HashSet<string>();
+        private static HashSet<LocBlock> LocalizationData = new HashSet<LocBlock>();
 
         public static void OnDataLoaded()
         {
@@ -22,51 +36,99 @@ namespace Areas
             ClearVariants();
         }
 
-        public static GameObject GetVariant(string name)
-        {
-
-            return Variants.TryGetValue(name, out var value) ? value : null;
-
-        }
-
         private static void GenerateVariants()
         {
 
             if (Globals.CurrentData.VAMods == null) return;
             if (Globals.CurrentData.VAMods.Count < 1) return;
 
+            Main.GLog.LogInfo($"Generating Variants");
+
+            // Generate Variants area
+            Area area = new Area
+            {
+                name = "variants",
+                cfg = "variants",
+                layer = 0,
+                passthrough = true,
+                centre = new float[] { 0, 0 },
+                radius = new float[] { 0, 1000000 },
+            };
+            Globals.CurrentData.Areas.Add("variants", area);
+
+            // Generate Variant prefabs
             foreach (var variant in Globals.CurrentData.VAMods)
             {
-                GameObject newCritter = PrefabManager.Instance.CreateClonedPrefab(variant.Key, variant.Value.original);
-                if (newCritter == null) { Main.GLog.LogInfo($"Couldn't find original critter for variant \"{variant.Key}\""); continue; }
-                newCritter.name = variant.Key;
+                string name = variant.Key;
 
-                Character character = newCritter.GetComponent<Character>();
-                CritterHandler.Patch_Character(newCritter.GetComponent<Character>(), variant.Value.character);
-                CritterHandler.Patch_BaseAI(newCritter.GetComponent<BaseAI>(), variant.Value.base_ai);
-                CritterHandler.Patch_MonsterAI(newCritter.GetComponent<MonsterAI>(), variant.Value.monster_ai);
-                CritterHandler.Assign_CT_Evolutions(character, variant.Value.evolution);
-
-                if (variant.Value.damage_multi.HasValue) character.SetDamageMulti(variant.Value.damage_multi.Value);
+                GameObject newCritter = PrefabManager.Instance.CreateClonedPrefab(name, variant.Value.original);
+                Character character = newCritter?.GetComponent<Character>();
+                if (newCritter == null)
+                {
+                    Main.GLog.LogWarning($"Couldn't find original critter for variant \"{name}\"!");
+                    continue;
+                }
+                else if (character == null || character.IsPlayer())
+                {
+                    Main.GLog.LogWarning($"Requested prefab \"{name}\" is not a critter!");
+                    continue;
+                }
 
                 if (variant.Value.localization != null)
                 {
-                    string tokenKey = $"$enemy_{variant.Key}";
-                    character.m_name = tokenKey;
-                    Tokens.Add(tokenKey);
-                    variant.Value.localization?.ForEach(a => LocalizationManager.Instance.AddToken(tokenKey, a[1], a[0]));
+                    string token = $"enemy_{variant.Key.ToLower()}";
+                    character.m_name = $"${token}";
+                    variant.Value.localization?.ForEach(a => LocalizationData.Add(new LocBlock(a[0], token, a[1])));
                 }
 
                 PrefabManager.Instance.AddPrefab(newCritter);
+                AddedPrefabs.Add(name);
             }
+
+            Globals.CurrentData.CTMods.Add("variants", Globals.CurrentData.VAMods.ToDictionary(a => a.Key, a => a.Value as CTData));
+            PushLocalizationData(Localization.instance.GetSelectedLanguage());
 
         }
 
         private static void ClearVariants()
         {
 
-            Variants.Clear();
-            Localization.m_instance.m_translations.RemoveAll(Tokens);
+            foreach (var prefab in AddedPrefabs) PrefabManager.Instance.RemovePrefab(prefab);
+            AddedPrefabs.Clear();
+            PullLocalizationData(Localization.instance.GetSelectedLanguage());
+
+        }
+
+        public static void PushLocalizationData(string language)
+        {
+
+            var stuff = from a in LocalizationData
+                        where a.language == language
+                        select a;
+
+            foreach (var item in stuff)
+                if (Localization.instance.m_translations.ContainsKey(item.token))
+                    Localization.instance.m_translations[item.token] = item.value;
+                else
+                    Localization.instance.m_translations.Add(item.token, item.value);
+
+        }
+
+        public static void PullLocalizationData(string language)
+        {
+
+            var stuff = from a in LocalizationData
+                        where a.language == language
+                        select a.token;
+
+            Localization.instance.m_translations.RemoveAll(stuff);
+
+        }
+
+        public static void OnLanguageChanged(string language)
+        {
+
+            PushLocalizationData(language);
 
         }
 

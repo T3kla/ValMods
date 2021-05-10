@@ -60,7 +60,6 @@ namespace Areas
 
             Bounds bounds = new Bounds(dg.transform.position, dg.m_zoneSize * 2f);
             if (ZNet.instance.GetPlayerList().Any(a => bounds.Contains(a.m_position))) { return "PlayerInside"; }
-            if (bounds.Contains(Player.m_localPlayer.transform.position)) { return "PlayerInside"; }
 
             GameObject netSceneRoot = ZNetScene.instance.m_netSceneRoot;
 

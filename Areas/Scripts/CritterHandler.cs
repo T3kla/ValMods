@@ -24,27 +24,16 @@ namespace Areas
 
             if (CT_Holder == null) return;
             Character critter = CT_Holder.GetComponent<Character>();
+            CheckedCritters.Add(critter.transform);
             CT_Holder = null;
 
             if (critter == null) return;
 
-            string name = critter.GetCleanName();
+            string name = critter.GetCleanName(), area = "", cfg = "";
+            Vector2 pos = critter.transform.position.ToXZ();
+            Modify(critter, AreaHandler.GetCTDataFromPos(name, pos, out area, out cfg));
 
-            Area area = AreaHandler.GetArea(critter.transform.position);
-            if (area == null) return;
-            if (!Globals.CurrentData.CTMods.ContainsKey(area.cfg)) return;
-            if (!Globals.CurrentData.CTMods[area.cfg].ContainsKey(name)) return;
-
-            CTData data = Globals.CurrentData.CTMods[area.cfg][name];
-            if (data.custom?.scale_by_boss?.Count > 0) RefreshKilledBosses();
-            if (data.character != null) Patch_Character(critter, data.character);
-            if (data.base_ai != null) Patch_BaseAI(critter.GetComponent<BaseAI>(), data.base_ai);
-            if (data.monster_ai != null) Patch_MonsterAI(critter.GetComponent<MonsterAI>(), data.monster_ai);
-            if (data.custom != null) Patch_Custom(critter, data.custom);
-
-            Main.GLog.LogInfo($"Modifying Critter \"Lv.{critter.GetLevel()} {name}\" in area \"{area.name}\" with config \"{area.cfg}\"");
-
-            CheckedCritters.Add(critter.transform);
+            Main.GLog.LogInfo($"Modifying Critter \"Lv.{critter.GetLevel()} {name}\" in area \"{area}\" with config \"{cfg}\"");
 
         }
 
@@ -52,25 +41,36 @@ namespace Areas
         {
 
             if (critter == null) return;
+            CheckedCritters.Add(critter.transform);
 
             string name = critter.GetCleanName();
-            string config = cfg ?? AreaHandler.GetArea(critter.transform.position)?.cfg;
-            if (config == null) return;
 
-            if (!Globals.CurrentData.CTMods.ContainsKey(config)) return;
-            if (!Globals.CurrentData.CTMods[config].ContainsKey(name)) return;
+            if (cfg == "none")
+            {
+                CritterHandler.Assign_CT_Level_Vanilla(critter);
+                return;
+            }
+            else if (cfg == null || !Globals.CurrentData.CTMods.ContainsKey(cfg))
+            {
+                Modify(critter, AreaHandler.GetCTDataFromPos(name, critter.transform.position.ToXZ(), out _, out var config));
+                Main.GLog.LogInfo($"Modifying Critter \"Lv.{critter.GetLevel()} {name}\" with config \"{config}\"");
+            }
+            else
+            {
+                Modify(critter, AreaHandler.GetCTDataFromCfg(name, cfg));
+                Main.GLog.LogInfo($"Modifying Critter \"Lv.{critter.GetLevel()} {name}\" with config \"{cfg}\"");
+            }
 
-            CTData data = Globals.CurrentData.CTMods[config][name];
+        }
+
+        private static void Modify(Character critter, CTData data)
+        {
+            if (data == null) return;
             if (data.custom?.scale_by_boss?.Count > 0) RefreshKilledBosses();
             Patch_Character(critter, data.character);
             Patch_BaseAI(critter.GetComponent<BaseAI>(), data.base_ai);
             Patch_MonsterAI(critter.GetComponent<MonsterAI>(), data.monster_ai);
             Patch_Custom(critter, data.custom);
-
-            Main.GLog.LogInfo($"Modifying Critter \"Lv.{critter.GetLevel()} {name}\" with config \"{config}\"");
-
-            CheckedCritters.Add(critter.transform);
-
         }
 
         public static void Patch_Character(Character critter, CTCharacterData data)
@@ -219,9 +219,6 @@ namespace Areas
         public static void Assign_CT_Evolutions(Character critter, Dictionary<int[], Stage> evolution)
         {
 
-            if (evolution == null) return;
-            if (evolution.Count < 1) return;
-
             critter.SetEvolution(evolution);
 
         }
@@ -298,7 +295,7 @@ namespace Areas
         public static void Assign_CT_Level(Character critter, CTCustomData data)
         {
 
-            if (data != null && data.level_fixed.HasValue)
+            if (data.level_fixed.HasValue)
             {
 
                 int lvlFixed = data.level_fixed.Value;
@@ -311,8 +308,6 @@ namespace Areas
             }
             else
             {
-
-                if (data == null) data = new CTCustomData();
 
                 int lvlMin = data.level_min.HasValue ? data.level_min.Value : 1;
                 int lvlMax = data.level_max.HasValue ? data.level_max.Value : 3;
@@ -333,8 +328,34 @@ namespace Areas
 
             }
 
+            Check_Apply_CT_Evolution(critter);
+
+        }
+
+        public static void Assign_CT_Level_Vanilla(Character critter)
+        {
+
+            int lvlMin = 1;
+            int lvlMax = 3;
+            float lvlCha = 15;
+
+            while (lvlMin < lvlMax && UnityEngine.Random.Range(0f, 100f) <= lvlCha) lvlMin++;
+            critter.SetLevel(Mathf.Clamp(lvlMin, 1, 100));
+
+            Check_Apply_CT_Evolution(critter);
+
+        }
+
+        /// <summary>
+        ///     Checks if Evolution should be applied immediately or via LevelEffects awake
+        /// </summary>
+        public static void Check_Apply_CT_Evolution(Character critter)
+        {
+
+            // If it has LevelEffects, it's check will trigger evolution application
             LevelEffects levelEffects = critter.GetComponentInChildren<LevelEffects>();
-            if (levelEffects == null) Apply_CT_Evolution(critter); // if it does have, its check will trigger apply evolution
+            if (levelEffects == null)
+                Apply_CT_Evolution(critter);
 
         }
 
@@ -404,16 +425,15 @@ namespace Areas
 
         }
 
-        public static Character Spawn(GameObject critter, Vector3 position, Quaternion rotation, bool patrol = false)
+        public static Character Spawn(GameObject prefab, Vector3 position, Quaternion rotation, bool patrol = false)
         {
 
             if (ZoneSystem.instance.FindFloor(position, out var height))
                 position.y = height + 0.25f;
 
-            GameObject newCritter = UnityEngine.Object.Instantiate(critter, position, rotation);
+            GameObject newCritter = UnityEngine.Object.Instantiate(prefab, position, rotation);
 
-            ZNetView zNetView = newCritter.GetComponent<ZNetView>();
-            ZDO zDO = zNetView.GetZDO();
+            ZDO zDO = newCritter.GetComponent<ZNetView>()?.GetZDO();
             Character character = newCritter.GetComponent<Character>();
             BaseAI baseAI = newCritter.GetComponent<BaseAI>();
 
@@ -423,8 +443,6 @@ namespace Areas
             zDO?.SetPGWVersion(zDO.GetPGWVersion());
             zDO?.Set("spawn_id", zDO.m_uid);
             zDO?.Set("alive_time", ZNet.instance.GetTime().Ticks);
-
-            CritterHandler.Assign_CT_Level(character, null);
 
             return character;
 

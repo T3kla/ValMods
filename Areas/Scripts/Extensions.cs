@@ -48,15 +48,14 @@ namespace Areas
     public static class CharacterExtensions
     {
 
-        public static string GetCleanName(this Character character)
-        {
-            return character.name.Replace("(Clone)", "").Trim();
-        }
+        public static string GetCleanName(this Character character) => character.name.Replace("(Clone)", "").Trim();
 
         public static bool SetEvolution(this Character character, Dictionary<int[], Stage> evolutions)
         {
 
             if (character.IsPlayer()) return false;
+            if (evolutions == null) return false;
+            if (evolutions.Count < 1) return false;
 
             ZNetView netView = character.GetComponent<ZNetView>();
             if (netView == null) return false;
@@ -204,6 +203,36 @@ namespace Areas
 
             return count;
         }
+
+    }
+
+    public static class FloatArrayExtensions
+    {
+
+        public static Vector2 ToVector2(this float[] ar)
+        {
+
+            Vector2 v = Vector2.zero;
+
+            try
+            {
+                v = new Vector2(ar[0], ar[1]);
+                return v;
+            }
+            catch (Exception e)
+            {
+                Main.GLog.LogError($"Failed Conversion \"float[]\" to \"Vector2\"\n{e.Message}\n{e.StackTrace}");
+                return v;
+            }
+
+        }
+
+    }
+
+    public static class Vector3Extensions
+    {
+
+        public static Vector2 ToXZ(this Vector3 v3) => new Vector2(v3.x, v3.z);
 
     }
 

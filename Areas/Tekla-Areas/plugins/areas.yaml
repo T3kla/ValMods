@@ -2,12 +2,14 @@ area_0:
     name: "Ring 1"
     cfg: "cfg_0"
     layer: 1
-    centre: { x: 0, z: 0 }
-    radius: { x: 0, z: 600 }
+    passthrough: true
+    centre: [0, 0]
+    radius: [0, 600]
 
 area_1:
     name: "Ring 2"
     cfg: "cfg_1"
     layer: 2
-    centre: { x: 0, z: 0 }
-    radius: { x: 600, z: 20000 }
+    passthrough: true
+    centre: [0, 0]
+    radius: [600, 20000]
