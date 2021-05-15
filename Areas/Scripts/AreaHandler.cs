@@ -112,6 +112,45 @@ namespace Areas
 
         }
 
+        public static SSData GetSSDataFromPos(int index, Vector2 pos, out string area, out string cfg)
+        {
+
+            SSData data = null; area = ""; cfg = "";
+
+            foreach (var a in GetAreas(pos))
+                if (Globals.CurrentData.RetrieveSSData(a.cfg, index, out data) || !a.passthrough)
+                { area = a.name; cfg = a.cfg; break; }
+
+            return data;
+
+        }
+
+        public static CSData GetCSDataFromPos(string name, Vector2 pos, out string area, out string cfg)
+        {
+
+            CSData data = null; area = ""; cfg = "";
+
+            foreach (var a in GetAreas(pos))
+                if (Globals.CurrentData.RetrieveCSData(a.cfg, name, out data) || !a.passthrough)
+                { area = a.name; cfg = a.cfg; break; }
+
+            return data;
+
+        }
+
+        public static SAData GetSADataFromPos(string name, Vector2 pos, out string area, out string cfg)
+        {
+
+            SAData data = null; area = ""; cfg = "";
+
+            foreach (var a in GetAreas(pos))
+                if (Globals.CurrentData.RetrieveSAData(a.cfg, name, out data) || !a.passthrough)
+                { area = a.name; cfg = a.cfg; break; }
+
+            return data;
+
+        }
+
     }
 
 }

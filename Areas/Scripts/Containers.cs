@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Areas.Containers
@@ -27,6 +28,36 @@ namespace Areas.Containers
         public Dictionary<string, Dictionary<string, CSData>> CSMods = new Dictionary<string, Dictionary<string, CSData>>();
         public Dictionary<string, Dictionary<string, SAData>> SAMods = new Dictionary<string, Dictionary<string, SAData>>();
 
+        public bool RetrieveSSData(string cfg, int index, out SSData data)
+        {
+            data = (from a in SSMods
+                    where a.Key == cfg
+                    from b in a.Value
+                    where b.Key == index
+                    select b.Value).FirstOrDefault();
+            return data != null ? true : false;
+        }
+
+        public bool RetrieveCSData(string cfg, string spawnerName, out CSData data)
+        {
+            data = (from a in CSMods
+                    where a.Key == cfg
+                    from b in a.Value
+                    where b.Key == spawnerName
+                    select b.Value).FirstOrDefault();
+            return data != null ? true : false;
+        }
+
+        public bool RetrieveSAData(string cfg, string spawnerName, out SAData data)
+        {
+            data = (from a in SAMods
+                    where a.Key == cfg
+                    from b in a.Value
+                    where b.Key == spawnerName
+                    select b.Value).FirstOrDefault();
+            return data != null ? true : false;
+        }
+
     }
 
     public class Area
@@ -45,6 +76,7 @@ namespace Areas.Containers
         public CTCharacterData character { get; set; }
         public CTBaseAIData base_ai { get; set; }
         public CTMonsterAIData monster_ai { get; set; }
+
     }
 
     public class VAData : CTData
@@ -59,8 +91,10 @@ namespace Areas.Containers
         public int? level_max { get; set; }
         public float? level_chance { get; set; }
         public int? level_fixed { get; set; }
+
         public float? health_multi { get; set; }
         public float? damage_multi { get; set; }
+
         public Dictionary<int[], Stage> evolution { get; set; }         // Not in Wiki
         public Dictionary<string, ByDay> scale_by_day { get; set; }     // Not in Wiki
         public Dictionary<string, Dictionary<string, float>> scale_by_boss { get; set; }
@@ -214,6 +248,7 @@ namespace Areas.Containers
         public float? ground_offset { get; set; }
     }
 
+    [Serializable]
     public class CSData
     {
         public float? respawn_time_minutes { get; set; }
@@ -224,6 +259,18 @@ namespace Areas.Containers
         public bool? require_spawn_area { get; set; }
         public bool? spawn_in_player_base { get; set; }
         public bool? set_patrol_spawn_point { get; set; }
+        public CSData() { }
+        public CSData(CSData data)
+        {
+            respawn_time_minutes = data.respawn_time_minutes;
+            trigger_distance = data.trigger_distance;
+            trigger_noise = data.trigger_noise;
+            spawn_at_day = data.spawn_at_day;
+            spawn_at_night = data.spawn_at_night;
+            require_spawn_area = data.require_spawn_area;
+            spawn_in_player_base = data.spawn_in_player_base;
+            set_patrol_spawn_point = data.set_patrol_spawn_point;
+        }
     }
 
     public class SAData

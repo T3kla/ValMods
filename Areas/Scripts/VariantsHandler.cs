@@ -61,14 +61,15 @@ namespace Areas
             {
                 string name = variant.Key;
 
-                GameObject newCritter = PrefabManager.Instance.CreateClonedPrefab(name, variant.Value.original);
-                Character character = newCritter?.GetComponent<Character>();
-                if (newCritter == null)
+                GameObject newCritterPrefab = PrefabManager.Instance.CreateClonedPrefab(name, variant.Value.original);
+                if (newCritterPrefab == null)
                 {
                     Main.GLog.LogWarning($"Couldn't find original critter for variant \"{name}\"!");
                     continue;
                 }
-                else if (character == null || character.IsPlayer())
+
+                Character newCharPrefab = newCritterPrefab?.GetComponent<Character>();
+                if (newCharPrefab == null || newCharPrefab.IsPlayer())
                 {
                     Main.GLog.LogWarning($"Requested prefab \"{name}\" is not a critter!");
                     continue;
@@ -77,11 +78,11 @@ namespace Areas
                 if (variant.Value.localization != null)
                 {
                     string token = $"enemy_{variant.Key.ToLower()}";
-                    character.m_name = $"${token}";
+                    newCharPrefab.m_name = $"${token}";
                     variant.Value.localization?.ForEach(a => LocalizationData.Add(new LocBlock(a[0], token, a[1])));
                 }
 
-                PrefabManager.Instance.AddPrefab(newCritter);
+                PrefabManager.Instance.AddPrefab(newCritterPrefab);
                 AddedPrefabs.Add(name);
             }
 

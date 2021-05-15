@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using static CharacterDrop;
+using Jotunn.Managers;
 
 namespace Areas.Patches
 {
@@ -145,6 +146,9 @@ namespace Areas.Patches
             if (__instance.IsPlayer()) return;
             if (CritterHandler.CheckedCritters.Contains(__instance.transform)) return;
 
+            var data = __instance.GetCTData();
+            if (data != null) CritterHandler.ProcessAwakenCritter(__instance);
+
             CritterHandler.CheckedCritters.Add(__instance.transform);
 
         }
@@ -170,8 +174,8 @@ namespace Areas.Patches
             Character attacker = hit.GetAttacker();
             if (attacker == null) return;
 
-            float multi = attacker.GetDamageMulti();
-            hit.ApplyModifier(multi);
+            float? multi = attacker.GetCTData()?.custom?.damage_multi;
+            if (multi.HasValue) hit.ApplyModifier(multi.Value);
 
         }
 
@@ -277,7 +281,7 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SpawnSystem), nameof(SpawnSystem.Spawn))]
-        public static void SpawnSystem_Spawn_Post(SpawnSystem __instance) { CritterHandler.ModifyHolden(); }
+        public static void SpawnSystem_Spawn_Post(SpawnSystem __instance) { CritterHandler.ProcessCapturedCritter(); }
 
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(CreatureSpawner), nameof(CreatureSpawner.Spawn))]
@@ -319,7 +323,7 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CreatureSpawner), nameof(CreatureSpawner.Spawn))]
-        public static void CreatureSpawner_Spawn_Post(CreatureSpawner __instance) { CritterHandler.ModifyHolden(); }
+        public static void CreatureSpawner_Spawn_Post(CreatureSpawner __instance) { CritterHandler.ProcessCapturedCritter(); }
 
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(SpawnArea), nameof(SpawnArea.SpawnOne))]
@@ -361,7 +365,7 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SpawnArea), nameof(SpawnArea.SpawnOne))]
-        public static void SpawnArea_SpawnOne_Post(SpawnArea __instance) { CritterHandler.ModifyHolden(); }
+        public static void SpawnArea_SpawnOne_Post(SpawnArea __instance) { CritterHandler.ProcessCapturedCritter(); }
 
 
         // ----------------------------------------------------------------------------------------------------------------------------------- RAGDOLL SETUP
@@ -376,7 +380,16 @@ namespace Areas.Patches
             var renderer = levelEffects?.m_mainRender ?? characterDrop.GetComponentInChildren<SkinnedMeshRenderer>();
             if (renderer != null) __instance.m_mainModel.materials = new Material[] { renderer.material };
 
-            __instance.transform.localScale = characterDrop.m_character.transform.localScale;
+            Transform prefab = PrefabManager.Instance.GetPrefab(characterDrop.m_character.GetCleanName()).transform;
+            if (prefab == null) return;
+
+            Vector3 pls = prefab.localScale;
+            Vector3 cls = characterDrop.m_character.transform.localScale;
+            Vector3 rag = __instance.transform.localScale;
+            Vector3 dif = new Vector3(cls.x / pls.x, cls.y / pls.y, cls.z / pls.z);
+            Vector3 fin = new Vector3(dif.x * rag.x, dif.y * rag.y, dif.z * rag.z);
+
+            __instance.transform.localScale = fin;
 
         }
 
@@ -384,15 +397,15 @@ namespace Areas.Patches
         // ----------------------------------------------------------------------------------------------------------------------------------- MODIFY SPAWNERS
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SpawnSystem), nameof(SpawnSystem.Awake))]
-        public static void SpawnSystem_Awake_Post(SpawnSystem __instance) { SpawnerHandler.Modify_SS(__instance); }
+        public static void SpawnSystem_Awake_Post(SpawnSystem __instance) { SpawnerHandler.ProcessCapturedSS(__instance); }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CreatureSpawner), nameof(CreatureSpawner.Awake))]
-        public static void CreatureSpawner_Awake_Post(CreatureSpawner __instance) { SpawnerHandler.Modify_CS(__instance); }
+        public static void CreatureSpawner_Awake_Post(CreatureSpawner __instance) { SpawnerHandler.ProcessCapturedCS(__instance); }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SpawnArea), nameof(SpawnArea.Awake))]
-        public static void SpawnArea_Awake_Post(SpawnArea __instance) { SpawnerHandler.Modify_SA(__instance); }
+        public static void SpawnArea_Awake_Post(SpawnArea __instance) { SpawnerHandler.ProcessCapturedSA(__instance); }
 
     }
 

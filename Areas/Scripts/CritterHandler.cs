@@ -19,53 +19,66 @@ namespace Areas
 
         public static Dictionary<string, bool> KilledBosses = new Dictionary<string, bool>();
 
-        public static void ModifyHolden()
+        public static void ProcessCapturedCritter()
         {
 
-            if (CT_Holder == null) return;
             Character critter = CT_Holder.GetComponent<Character>();
-            CheckedCritters.Add(critter.transform);
             CT_Holder = null;
-
-            if (critter == null) return;
-
-            string name = critter.GetCleanName(), area = "", cfg = "";
-            Vector2 pos = critter.transform.position.ToXZ();
-            Modify(critter, AreaHandler.GetCTDataFromPos(name, pos, out area, out cfg));
-
-            Main.GLog.LogInfo($"Modifying Critter \"Lv.{critter.GetLevel()} {name}\" in area \"{area}\" with config \"{cfg}\"");
-
-        }
-
-        public static void ModifyGiven(Character critter, string cfg = null)
-        {
 
             if (critter == null) return;
             CheckedCritters.Add(critter.transform);
 
             string name = critter.GetCleanName();
+            CTData data = AreaHandler.GetCTDataFromPos(name, critter.transform.position.ToXZ(), out _, out var cfg);
 
-            if (cfg == "none")
-            {
-                CritterHandler.Assign_CT_Level_Vanilla(critter);
-                return;
-            }
-            else if (cfg == null || !Globals.CurrentData.CTMods.ContainsKey(cfg))
-            {
-                Modify(critter, AreaHandler.GetCTDataFromPos(name, critter.transform.position.ToXZ(), out _, out var config));
-                Main.GLog.LogInfo($"Modifying Critter \"Lv.{critter.GetLevel()} {name}\" with config \"{config}\"");
-            }
-            else
-            {
-                Modify(critter, AreaHandler.GetCTDataFromCfg(name, cfg));
-                Main.GLog.LogInfo($"Modifying Critter \"Lv.{critter.GetLevel()} {name}\" with config \"{cfg}\"");
-            }
+            if (data == null) return;
+
+            critter.SetCTDataStr(cfg, name);
+            Modify(critter, data, name, cfg);
 
         }
 
-        private static void Modify(Character critter, CTData data)
+        public static void ProcessSpawnCommand(Character critter = null, string cfg = null)
         {
+
+            if (critter == null) return;
+            CheckedCritters.Add(critter.transform);
+
+            if (cfg == "vanilla") { CritterHandler.Assign_CT_Level_Vanilla(critter); return; }
+
+            string name = critter.GetCleanName();
+            string config = cfg;
+            CTData data = null;
+
+            if (cfg == null || !Globals.CurrentData.CTMods.ContainsKey(cfg))
+                data = AreaHandler.GetCTDataFromPos(name, critter.transform.position.ToXZ(), out _, out config);
+            else
+                data = AreaHandler.GetCTDataFromCfg(name, config);
+
             if (data == null) return;
+
+            critter.SetCTDataStr(config, name);
+            Modify(critter, data, name, config);
+
+        }
+
+        public static void ProcessAwakenCritter(Character critter)
+        {
+
+            if (critter == null) return;
+            CheckedCritters.Add(critter.transform);
+
+            if (!critter.GetCTDataStr(out var dataStr)) return;
+            CTData data = critter.GetCTData();
+            if (data == null) return;
+
+            Modify(critter, data, dataStr.name, dataStr.cfg);
+
+        }
+
+        private static void Modify(Character critter, CTData data, string critterName, string cfg)
+        {
+            Main.GLog.LogInfo($"Modifying Critter \"Lv.{critter.GetLevel()} {critterName}\" with config \"{cfg}\"");
             if (data.custom?.scale_by_boss?.Count > 0) RefreshKilledBosses();
             Patch_Character(critter, data.character);
             Patch_BaseAI(critter.GetComponent<BaseAI>(), data.base_ai);
@@ -187,9 +200,9 @@ namespace Areas
         {
 
             if (critter == null || data == null) return;
+
             Assign_CT_Health(critter, data);
             Assign_CT_Damage(critter, data);
-            Assign_CT_Evolutions(critter, data.evolution);
             Assign_CT_Level(critter, data);
 
         }
@@ -212,21 +225,12 @@ namespace Areas
             multi *= ByDay(data, "damage_multi", true);
             multi *= ByBoss(data, "damage_multi", true);
 
-            critter.SetDamageMulti(multi);
-
-        }
-
-        public static void Assign_CT_Evolutions(Character critter, Dictionary<int[], Stage> evolution)
-        {
-
-            critter.SetEvolution(evolution);
-
         }
 
         public static void Apply_CT_Evolution(Character critter)
         {
 
-            var evolution = critter.GetEvolution();
+            var evolution = critter?.GetCTData()?.custom?.evolution;
             if (evolution == null) return;
             int level = critter.GetLevel();
             Stage stage = null;
