@@ -1,4 +1,4 @@
-cfg_0:
+ring_1_cfg:
     0:
         group_size_min: 10
         group_size_max: 20
@@ -8,7 +8,7 @@ cfg_0:
         min_altitude: 0
         max_altitude: 1000
 
-cfg_1:
+ring_2_cfg:
     1:
         group_size_min: 1
         group_size_max: 1

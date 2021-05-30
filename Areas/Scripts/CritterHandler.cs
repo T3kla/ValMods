@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using HarmonyLib;
 using Areas.Containers;
+using Jotunn.Managers;
 
 namespace Areas
 {
@@ -11,53 +12,83 @@ namespace Areas
     public static class CritterHandler
     {
 
-        public static HashSet<Transform> CheckedCritters = new HashSet<Transform>();
-
         public static MethodInfo CT_SetHolderInfo = AccessTools.Method(typeof(CritterHandler), nameof(CritterHandler.CT_SetHolder), new Type[] { typeof(GameObject) });
         public static void CT_SetHolder(GameObject critter) { CT_Holder = critter; }
         public static GameObject CT_Holder = null;
 
         public static Dictionary<string, bool> KilledBosses = new Dictionary<string, bool>();
 
-        public static void ProcessCapturedCritter()
+        public static void ProcessCapturedCritter<T>(T spawner)
         {
+
+            string name = "";
 
             Character critter = CT_Holder.GetComponent<Character>();
             CT_Holder = null;
 
             if (critter == null) return;
-            CheckedCritters.Add(critter.transform);
 
-            string name = critter.GetCleanName();
+            CreatureSpawner cs = spawner is CreatureSpawner ? spawner as CreatureSpawner : null;
+            if (cs != null)
+            {
+                var ctName = cs.GetCtName();
+                if (!string.IsNullOrEmpty(ctName) && Globals.CurrentData.VAMods.ContainsKey(ctName))
+                {
+                    name = ctName;
+                    critter.SetVariant(ctName);
+                    critter.name = $"{ctName}(Clone)";
+                    critter.m_name = $"$enemy_{ctName}";
+                }
+            }
+
+            name = string.IsNullOrEmpty(name) ? critter.gameObject.GetCleanName() : name;
             CTData data = AreaHandler.GetCTDataFromPos(name, critter.transform.position.ToXZ(), out _, out var cfg);
 
-            if (data == null) return;
+            if (data == null)
+            {
+                Console.instance.Print($"Couldn't find data for critter \"{name}\"");
+                CritterHandler.Assign_CT_Level_Vanilla(critter);
+                return;
+            }
 
-            critter.SetCTDataStr(cfg, name);
+            critter.SetCfg(cfg);
             Modify(critter, data, name, cfg);
 
         }
 
-        public static void ProcessSpawnCommand(Character critter = null, string cfg = null)
+        public static void ProcessSpawnCommand(Character critter, string ctName, string givenCfg)
         {
 
+            string name = "";
+
             if (critter == null) return;
-            CheckedCritters.Add(critter.transform);
+            if (givenCfg == "vanilla") { CritterHandler.Assign_CT_Level_Vanilla(critter); return; }
 
-            if (cfg == "vanilla") { CritterHandler.Assign_CT_Level_Vanilla(critter); return; }
+            if (Globals.CurrentData.VAMods.ContainsKey(ctName))
+            {
+                name = ctName;
+                critter.SetVariant(ctName);
+                critter.name = $"{name}(Clone)";
+                critter.m_name = $"$enemy_{name}";
+            }
 
-            string name = critter.GetCleanName();
-            string config = cfg;
+            name = string.IsNullOrEmpty(name) ? critter.gameObject.GetCleanName() : name;
+            string config = givenCfg;
             CTData data = null;
 
-            if (cfg == null || !Globals.CurrentData.CTMods.ContainsKey(cfg))
+            if (givenCfg == null || !Globals.CurrentData.CTMods.ContainsKey(givenCfg))
                 data = AreaHandler.GetCTDataFromPos(name, critter.transform.position.ToXZ(), out _, out config);
             else
                 data = AreaHandler.GetCTDataFromCfg(name, config);
 
-            if (data == null) return;
+            if (data == null)
+            {
+                Console.instance.Print($"Couldn't find data for critter \"{name}\"");
+                CritterHandler.Assign_CT_Level_Vanilla(critter);
+                return;
+            }
 
-            critter.SetCTDataStr(config, name);
+            critter.SetCfg(config);
             Modify(critter, data, name, config);
 
         }
@@ -65,25 +96,32 @@ namespace Areas
         public static void ProcessAwakenCritter(Character critter)
         {
 
-            if (critter == null) return;
-            CheckedCritters.Add(critter.transform);
+            var variant = critter.GetVariant();
+            if (Globals.CurrentData.VAMods.ContainsKey(variant))
+            {
+                critter.name = $"{variant}(Clone)";
+                critter.m_name = $"$enemy_{variant}";
+            }
 
-            if (!critter.GetCTDataStr(out var dataStr)) return;
-            CTData data = critter.GetCTData();
+            var cfg = critter.GetCfg();
+            if (string.IsNullOrEmpty(cfg)) return;
+
+            var data = critter.GetCtData();
             if (data == null) return;
 
-            Modify(critter, data, dataStr.name, dataStr.cfg);
+            Modify(critter, data, critter.gameObject.GetCleanName(), cfg, true);
 
         }
 
-        private static void Modify(Character critter, CTData data, string critterName, string cfg)
+        private static void Modify(Character critter, CTData data, string ctName, string cfg, bool keepLevel = false)
         {
-            Main.GLog.LogInfo($"Modifying Critter \"Lv.{critter.GetLevel()} {critterName}\" with config \"{cfg}\"");
+            Main.GLog.LogInfo($"Modifying Critter \"Lv.{critter.GetLevel()} {ctName}\" with config \"{cfg}\"");
             if (data.custom?.scale_by_boss?.Count > 0) RefreshKilledBosses();
+            var prefab = PrefabManager.Instance.GetPrefab(VariantsHandler.FindOriginal(ctName) ?? ctName);
             Patch_Character(critter, data.character);
             Patch_BaseAI(critter.GetComponent<BaseAI>(), data.base_ai);
             Patch_MonsterAI(critter.GetComponent<MonsterAI>(), data.monster_ai);
-            Patch_Custom(critter, data.custom);
+            Patch_Custom(prefab, critter, data, keepLevel);
         }
 
         public static void Patch_Character(Character critter, CTCharacterData data)
@@ -196,25 +234,36 @@ namespace Areas
             ai.m_consumeHeal = data.consume_heal.HasValue ? data.consume_heal.Value : ai.m_consumeHeal;
         }
 
-        public static void Patch_Custom(Character critter, CTCustomData data)
+        public static void Patch_Custom(GameObject prefab, Character critter, CTData data, bool keepLevel = false)
         {
 
             if (critter == null || data == null) return;
-
+            Assign_CT_Damage(critter, data.custom);
+            Assign_CT_Level(critter, data.custom, keepLevel);
             Assign_CT_Health(critter, data);
-            Assign_CT_Damage(critter, data);
-            Assign_CT_Level(critter, data);
+
+            if (data.custom.evolution == null) return;
+            Apply_CT_Evolution(critter, data.custom.evolution, prefab);
 
         }
 
-        private static void Assign_CT_Health(Character critter, CTCustomData data)
+        private static void Assign_CT_Health(Character critter, CTData data)
         {
 
-            float multi = data.health_multi.HasValue ? data.health_multi.Value : 1;
-            multi *= ByDay(data, "health_multi", true);
-            multi *= ByBoss(data, "health_multi", true);
+            var percent = critter.GetCustomHealthPercentage() ?? 1f;
+            var level = critter.GetLevel();
+            var difficultyHealthScale = Game.instance.GetDifficultyHealthScale(critter.transform.position);
 
-            critter.m_health *= multi;
+            var multi = data.custom.health_multi.HasValue ? data.custom.health_multi.Value : 1f;
+
+            multi *= ByDay(data.custom, "health_multi", true);
+            multi *= ByBoss(data.custom, "health_multi", true);
+
+            var newMax = critter.m_health * multi * difficultyHealthScale * (float)level;
+            var newCur = newMax * percent;
+
+            critter.SetMaxHealth(newMax);
+            critter.SetHealth(newCur);
 
         }
 
@@ -225,81 +274,21 @@ namespace Areas
             multi *= ByDay(data, "damage_multi", true);
             multi *= ByBoss(data, "damage_multi", true);
 
-        }
-
-        public static void Apply_CT_Evolution(Character critter)
-        {
-
-            var evolution = critter?.GetCTData()?.custom?.evolution;
-            if (evolution == null) return;
-            int level = critter.GetLevel();
-            Stage stage = null;
-            int[] interval = null;
-
-            foreach (var stg in evolution)
-                if (level >= stg.Key[0] && level <= stg.Key[1]) { interval = stg.Key; stage = stg.Value; break; }
-            if (stage == null) return;
-
-            // Declarations
-            Renderer renderer = new Renderer();
-            LevelEffects levelEffects = critter.GetComponentInChildren<LevelEffects>();
-            LevelEffects.LevelSetup levelSetup = null;
-            if (stage.stage.HasValue && levelEffects != null)
-                if (stage.stage == 2 || stage.stage == 3)
-                    levelSetup = levelEffects.m_levelSetups[stage.stage.Value - 2];
-
-            // Fill missing Stage parameters with vanilla LevelSetup if found
-            if (levelSetup != null)
-            {
-                if (!stage.h.HasValue) { stage.h = levelSetup.m_hue; }
-                if (!stage.s.HasValue) { stage.s = levelSetup.m_saturation; }
-                if (!stage.v.HasValue) { stage.v = levelSetup.m_value; }
-                if (!stage.scale.HasValue) { stage.scale = levelSetup.m_scale; }
-            }
-
-            // Apply Scale
-            if (stage.scale.HasValue) critter.transform.localScale *= Mathf.Clamp(stage.scale.Value, 0.1f, 50f);
-
-            // Apply Decoration Gameobjects if found
-            GameObject baseDecor = levelEffects?.m_baseEnableObject;
-            if (stage.stage.HasValue && stage.stage.Value > 1)
-            {
-                GameObject stageDecor = levelSetup?.m_enableObject;
-                if (stageDecor != null) stageDecor.SetActive(true);
-                if (baseDecor != null) baseDecor.SetActive(false);
-            }
-            else
-            {
-                if (baseDecor != null) baseDecor.SetActive(true);
-            }
-
-            // Find Renderer
-            renderer = levelEffects?.m_mainRender ?? critter.GetComponentInChildren<SkinnedMeshRenderer>();
-            if (renderer == null) return;
-
-            // Apply/Create Material
-            string key = $"{critter.GetCleanName()} [{interval[0]}-{interval[1]}]";
-            Material mat;
-            if (LevelEffects.m_materials.TryGetValue(key, out var value))
-            {
-                mat = new Material(value);
-            }
-            else
-            {
-                mat = new Material(renderer.sharedMaterials[0]);
-                if (stage.h.HasValue) mat.SetFloat("_Hue", stage.h.Value);
-                if (stage.s.HasValue) mat.SetFloat("_Saturation", stage.s.Value);
-                if (stage.v.HasValue) mat.SetFloat("_Value", stage.v.Value);
-                LevelEffects.m_materials.Add(key, mat);
-            }
-            renderer.sharedMaterials = new Material[] { mat };
+            critter.SetDamageMulti(multi);
 
         }
 
-        public static void Assign_CT_Level(Character critter, CTCustomData data)
+        public static void Assign_CT_Level(Character critter, CTCustomData data, bool keepLevel = false)
         {
 
-            if (data.level_fixed.HasValue)
+            if (keepLevel)
+            {
+
+                critter.SetLevel(critter.GetLevel());
+                return;
+
+            }
+            else if (data.level_fixed.HasValue)
             {
 
                 int lvlFixed = data.level_fixed.Value;
@@ -332,7 +321,7 @@ namespace Areas
 
             }
 
-            Check_Apply_CT_Evolution(critter);
+            critter.SetHealth(critter.GetMaxHealth());
 
         }
 
@@ -346,20 +335,82 @@ namespace Areas
             while (lvlMin < lvlMax && UnityEngine.Random.Range(0f, 100f) <= lvlCha) lvlMin++;
             critter.SetLevel(Mathf.Clamp(lvlMin, 1, 100));
 
-            Check_Apply_CT_Evolution(critter);
-
         }
 
-        /// <summary>
-        ///     Checks if Evolution should be applied immediately or via LevelEffects awake
-        /// </summary>
-        public static void Check_Apply_CT_Evolution(Character critter)
+        public static void Apply_CT_Evolution(Character critter, Dictionary<int[], Stage> evoDic = null, GameObject prefab = null)
         {
 
-            // If it has LevelEffects, it's check will trigger evolution application
+            if (critter.name.Contains("(Evo)")) return;
+            critter.name += "(Evo)";
+
+            var evolution = evoDic ?? critter.GetCtData()?.custom?.evolution;
+            if (evolution == null) return;
+            int level = critter.GetLevel();
+            Stage stage = null;
+            int[] interval = null;
+
+            foreach (var stg in evolution)
+                if (level >= stg.Key[0] && level <= stg.Key[1]) { interval = stg.Key; stage = stg.Value; break; }
+            if (stage == null) return;
+
+            // Declarations
+            Renderer renderer = new Renderer();
             LevelEffects levelEffects = critter.GetComponentInChildren<LevelEffects>();
-            if (levelEffects == null)
-                Apply_CT_Evolution(critter);
+            LevelEffects.LevelSetup levelSetup = null;
+            if (stage.stage.HasValue && levelEffects != null)
+                if (stage.stage == 2 || stage.stage == 3)
+                    levelSetup = levelEffects.m_levelSetups[stage.stage.Value - 2];
+
+            // Fill missing Stage parameters with vanilla LevelSetup if found
+            if (levelSetup != null)
+            {
+                if (!stage.h.HasValue) { stage.h = levelSetup.m_hue; }
+                if (!stage.s.HasValue) { stage.s = levelSetup.m_saturation; }
+                if (!stage.v.HasValue) { stage.v = levelSetup.m_value; }
+                if (!stage.scale.HasValue) { stage.scale = levelSetup.m_scale; }
+            }
+
+            // Apply Scale
+            if (stage.scale.HasValue)
+            {
+                var ctName = critter.gameObject.GetCleanName();
+                var pfb = prefab ?? PrefabManager.Instance.GetPrefab(VariantsHandler.FindOriginal(ctName) ?? ctName);
+                critter.transform.localScale = pfb.transform.localScale * Mathf.Clamp(stage.scale.Value, 0.1f, 50f);
+            }
+
+            // Apply Decoration Gameobjects if found
+            GameObject baseDecor = levelEffects?.m_baseEnableObject;
+            if (stage.stage.HasValue && stage.stage.Value > 1)
+            {
+                GameObject stageDecor = levelSetup?.m_enableObject;
+                if (stageDecor != null) stageDecor.SetActive(true);
+                if (baseDecor != null) baseDecor.SetActive(false);
+            }
+            else
+            {
+                if (baseDecor != null) baseDecor.SetActive(true);
+            }
+
+            // Find Renderer
+            renderer = levelEffects?.m_mainRender ?? critter.GetComponentInChildren<SkinnedMeshRenderer>();
+            if (renderer == null) return;
+
+            // Apply/Create Material
+            string key = $"{critter.gameObject.GetCleanName()} [{interval[0]}-{interval[1]}]";
+            Material mat;
+            if (LevelEffects.m_materials.TryGetValue(key, out var value))
+            {
+                mat = new Material(value);
+            }
+            else
+            {
+                mat = new Material(renderer.sharedMaterials[0]);
+                if (stage.h.HasValue) mat.SetFloat("_Hue", stage.h.Value);
+                if (stage.s.HasValue) mat.SetFloat("_Saturation", stage.s.Value);
+                if (stage.v.HasValue) mat.SetFloat("_Value", stage.v.Value);
+                LevelEffects.m_materials.Add(key, mat);
+            }
+            renderer.sharedMaterials = new Material[] { mat };
 
         }
 
@@ -425,7 +476,6 @@ namespace Areas
 
             KilledBosses = new Dictionary<string, bool>();
             CT_Holder = null;
-            CheckedCritters.Clear();
 
         }
 
@@ -445,8 +495,6 @@ namespace Areas
                 baseAI.SetPatrolPoint();
 
             zDO?.SetPGWVersion(zDO.GetPGWVersion());
-            zDO?.Set("spawn_id", zDO.m_uid);
-            zDO?.Set("alive_time", ZNet.instance.GetTime().Ticks);
 
             return character;
 

@@ -53,7 +53,7 @@ namespace Areas
                     Main.GLog.LogInfo($"ZoneLookup newArea: {(PlayerCurrentArea != null ? newArea.name : "None")}");
                 }
 
-                yield return new WaitForSecondsRealtime(4f);
+                yield return new WaitForSecondsRealtime(1f);
 
             }
 

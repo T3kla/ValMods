@@ -28,6 +28,14 @@ namespace Areas.Containers
         public Dictionary<string, Dictionary<string, CSData>> CSMods = new Dictionary<string, Dictionary<string, CSData>>();
         public Dictionary<string, Dictionary<string, SAData>> SAMods = new Dictionary<string, Dictionary<string, SAData>>();
 
+        public bool RetrieveVAData(string ctName, out VAData data)
+        {
+            data = (from a in VAMods
+                    where a.Key == ctName
+                    select a.Value).FirstOrDefault();
+            return data != null ? true : false;
+        }
+
         public bool RetrieveSSData(string cfg, int index, out SSData data)
         {
             data = (from a in SSMods
@@ -70,19 +78,18 @@ namespace Areas.Containers
         public float[] radius { get; set; }
     }
 
+    public class VAData : CTData
+    {
+        public string original { get; set; }
+        public List<string[]> localization { get; set; }
+    }
+
     public class CTData
     {
         public CTCustomData custom { get; set; }
         public CTCharacterData character { get; set; }
         public CTBaseAIData base_ai { get; set; }
         public CTMonsterAIData monster_ai { get; set; }
-
-    }
-
-    public class VAData : CTData
-    {
-        public string original { get; set; }
-        public List<string[]> localization { get; set; }
     }
 
     public class CTCustomData

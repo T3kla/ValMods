@@ -33,13 +33,20 @@ namespace Areas
         public override void Run(string[] args)
         {
 
-            if (args.Length < 1) return;
-            string ctrName = args[0];
+            if (!SynchronizationManager.Instance.PlayerIsAdmin) return;
 
-            GameObject prefab = PrefabManager.Instance.GetPrefab(ctrName);
+            if (args.Length < 1) return;
+            string ctName = args[0];
+            GameObject prefab = null;
+
+            if (Globals.CurrentData.VAMods.TryGetValue(ctName, out var vaData))
+                prefab = PrefabManager.Instance.GetPrefab(vaData.original);
+            else
+                prefab = PrefabManager.Instance.GetPrefab(ctName);
+
             if (prefab == null || prefab.GetComponent<Character>() == null || prefab.GetComponent<Character>()?.IsPlayer() == true)
             {
-                Console.instance.Print($"Couldn't find critter with name \"{ctrName}\"");
+                Console.instance.Print($"Couldn't find critter with name \"{ctName}\"");
                 return;
             }
 
@@ -59,7 +66,7 @@ namespace Areas
                     }
 
             Character newCritter = CritterHandler.Spawn(prefab, pos.Value, Quaternion.identity);
-            CritterHandler.ProcessSpawnCommand(newCritter, cfg);
+            CritterHandler.ProcessSpawnCommand(newCritter, ctName, cfg);
 
         }
 
@@ -76,24 +83,27 @@ namespace Areas
         {
 
             GameObject root = ZNetScene.instance.m_netSceneRoot;
+            Console.instance.Print($" ---- Starting search for custom spawners ---- ");
 
             for (int i = 0; i < root.transform.childCount; i++)
             {
                 GameObject obj = root.transform.GetChild(i).gameObject;
 
+                var dis = Vector3.Distance(obj.transform.position, Player.m_localPlayer.transform.position);
+
                 CreatureSpawner cs = obj.GetComponent<CreatureSpawner>();
                 if (cs == null) continue;
 
-                ZDO zDO = cs.GetComponent<ZNetView>()?.GetZDO();
-                if (zDO == null) continue;
+                var ctName = cs.GetCtName();
+                if (string.IsNullOrEmpty(ctName)) continue;
 
-                var str = zDO.GetString("Areas CustomCS");
-                if (string.IsNullOrEmpty(str)) continue;
+                var data = cs.GetData();
+                if (data == null) continue;
 
-                var dis = Vector3.Distance(obj.transform.position, Player.m_localPlayer.transform.position);
-
-                Console.instance.Print($"Found spawner for critter \"{cs.m_creaturePrefab?.name}\" at position \"{obj.transform.position}\" and distance \"{dis.ToString("F2")}\"");
+                Console.instance.Print($"Found custom spawner for critter \"{ctName}\" at position \"{obj.GetCleanPos()}\" and distance \"{dis.ToString("F2")}\"");
             }
+
+            Console.instance.Print($" ---- Finished search for custom spawners ---- ");
 
         }
 
@@ -107,6 +117,8 @@ namespace Areas
 
         public override void Run(string[] args)
         {
+
+            if (!SynchronizationManager.Instance.PlayerIsAdmin) return;
 
             CSData DefaultCSData = new CSData()
             {
@@ -122,8 +134,10 @@ namespace Areas
 
             if (args.Length < 1) return;
 
+            string ctName = args[0];
+
             GameObject p_spawner = PrefabManager.Instance.GetPrefab("Spawner_Boar");
-            GameObject p_critter = PrefabManager.Instance.GetPrefab(args[0]);
+            GameObject p_critter = PrefabManager.Instance.GetPrefab(VariantsHandler.FindOriginal(ctName) ?? ctName);
             if (p_spawner == null || p_spawner.GetComponent<CreatureSpawner>() == null ||
             p_critter == null || p_critter.GetComponent<Character>() == null)
                 return;
@@ -157,13 +171,14 @@ namespace Areas
             CreatureSpawner cs = newSpawner.GetComponent<CreatureSpawner>();
 
             CSData data = new CSData(DefaultCSData);
-            data.respawn_time_minutes = respawnTime;
+            data.respawn_time_minutes = Mathf.Clamp(respawnTime, 0.1f, 1000000f);
             data.spawn_at_day = respawnDay;
             data.spawn_at_night = respawnNight;
 
-            cs.SetCustomCS(args[0], data);
-
+            cs.SetCtName(ctName);
+            cs.SetData(data);
             cs.m_creaturePrefab = p_critter;
+
             SpawnerHandler.ApplyCSData(cs, data);
             Console.instance.Print($"Creating spawner for critter \"{cs.m_creaturePrefab?.name}\" at \"{Player.m_localPlayer.transform.position}\"");
 
@@ -180,6 +195,8 @@ namespace Areas
         public override void Run(string[] args)
         {
 
+            if (!SynchronizationManager.Instance.PlayerIsAdmin) return;
+
             HashSet<CreatureSpawner> spawners = new HashSet<CreatureSpawner>();
             GameObject root = ZNetScene.instance.m_netSceneRoot;
 
@@ -187,18 +204,17 @@ namespace Areas
             string critter = "";
 
             if (args.Length > 1)
-                for (int i = 1; i < args.Length; i++)
+                for (int i = 0; i < args.Length; i++)
                     switch (args[i])
                     {
                         case "-r":
-                            float.TryParse(args[i + 1], out radios);
+                            float.TryParse(args[i + 1], NumberStyles.Any, CultureInfo.InvariantCulture, out radios);
                             break;
                         case "-c":
                             critter = args[i + 1];
                             break;
                         default: break;
                     }
-
 
             for (int i = 0; i < root.transform.childCount; i++)
             {
@@ -223,7 +239,7 @@ namespace Areas
             {
                 var dis = Vector3.Distance(cs.transform.position, Player.m_localPlayer.transform.position);
                 Console.instance.Print($"Destroying spawner for critter \"{cs.m_creaturePrefab?.name}\" at a distance of \"{dis.ToString("F2")}\"");
-                GameObject.Destroy(cs.gameObject);
+                ZNetScene.instance.Destroy(cs.gameObject);
             }
 
         }

@@ -84,7 +84,7 @@ namespace Areas
                 }
                 else
                 {
-                    UnityEngine.Object.Destroy(obj);
+                    ZNetScene.instance.Destroy(obj);
                 }
             }
 

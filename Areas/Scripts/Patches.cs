@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using static CharacterDrop;
 using Jotunn.Managers;
+using Jotunn;
 
 namespace Areas.Patches
 {
@@ -91,18 +92,18 @@ namespace Areas.Patches
         public static void ZNet_Awake_Post(ZNet __instance)
         {
 
-            ZNetType type = __instance.GetInstanceType();
+            var type = __instance.GetInstanceType();
 
             Main.GLog.LogInfo($"Instance is \"{type.ToString()}\"");
 
             switch (type)
             {
-                case ZNetType.Local:
-                case ZNetType.Server:
+                case ZNetExtension.ZNetInstanceType.Local:
+                case ZNetExtension.ZNetInstanceType.Server:
                     Main.LoadData(EDS.Local);
                     break;
 
-                case ZNetType.Client:
+                case ZNetExtension.ZNetInstanceType.Client:
                     break;
 
                 default: break;
@@ -127,7 +128,7 @@ namespace Areas.Patches
         public static void ZNet_RPCCharacterID_Post(ZNet __instance, ZRpc rpc, ZDOID characterID)
         {
 
-            if (__instance.GetInstanceType() == ZNetType.Client) return;
+            if (__instance.GetInstanceType() == ZNetExtension.ZNetInstanceType.Client) return;
 
             long client = __instance.GetPeer(rpc).m_uid;
 
@@ -138,29 +139,28 @@ namespace Areas.Patches
 
 
         // ----------------------------------------------------------------------------------------------------------------------------------- CRITTER REGISTER
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(Character), nameof(Character.Awake))]
+        public static void Character_Awake_Pre(Character __instance)
+        {
+
+            if (__instance == null) return;
+            if (__instance.IsPlayer()) return;
+
+            ZNetView znv = __instance.m_nview != null ? __instance.m_nview : __instance.GetComponent<ZNetView>();
+            if (znv != null) znv.GetZDO()?.Set("Areas Health Percentage", __instance.GetHealthPercentage());
+
+        }
+
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Character), nameof(Character.Awake))]
         public static void Character_Awake_Post(Character __instance)
         {
 
+            if (__instance == null) return;
             if (__instance.IsPlayer()) return;
-            if (CritterHandler.CheckedCritters.Contains(__instance.transform)) return;
 
-            var data = __instance.GetCTData();
-            if (data != null) CritterHandler.ProcessAwakenCritter(__instance);
-
-            CritterHandler.CheckedCritters.Add(__instance.transform);
-
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(Character), nameof(Character.OnDestroy))]
-        public static void Character_OnDeath_Pre(Character __instance)
-        {
-
-            if (__instance.IsPlayer()) return;
-            CritterHandler.CheckedCritters.Remove(__instance.transform);
-            CritterHandler.CheckedCritters.RemoveWhere(a => a == null);
+            CritterHandler.ProcessAwakenCritter(__instance);
 
         }
 
@@ -171,11 +171,8 @@ namespace Areas.Patches
         private static void Character_Damage_Pre(Character __instance, HitData hit)
         {
 
-            Character attacker = hit.GetAttacker();
-            if (attacker == null) return;
-
-            float? multi = attacker.GetCTData()?.custom?.damage_multi;
-            if (multi.HasValue) hit.ApplyModifier(multi.Value);
+            float? multi = hit?.GetAttacker()?.GetDamageMulti();
+            if (multi.HasValue && multi.Value != 1) hit.ApplyModifier(multi.Value);
 
         }
 
@@ -183,7 +180,7 @@ namespace Areas.Patches
         // ----------------------------------------------------------------------------------------------------------------------------------- CRITTER EVOLUTIONS
         [HarmonyPostfix]
         [HarmonyPatch(typeof(LevelEffects), nameof(LevelEffects.SetupLevelVisualization))]
-        public static void LevelEffects_SetupLevelVisualization_Pre(LevelEffects __instance, ref int level)
+        public static void LevelEffects_SetupLevelVisualization_Post(LevelEffects __instance, ref int level)
         {
 
             CritterHandler.Apply_CT_Evolution(__instance.m_character);
@@ -215,7 +212,7 @@ namespace Areas.Patches
                     lvlReward = Mathf.FloorToInt(Mathf.Max(1, 2 * (adjustLvl - 1)));
                 }
 
-                Main.GLog.LogInfo($"Calculating DropList of \"{__instance.m_character.GetCleanName()}\" at \"{lvl}\" ");
+                Main.GLog.LogInfo($"Calculating DropList for \"Lv.{lvl} {__instance.m_character.gameObject.GetCleanName()}\"");
             }
 
             foreach (Drop drop in __instance.m_drops)
@@ -281,7 +278,7 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SpawnSystem), nameof(SpawnSystem.Spawn))]
-        public static void SpawnSystem_Spawn_Post(SpawnSystem __instance) { CritterHandler.ProcessCapturedCritter(); }
+        public static void SpawnSystem_Spawn_Post(SpawnSystem __instance) { CritterHandler.ProcessCapturedCritter(__instance); }
 
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(CreatureSpawner), nameof(CreatureSpawner.Spawn))]
@@ -323,7 +320,7 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CreatureSpawner), nameof(CreatureSpawner.Spawn))]
-        public static void CreatureSpawner_Spawn_Post(CreatureSpawner __instance) { CritterHandler.ProcessCapturedCritter(); }
+        public static void CreatureSpawner_Spawn_Post(CreatureSpawner __instance) { CritterHandler.ProcessCapturedCritter(__instance); }
 
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(SpawnArea), nameof(SpawnArea.SpawnOne))]
@@ -365,7 +362,7 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SpawnArea), nameof(SpawnArea.SpawnOne))]
-        public static void SpawnArea_SpawnOne_Post(SpawnArea __instance) { CritterHandler.ProcessCapturedCritter(); }
+        public static void SpawnArea_SpawnOne_Post(SpawnArea __instance) { CritterHandler.ProcessCapturedCritter(__instance); }
 
 
         // ----------------------------------------------------------------------------------------------------------------------------------- RAGDOLL SETUP
@@ -374,22 +371,31 @@ namespace Areas.Patches
         public static void Ragdoll_Setup_Post(Ragdoll __instance, CharacterDrop characterDrop)
         {
 
+            if (characterDrop == null) return;
+            if (characterDrop.m_character == null) return;
             if (characterDrop.m_character.IsPlayer()) return;
 
             LevelEffects levelEffects = characterDrop.GetComponentInChildren<LevelEffects>();
             var renderer = levelEffects?.m_mainRender ?? characterDrop.GetComponentInChildren<SkinnedMeshRenderer>();
             if (renderer != null) __instance.m_mainModel.materials = new Material[] { renderer.material };
 
-            Transform prefab = PrefabManager.Instance.GetPrefab(characterDrop.m_character.GetCleanName()).transform;
+            Transform prefab = null;
+            string variant = characterDrop.m_character.GetVariant();
+            string ctName = characterDrop.m_character.gameObject.GetCleanName();
+            string originalCtName = VariantsHandler.FindOriginal(variant);
+            int level = characterDrop.m_character.GetLevel();
+
+            prefab = PrefabManager.Instance.GetPrefab(VariantsHandler.FindOriginal(ctName) ?? ctName).transform;
             if (prefab == null) return;
 
-            Vector3 pls = prefab.localScale;
-            Vector3 cls = characterDrop.m_character.transform.localScale;
             Vector3 rag = __instance.transform.localScale;
-            Vector3 dif = new Vector3(cls.x / pls.x, cls.y / pls.y, cls.z / pls.z);
-            Vector3 fin = new Vector3(dif.x * rag.x, dif.y * rag.y, dif.z * rag.z);
+            Vector3 act = characterDrop.m_character.transform.localScale;
+            Vector3 pref = prefab.localScale;
 
-            __instance.transform.localScale = fin;
+            Vector3 ragBYact = new Vector3(rag.x * act.x, rag.y * act.y, rag.z * act.z);
+            Vector3 final = new Vector3(ragBYact.x / pref.x, ragBYact.y / pref.y, ragBYact.z / pref.z);
+
+            __instance.transform.localScale = final;
 
         }
 

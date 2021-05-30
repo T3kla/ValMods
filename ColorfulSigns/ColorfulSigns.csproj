@@ -390,14 +390,14 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <GameDir>C:\Program Files (x86)\Steam\steamapps\common\Valheim</GameDir>
+    <PasteDir>C:\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Testing</PasteDir>
   </PropertyGroup>
   <Target Name="AfterBuild">
     <Exec Command="$(SolutionDir)pdb2mdb.exe $(ProjectDir)Tekla-ColorfulSigns\plugins\ColorfulSigns.dll" />
     <ItemGroup>
       <ModFolder Include="$(ProjectDir)Tekla-ColorfulSigns\**\*.*" />
     </ItemGroup>
-    <Copy SourceFiles="@(ModFolder)" DestinationFolder="$(GameDir)\Bepinex\plugins\$(ProjectName)\%(RecursiveDir)" />
+    <Copy SourceFiles="@(ModFolder)" DestinationFolder="$(PasteDir)\Bepinex\plugins\$(ProjectName)\%(RecursiveDir)" />
     <Delete Files="$(ProjectDir)Tekla-ColorfulSigns\plugins\ColorfulSigns.pdb" />
     <Delete Files="$(ProjectDir)Tekla-ColorfulSigns\plugins\ColorfulSigns.dll.mdb" />
     <Exec Command="powershell Compress-Archive -Path $(ProjectDir)Tekla-ColorfulSigns\**\ $(SolutionDir)__Releases\Tekla-ColorfulSigns.zip -Force" />

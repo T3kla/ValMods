@@ -24,7 +24,6 @@ namespace Areas.TYaml
                 var data = deserializer.Deserialize<T>(reader);
                 reader.Close();
 
-                Main.GLog.LogInfo($"Deserialized object");
                 return (T)data;
             }
             catch (Exception e)
@@ -40,10 +39,13 @@ namespace Areas.TYaml
         {
             try
             {
-                string data = Serialize(obj);
+                if (obj == null) return "";
 
-                Main.GLog.LogInfo($"Serialized object with name \"{obj.ToString()}\"");
-                return data;
+                var serializer = new SerializerBuilder()
+                    .WithNamingConvention(UnderscoredNamingConvention.Instance)
+                    .Build();
+
+                return serializer.Serialize(obj); ;
             }
             catch (Exception e)
             {
@@ -61,7 +63,6 @@ namespace Areas.TYaml
                     .WithNamingConvention(UnderscoredNamingConvention.Instance)
                     .IgnoreUnmatchedProperties()
                     .Build();
-
 
                 var data = deserializer.Deserialize<T>(File.ReadAllText(path));
 
@@ -81,6 +82,8 @@ namespace Areas.TYaml
         {
             try
             {
+                if (obj == null) return;
+
                 var serializer = new SerializerBuilder()
                     .WithNamingConvention(UnderscoredNamingConvention.Instance)
                     .Build();

@@ -1,4 +1,4 @@
-cfg_0:
+ring_1_cfg:
     Boar:
         custom:
             level_min: 1
@@ -22,11 +22,11 @@ cfg_0:
                 level_chance: { eikthyr: 1, the_elder: 1 }
                 health_multi: { eikthyr: 1.1 }
                 damage_multi: { the_elder: 1.2 }
-    Greyling:
-        custom:
-            level_fixed: 2
+    Deer:
+        character:
+            health: 25
 
-cfg_1:
+ring_2_cfg:
     Troll:
         custom:
             level_fixed: 3

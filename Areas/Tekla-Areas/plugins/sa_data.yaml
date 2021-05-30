@@ -1,4 +1,4 @@
-cfg_0:
+ring_1_cfg:
     Spawner_DraugrPile:
         spawn_interval_sec: 5
         trigger_distance: 20
@@ -10,7 +10,7 @@ cfg_0:
         max_total: 100
         on_ground_only: false
 
-cfg_1:
+ring_2_cfg:
     Spawner_GreydwarfNest:
         spawn_interval_sec: 10
         trigger_distance: 60

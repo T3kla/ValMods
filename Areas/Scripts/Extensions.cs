@@ -4,32 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using Areas.Containers;
+using Areas.TYaml;
 using UnityEngine;
-
-namespace Areas.NetCode
-{
-    public enum ZNetType { Local, Client, Server }
-
-    public static class ZNetExtensions
-    {
-
-        public static ZNetType GetInstanceType(this ZNet znet)
-        {
-
-            bool isServer = znet.IsServer();
-            bool isDedicated = znet.IsDedicated();
-
-            if (isServer && !isDedicated) return ZNetType.Local;
-            if (!isServer && !isDedicated) return ZNetType.Client;
-            if (isServer && isDedicated) return ZNetType.Server;
-
-            return ZNetType.Server;
-
-        }
-
-    }
-
-}
 
 namespace Areas
 {
@@ -46,67 +22,46 @@ namespace Areas
 
     }
 
-    public static class CharacterExtensions
+    public static class GameObjectExtensions
     {
 
-        public static string GetCleanName(this Character character) => character.name.Replace("(Clone)", "").Trim();
-
-        public static bool SetCTDataStr(this Character character, string cfg, string ctName)
-        {
-            if (character.IsPlayer()) return false;
-
-            ZDO zDO = character.GetComponent<ZNetView>()?.GetZDO();
-            if (zDO == null) return false;
-
-            zDO.Set("Areas CTDataStr", $"{cfg}={ctName}");
-
-            return true;
-
-        }
-
-        public static bool GetCTDataStr(this Character character, out (string cfg, string name) pair)
-        {
-
-            pair = ("", "");
-
-            if (character.IsPlayer()) return false;
-
-            ZDO zDO = character.GetComponent<ZNetView>()?.GetZDO();
-            if (zDO == null) return false;
-
-            var str = zDO.GetString("Areas CTDataStr");
-            if (string.IsNullOrEmpty(str)) return false;
-            var split = str.Split('=');
-            if (split.Length != 2) return false;
-
-            pair = (split[0], split[1]);
-            return true;
-
-        }
-
-        public static CTData GetCTData(this Character character)
-        {
-
-            if (!character.GetCTDataStr(out var pair)) return null;
-
-            var data = (from a in Globals.CurrentData.CTMods
-                        where a.Key == pair.cfg
-                        from b in Globals.CurrentData.CTMods[pair.cfg]
-                        where b.Key == pair.name
-                        select b.Value).FirstOrDefault();
-
-            return data;
-
-        }
+        public static string GetCleanName(this GameObject go) => go.name.Replace("(Clone)", "").Replace("(Evo)", "").Trim();
+        public static string GetCleanNamePos(this GameObject go) => $"{go.name.Replace("(Clone)", "").Replace("(Evo)", "").Trim()}-{go.transform.position.ToString("F0")}";
+        public static string GetCleanPos(this GameObject go) => go.transform.position.ToString("F0");
 
     }
 
-    public static class SpawnerSystemExtensions
+    public static class CharacterExtensions
     {
 
-        public static string GetCleanName(this SpawnSystem ss)
+        public static void SetCfg(this Character character, string cfg) => character?.m_nview?.GetZDO()?.Set("Areas Cfg", cfg);
+        public static string GetCfg(this Character character) => character?.m_nview?.GetZDO()?.GetString("Areas Cfg");
+
+        public static void SetVariant(this Character character, string variant) => character?.m_nview?.GetZDO()?.Set("Areas Variant", variant);
+        public static string GetVariant(this Character character) => character?.m_nview?.GetZDO()?.GetString("Areas Variant");
+
+        public static void SetDamageMulti(this Character character, float damageMulti) => character?.m_nview?.GetZDO()?.Set("Areas DamageMulti", damageMulti);
+        public static float? GetDamageMulti(this Character character) => character?.m_nview?.GetZDO()?.GetFloat("Areas DamageMulti", 1f);
+
+        public static void SetCustomHealthPercentage(this Character character, float percent) => character?.m_nview?.GetZDO()?.Set("Areas Health Percentage", percent);
+        public static float? GetCustomHealthPercentage(this Character character) => character?.m_nview?.GetZDO()?.GetFloat("Areas Health Percentage");
+
+        public static CTData GetCtData(this Character character)
         {
-            return ss.name.Replace("(Clone)", "").Trim() + ss.transform.position.ToString("F0");
+            string cfg = character?.GetCfg();
+            if (string.IsNullOrEmpty(cfg)) return null;
+
+            string _variant = character?.GetVariant();
+            string _ctName = !string.IsNullOrEmpty(_variant) ? _variant : character?.m_nview?.gameObject.GetCleanName();
+            if (string.IsNullOrEmpty(_ctName)) return null;
+
+            var data = (from a in Globals.CurrentData.CTMods
+                        where a.Key == cfg
+                        from b in Globals.CurrentData.CTMods[cfg]
+                        where b.Key == _ctName
+                        select b.Value).FirstOrDefault();
+
+            return data;
         }
 
     }
@@ -114,131 +69,11 @@ namespace Areas
     public static class CreatureSpawnerExtensions
     {
 
-        public static string GetCleanName(this CreatureSpawner cs)
-        {
-            return cs.name.Replace("(Clone)", "").Trim() + cs.transform.position.ToString("F0");
-        }
+        public static void SetCtName(this CreatureSpawner cs, string ctName) => cs?.m_nview?.GetZDO()?.Set("Areas CustomCS CtName", ctName);
+        public static string GetCtName(this CreatureSpawner cs) => cs?.m_nview?.GetZDO()?.GetString("Areas CustomCS CtName");
 
-        public static void SetCustomCS(this CreatureSpawner cs, string ctName, CSData data)
-        {
-
-            ZDO zDO = cs.GetComponent<ZNetView>()?.GetZDO();
-            if (zDO == null) return;
-
-            try
-            {
-                var binFormatter = new BinaryFormatter();
-                var mStream = new MemoryStream();
-                binFormatter.Serialize(mStream, data);
-                zDO.Set("Areas CustomCS", ctName);
-                zDO.Set("Areas CustomCSData", mStream.ToArray());
-                mStream.Close();
-            }
-            catch (Exception e)
-            {
-                Main.GLog.LogError($"SetCustomCS failed!\n{e.Message}\n{e.StackTrace}");
-            }
-
-        }
-
-        public static bool GetCustomCS(this CreatureSpawner cs, out string ctName, out CSData data)
-        {
-
-            ctName = "";
-            data = null;
-
-            ZDO zDO = cs.GetComponent<ZNetView>()?.GetZDO();
-            if (zDO == null) return false;
-
-            var str = zDO.GetString("Areas CustomCS");
-            if (string.IsNullOrEmpty(str)) return false;
-
-            Byte[] array = zDO.GetByteArray("Areas CustomCSData");
-            if (array == null) return false;
-
-            try
-            {
-                var mStream = new MemoryStream();
-                var binFormatter = new BinaryFormatter();
-                mStream.Write(array, 0, array.Length);
-                mStream.Position = 0;
-                ctName = str;
-                data = (CSData)binFormatter.Deserialize(mStream);
-                mStream.Close();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Main.GLog.LogError($"GetCustomCS failed!\n{e.Message}\n{e.StackTrace}");
-                return false;
-            }
-
-        }
-
-        // public static bool SetEvolution(this Character character, Dictionary<int[], Stage> evolutions)
-        // {
-
-        //     if (character.IsPlayer()) return false;
-
-        //     ZNetView netView = character.GetComponent<ZNetView>();
-        //     if (netView == null) return false;
-
-        //     try
-        //     {
-        //         var binFormatter = new BinaryFormatter();
-        //         var mStream = new MemoryStream();
-        //         binFormatter.Serialize(mStream, evolutions);
-        //         netView.GetZDO()?.Set($"Areas EvolutionSetter", mStream.ToArray());
-        //         mStream.Close();
-        //         return true;
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         Main.GLog.LogError($"Critter SetEvolutions failed for critter \"Lv.{character.GetCleanName()}\"\n{e.Message}\n{e.StackTrace}");
-        //         return false;
-        //     }
-
-        // }
-
-        // public static Dictionary<int[], Stage> GetEvolution(this Character character)
-        // {
-
-        //     if (character.IsPlayer()) return null;
-
-        //     ZNetView netView = character.GetComponent<ZNetView>();
-        //     if (netView == null) return null;
-
-        //     Byte[] array = netView.GetZDO().GetByteArray("Areas EvolutionSetter");
-        //     if (array == null) return null;
-        //     if (array.Length < 1) return null;
-
-        //     try
-        //     {
-        //         var mStream = new MemoryStream();
-        //         var binFormatter = new BinaryFormatter();
-        //         mStream.Write(array, 0, array.Length);
-        //         mStream.Position = 0;
-        //         var evolutions = binFormatter.Deserialize(mStream) as Dictionary<int[], Stage>;
-        //         mStream.Close();
-        //         return evolutions;
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         Main.GLog.LogError($"Critter GetEvolution failed for critter \"Lv.{character.GetCleanName()}\"\n{e.Message}\n{e.StackTrace}");
-        //         return null;
-        //     }
-
-        // }
-
-    }
-
-    public static class SpawnAreaExtensions
-    {
-
-        public static string GetCleanName(this SpawnArea sa)
-        {
-            return sa.name.Replace("(Clone)", "").Trim() + sa.transform.position.ToString("F0");
-        }
+        public static void SetData(this CreatureSpawner cs, CSData data) => cs?.m_nview?.GetZDO()?.Set("Areas CustomCS Data", Serialization.Serialize(data));
+        public static CSData GetData(this CreatureSpawner cs) => Serialization.Deserialize<CSData>(cs?.m_nview?.GetZDO()?.GetString("Areas CustomCS Data"));
 
     }
 

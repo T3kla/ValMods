@@ -1,6 +1,6 @@
 area_0:
     name: "Ring 1"
-    cfg: "cfg_0"
+    cfg: "ring_1_cfg"
     layer: 1
     passthrough: true
     centre: [0, 0]
@@ -8,7 +8,7 @@ area_0:
 
 area_1:
     name: "Ring 2"
-    cfg: "cfg_1"
+    cfg: "ring_2_cfg"
     layer: 2
     passthrough: true
     centre: [0, 0]

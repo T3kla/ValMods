@@ -12,23 +12,17 @@ namespace Areas
 
         private static bool SS_DataDicFlag = false;
         private static Dictionary<string, List<SpawnSystem.SpawnData>> SS_DataDic = new Dictionary<string, List<SpawnSystem.SpawnData>>();
-        private static HashSet<GameObject> CheckedSS = new HashSet<GameObject>();
-        private static HashSet<GameObject> CheckedCS = new HashSet<GameObject>();
-        private static HashSet<GameObject> CheckedSA = new HashSet<GameObject>();
 
         public static void ProcessCapturedSS(SpawnSystem ss)
         {
 
             if (SS_DataDicFlag) GenerateSSDataDic(ss);
 
-            if (CheckedSS.Contains(ss.gameObject)) return;
-            CheckedSS.Add(ss.gameObject);
-
             foreach (var area in AreaHandler.GetAreas(ss.transform.position.ToXZ()))
                 if (SS_DataDic.ContainsKey(area.cfg))
                 {
                     ss.m_spawners = SS_DataDic[area.cfg];
-                    Main.GLog.LogInfo($"Modifying SpawnSystem \"{ss.GetCleanName()}\" in area \"{area.name}\" ");
+                    Main.GLog.LogInfo($"Modifying SpawnSystem \"{ss.gameObject.GetCleanNamePos()}\" in area \"{area.name}\" ");
                     return;
                 }
 
@@ -37,28 +31,26 @@ namespace Areas
         public static void ProcessCapturedCS(CreatureSpawner cs)
         {
 
-            if (CheckedCS.Contains(cs.gameObject)) return;
-            CheckedCS.Add(cs.gameObject);
+            string name = "";
+            string area = "";
+            string cfg = "";
 
-            string name = cs.GetCleanName(), area = "", cfg = "";
-            CSData data = null;
-            bool custom = false;
+            string ctName = cs.GetCtName();
+            CSData data = cs.GetData();
 
-            if (cs.GetCustomCS(out var ctName, out data))
+            if (!string.IsNullOrEmpty(ctName))
             {
-                custom = true;
-                var critter = PrefabManager.Instance.GetPrefab(ctName);
-                if (critter == null) { GameObject.Destroy(cs.gameObject); return; }
+                if (data == null) { ZNetScene.instance.Destroy(cs.gameObject); return; }
+                GameObject critter = PrefabManager.Instance.GetPrefab(VariantsHandler.FindOriginal(ctName) ?? ctName);
+                if (critter == null) { ZNetScene.instance.Destroy(cs.gameObject); return; }
                 cs.m_creaturePrefab = critter;
             }
-            else
-            {
-                data = AreaHandler.GetCSDataFromPos(name, cs.transform.position.ToXZ(), out area, out cfg);
-            }
+
+            data = data ?? AreaHandler.GetCSDataFromPos(cs.gameObject.GetCleanName(), cs.transform.position.ToXZ(), out area, out cfg);
 
             if (data == null) return;
-            Main.GLog.LogInfo($"Modifying {(custom ? "custom" : "")} CreatureSpawner \"{name}\" in area \"{area}\" with config \"{cfg}\"");
 
+            Main.GLog.LogInfo($"Modifying {(string.IsNullOrEmpty(ctName) ? "custom" : "")} CreatureSpawner \"{name}\" in area \"{area}\" with config \"{cfg}\"");
             ApplyCSData(cs, data);
 
         }
@@ -79,10 +71,7 @@ namespace Areas
         public static void ProcessCapturedSA(SpawnArea sa)
         {
 
-            if (CheckedSA.Contains(sa.gameObject)) return;
-            CheckedSA.Add(sa.gameObject);
-
-            string name = sa.GetCleanName();
+            string name = sa.gameObject.GetCleanName();
 
             SAData data = AreaHandler.GetSADataFromPos(name, sa.transform.position.ToXZ(), out var area, out var cfg);
             if (data == null) return;
@@ -146,9 +135,6 @@ namespace Areas
         {
 
             SS_DataDic.Clear();
-            CheckedSS.Clear();
-            CheckedCS.Clear();
-            CheckedSA.Clear();
 
         }
 

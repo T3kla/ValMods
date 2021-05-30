@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\JotunnLib.2.0.9\build\JotunnLib.props" Condition="Exists('..\packages\JotunnLib.2.0.9\build\JotunnLib.props')" />
+  <Import Project="..\packages\JotunnLib.2.0.11\build\JotunnLib.props" Condition="Exists('..\packages\JotunnLib.2.0.11\build\JotunnLib.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
@@ -31,8 +31,8 @@
       <HintPath>..\packages\HarmonyX.2.4.2\lib\net45\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Jotunn, Version=2.0.9.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\JotunnLib.2.0.9\lib\net462\Jotunn.dll</HintPath>
+    <Reference Include="Jotunn, Version=2.0.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\JotunnLib.2.0.11\lib\net462\Jotunn.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
@@ -52,16 +52,16 @@
       <HintPath>..\packages\Mono.Cecil.0.11.3\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MonoMod, Version=21.4.21.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoMod.21.4.21.3\lib\net40\MonoMod.exe</HintPath>
+    <Reference Include="MonoMod, Version=21.4.29.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.21.4.29.1\lib\net40\MonoMod.exe</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MonoMod.RuntimeDetour, Version=21.4.21.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoMod.RuntimeDetour.21.4.21.3\lib\net40\MonoMod.RuntimeDetour.dll</HintPath>
+    <Reference Include="MonoMod.RuntimeDetour, Version=21.4.29.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.RuntimeDetour.21.4.29.1\lib\net40\MonoMod.RuntimeDetour.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MonoMod.Utils, Version=21.4.21.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoMod.Utils.21.4.21.3\lib\net40\MonoMod.Utils.dll</HintPath>
+    <Reference Include="MonoMod.Utils, Version=21.4.29.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.Utils.21.4.29.1\lib\net40\MonoMod.Utils.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -421,14 +421,14 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <GameDir>C:\Program Files (x86)\Steam\steamapps\common\Valheim</GameDir>
+    <PasteDir>C:\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Testing</PasteDir>
   </PropertyGroup>
   <Target Name="AfterBuild">
     <Exec Command="$(SolutionDir)pdb2mdb.exe $(ProjectDir)Tekla-Areas\plugins\Areas.dll" />
     <ItemGroup>
       <ModFolder Include="$(ProjectDir)Tekla-Areas\**\*.*" />
     </ItemGroup>
-    <Copy SourceFiles="@(ModFolder)" DestinationFolder="$(GameDir)\Bepinex\plugins\$(ProjectName)\%(RecursiveDir)" />
+    <Copy SourceFiles="@(ModFolder)" DestinationFolder="$(PasteDir)\Bepinex\plugins\$(ProjectName)\%(RecursiveDir)" />
     <Delete Files="$(ProjectDir)Tekla-Areas\plugins\Areas.pdb" />
     <Delete Files="$(ProjectDir)Tekla-Areas\plugins\Areas.dll.mdb" />
     <Exec Command="powershell Compress-Archive -Path $(ProjectDir)Tekla-Areas\**\ $(SolutionDir)__Releases\Tekla-Areas.zip -Force" />
@@ -447,6 +447,6 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\JotunnLib.2.0.9\build\JotunnLib.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\JotunnLib.2.0.9\build\JotunnLib.props'))" />
+    <Error Condition="!Exists('..\packages\JotunnLib.2.0.11\build\JotunnLib.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\JotunnLib.2.0.11\build\JotunnLib.props'))" />
   </Target>
 </Project>
