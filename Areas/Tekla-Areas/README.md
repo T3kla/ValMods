@@ -6,16 +6,14 @@ With this mod you will be able to:
 
 This mod uses multiple yaml files to function. Check the [Wiki](https://github.com/T3kla/ValMods/wiki/Areas) to learn how they work.
 
+## Stuff
 **Bugs?** Report them [here](https://github.com/T3kla/ValMods/issues).
 
 **Features?** Propose them [here](https://github.com/T3kla/ValMods/issues).
 
 **Questions?** The nicest way would be [Nexus](https://www.nexusmods.com/valheim/mods/944?tab=posts) posts.
 
-**Contact?**  Discord: Tekla#1012
-
-## Issues & Suggestions
-Please report issues and suggestions [here](https://github.com/T3kla/ValMods/issues) or tag me as `@Tekla` in [Valheim Modding](https://discord.gg/RBq2mzeu4z) Discord server.
+**Contact?** Discord: Tekla#1012 or tag me as @Tekla in [Valheim Modding](https://discord.gg/RBq2mzeu4z)
 
 ## Installation (manual)
 If you are installing this manually, do the following 

@@ -28,7 +28,7 @@ namespace Areas
     {
 
         public override string Name => "asc";
-        public override string Help => "Spawn Critter as: command [critter_name] -c [cfg] -p [x,y,z]";
+        public override string Help => "Spawn Critter as: asc [critter_name] -c [cfg] -p [x,y,z]";
 
         public override void Run(string[] args)
         {
