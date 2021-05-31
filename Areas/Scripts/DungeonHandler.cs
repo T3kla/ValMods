@@ -44,9 +44,7 @@ namespace Areas
 
             if (regenAtSecond.HasValue && dg != null)
             {
-                ZDO dungeonZDO = dg.GetComponent<ZNetView>().GetZDO();
-                dungeonZDO.Set("Areas RegenAtSecond", regenAtSecond.Value);
-
+                dg.SetRegenAtSecond(regenAtSecond.Value);
                 Task_Schedule(dg);
             }
 

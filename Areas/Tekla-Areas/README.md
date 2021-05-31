@@ -1,7 +1,18 @@
 # Areas
-Allows to finely tune difficulty based on areas. It's in Alpha and won't work well.
+With this mod you will be able to: 
+- Tune the existing spawn system to your liking
+- Create new monsters from 
+- Create custom spawners
 
-**Questions?** Check the [Wiki](https://github.com/T3kla/ValMods/wiki/Areas) first.
+This mod uses multiple yaml files to function. Check the [Wiki](https://github.com/T3kla/ValMods/wiki/Areas) to learn how they work.
+
+**Bugs?** Report them [here](https://github.com/T3kla/ValMods/issues).
+
+**Features?** Propose them [here](https://github.com/T3kla/ValMods/issues).
+
+**Questions?** The nicest way would be [Nexus](https://www.nexusmods.com/valheim/mods/944?tab=posts) posts.
+
+**Contact?**  Discord: Tekla#1012
 
 ## Issues & Suggestions
 Please report issues and suggestions [here](https://github.com/T3kla/ValMods/issues) or tag me as `@Tekla` in [Valheim Modding](https://discord.gg/RBq2mzeu4z) Discord server.
@@ -16,6 +27,17 @@ If you are installing this manually, do the following
 ![Logo64](https://user-images.githubusercontent.com/23636548/112306898-a1ac1f00-8ca0-11eb-8b3e-90e73dc7bad2.png)
 
 ## Changelog
+#### 1.0.0
+- Evolutions System
+- Variants System
+- Custom Spawner System
+- Command Areas Spawn Critter
+- Command Areas Create Spawner
+- Command Areas List Spawners
+- Command Areas Remove Spawners
+- Migrate to Jotunn library
+- Many many many optimisations
+- Many many many bug fixes
 #### 0.1.2
 - Allow "Base AI" component modifications
 - Allow scaling parameters via days passed and bosses killed
@@ -30,4 +52,4 @@ If you are installing this manually, do the following
 - Allow "Monster AI" component modifications
 - Optimisations in the way SpawnSystem is handled
 #### 0.1.0
-- ??
+- Areas

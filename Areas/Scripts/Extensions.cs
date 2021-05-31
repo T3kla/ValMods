@@ -80,22 +80,18 @@ namespace Areas
     public static class DungeonGeneratorExtensions
     {
 
-        public static string GetCleanName(this DungeonGenerator dg)
-        {
-            return dg.name.Replace("(Clone)", "").Replace("(DungeonGenerator)", "").Trim() + dg.transform.position.ToString("F0");
-        }
+        public static string GetCleanName(this DungeonGenerator dg) => dg.name.Replace("(Clone)", "").Replace("(DungeonGenerator)", "").Trim() + dg.transform.position.ToString("F0");
 
+        public static void SetRegenAtSecond(this DungeonGenerator dg, long value) => dg?.m_nview?.GetZDO()?.Set("Areas RegenAtSecond", value);
         public static long GetRegenAtSecond(this DungeonGenerator dg)
         {
-            long regenAtSecond = dg.GetComponent<ZNetView>().GetZDO().GetLong("Areas RegenAtSecond");
-            return regenAtSecond < 0L ? 0L : regenAtSecond;
+            long value = dg?.m_nview?.GetZDO()?.GetLong("Areas RegenAtSecond") ?? 0L;
+            return value < 0L ? 0L : value;
         }
 
         public static long GetRegenRemainder(this DungeonGenerator dg)
         {
-            long currentSecond = (long)ZNet.instance.GetTimeSeconds();
-            long regenAtSecond = dg.GetComponent<ZNetView>().GetZDO().GetLong("Areas RegenAtSecond");
-            long remainder = regenAtSecond - currentSecond;
+            long remainder = dg.GetRegenAtSecond() - (long)ZNet.instance.GetTimeSeconds();
             return remainder < 0L ? 0L : remainder;
         }
 

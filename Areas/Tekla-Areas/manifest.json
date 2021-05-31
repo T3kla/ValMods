@@ -1,9 +1,9 @@
 {
-  "name": "Areas",
-  "description": "Allows to finely tune difficulty based on areas. It's in Alpha and won't work well.",
-  "version_number": "0.1.2",
-  "website_url": "",
-  "dependencies": [
-    "denikson-BepInExPack_Valheim-5.4.901"
-  ]
+    "name": "Areas",
+    "description": "Finely tune the existing spawn system and create new monsters and spawners.",
+    "version_number": "1.0.0",
+    "website_url": "",
+    "dependencies": [
+        "denikson-BepInExPack_Valheim-5.4.1100"
+    ]
 }

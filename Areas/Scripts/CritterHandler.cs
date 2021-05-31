@@ -27,6 +27,7 @@ namespace Areas
             CT_Holder = null;
 
             if (critter == null) return;
+            Main.GLog.LogInfo($"Processing Spawned Critter \"{critter.gameObject.GetCleanName()}\"");
 
             CreatureSpawner cs = spawner is CreatureSpawner ? spawner as CreatureSpawner : null;
             if (cs != null)
@@ -96,6 +97,8 @@ namespace Areas
         public static void ProcessAwakenCritter(Character critter)
         {
 
+            Main.GLog.LogInfo($"Processing Awakened Critter \"{critter.gameObject.GetCleanName()}\"");
+
             var variant = critter.GetVariant();
             if (Globals.CurrentData.VAMods.ContainsKey(variant))
             {
@@ -115,13 +118,15 @@ namespace Areas
 
         private static void Modify(Character critter, CTData data, string ctName, string cfg, bool keepLevel = false)
         {
-            Main.GLog.LogInfo($"Modifying Critter \"Lv.{critter.GetLevel()} {ctName}\" with config \"{cfg}\"");
+
             if (data.custom?.scale_by_boss?.Count > 0) RefreshKilledBosses();
             var prefab = PrefabManager.Instance.GetPrefab(VariantsHandler.FindOriginal(ctName) ?? ctName);
             Patch_Character(critter, data.character);
             Patch_BaseAI(critter.GetComponent<BaseAI>(), data.base_ai);
             Patch_MonsterAI(critter.GetComponent<MonsterAI>(), data.monster_ai);
             Patch_Custom(prefab, critter, data, keepLevel);
+            Main.GLog.LogInfo($"Modified Critter \"Lv.{critter.GetLevel()} {ctName}\" with config \"{cfg}\"");
+
         }
 
         public static void Patch_Character(Character critter, CTCharacterData data)
@@ -237,33 +242,13 @@ namespace Areas
         public static void Patch_Custom(GameObject prefab, Character critter, CTData data, bool keepLevel = false)
         {
 
-            if (critter == null || data == null) return;
+            if (critter == null || data == null || data.custom == null) return;
             Assign_CT_Damage(critter, data.custom);
             Assign_CT_Level(critter, data.custom, keepLevel);
-            Assign_CT_Health(critter, data);
+            Assign_CT_Health(critter, data.custom);
 
             if (data.custom.evolution == null) return;
             Apply_CT_Evolution(critter, data.custom.evolution, prefab);
-
-        }
-
-        private static void Assign_CT_Health(Character critter, CTData data)
-        {
-
-            var percent = critter.GetCustomHealthPercentage() ?? 1f;
-            var level = critter.GetLevel();
-            var difficultyHealthScale = Game.instance.GetDifficultyHealthScale(critter.transform.position);
-
-            var multi = data.custom.health_multi.HasValue ? data.custom.health_multi.Value : 1f;
-
-            multi *= ByDay(data.custom, "health_multi", true);
-            multi *= ByBoss(data.custom, "health_multi", true);
-
-            var newMax = critter.m_health * multi * difficultyHealthScale * (float)level;
-            var newCur = newMax * percent;
-
-            critter.SetMaxHealth(newMax);
-            critter.SetHealth(newCur);
 
         }
 
@@ -322,6 +307,26 @@ namespace Areas
             }
 
             critter.SetHealth(critter.GetMaxHealth());
+
+        }
+
+        private static void Assign_CT_Health(Character critter, CTCustomData data)
+        {
+
+            var percent = critter.GetCustomHealthPercentage() ?? 1f;
+            var level = critter.GetLevel();
+            var difficultyHealthScale = Game.instance.GetDifficultyHealthScale(critter.transform.position);
+
+            var multi = 1f;
+            multi = data.health_multi.HasValue ? data.health_multi.Value : 1f;
+            multi *= ByDay(data, "health_multi", true);
+            multi *= ByBoss(data, "health_multi", true);
+
+            var newMax = critter.m_health * multi * difficultyHealthScale * (float)level;
+            var newCur = newMax * percent;
+
+            critter.SetMaxHealth(newMax);
+            critter.SetHealth(newCur);
 
         }
 

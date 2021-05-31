@@ -137,6 +137,19 @@ namespace Areas.Patches
 
         }
 
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.OnNewPeer))]
+        // When receiving a client, send data
+        public static void ZoneSystem_OnNewPeer_Post(ZoneSystem __instance, ref long peerID)
+        {
+
+            if (ZNet.instance.GetInstanceType() == ZNetExtension.ZNetInstanceType.Client) return; // Send when Server or Local
+
+            Main.GLog.LogInfo($"Instance is sending Data to client \"{peerID}\"");
+            RPC.SendDataToClient(peerID);
+
+        }
+
 
         // ----------------------------------------------------------------------------------------------------------------------------------- CRITTER REGISTER
         [HarmonyPrefix]
@@ -148,7 +161,12 @@ namespace Areas.Patches
             if (__instance.IsPlayer()) return;
 
             ZNetView znv = __instance.m_nview != null ? __instance.m_nview : __instance.GetComponent<ZNetView>();
-            if (znv != null) znv.GetZDO()?.Set("Areas Health Percentage", __instance.GetHealthPercentage());
+            if (znv == null) return;
+
+            var hp = znv.GetZDO()?.GetFloat("health", __instance.m_health) ?? __instance.m_health;
+            var max = znv.GetZDO()?.GetFloat("max_health", __instance.m_health) ?? __instance.m_health;
+
+            znv.GetZDO()?.Set("Areas Health Percentage", hp / max);
 
         }
 

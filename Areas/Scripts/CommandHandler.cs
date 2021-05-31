@@ -28,12 +28,12 @@ namespace Areas
     {
 
         public override string Name => "asc";
-        public override string Help => "Spawn Critter: command [critter_name] -c [cfg] -p [x,y,z]";
+        public override string Help => "Spawn Critter as: command [critter_name] -c [cfg] -p [x,y,z]";
 
         public override void Run(string[] args)
         {
 
-            if (!SynchronizationManager.Instance.PlayerIsAdmin) return;
+            if (!SynchronizationManager.Instance.PlayerIsAdmin) { Console.instance.Print($"You are not admin"); return; }
 
             if (args.Length < 1) return;
             string ctName = args[0];
@@ -77,7 +77,7 @@ namespace Areas
     {
 
         public override string Name => "als";
-        public override string Help => "List Spawners. List loaded spawners.";
+        public override string Help => "List Custom Spawners as: command";
 
         public override void Run(string[] args)
         {
@@ -113,12 +113,12 @@ namespace Areas
     {
 
         public override string Name => "acs";
-        public override string Help => "Create Spawner: command [critterName] -p [x:float, y:float, z:float] -t [respawn_time:float] -d [respawn_at_day:bool] -n [respawn_at_night:bool]";
+        public override string Help => "Create Spawner as: command [critterName] -p [x:float, y:float, z:float] -t [respawn_time:float] -d [respawn_at_day:bool] -n [respawn_at_night:bool]";
 
         public override void Run(string[] args)
         {
 
-            if (!SynchronizationManager.Instance.PlayerIsAdmin) return;
+            if (!SynchronizationManager.Instance.PlayerIsAdmin) { Console.instance.Print($"You are not admin"); return; }
 
             CSData DefaultCSData = new CSData()
             {
@@ -190,12 +190,12 @@ namespace Areas
     {
 
         public override string Name => "ars";
-        public override string Help => "Remove Spawner: command -r [radios:float] -c [critter_name:string]";
+        public override string Help => "Remove Spawner as: command -r [radios:float] -c [critter_name:string]";
 
         public override void Run(string[] args)
         {
 
-            if (!SynchronizationManager.Instance.PlayerIsAdmin) return;
+            if (!SynchronizationManager.Instance.PlayerIsAdmin) { Console.instance.Print($"You are not admin"); return; }
 
             HashSet<CreatureSpawner> spawners = new HashSet<CreatureSpawner>();
             GameObject root = ZNetScene.instance.m_netSceneRoot;
@@ -223,7 +223,7 @@ namespace Areas
                 CreatureSpawner cs = obj.GetComponent<CreatureSpawner>();
                 if (cs == null) continue;
 
-                ZDO zDO = cs.GetComponent<ZNetView>()?.GetZDO();
+                ZDO zDO = cs.m_nview?.GetZDO();
                 if (zDO == null) continue;
 
                 var str = zDO.GetString("Areas CustomCS");
