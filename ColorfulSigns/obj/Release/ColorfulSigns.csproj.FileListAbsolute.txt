@@ -139,3 +139,15 @@ C:\Repos\Tekla.Mods\ColorfulSigns\obj\Release\ColorfulSigns.dll
 C:\Repos\Tekla.Mods\ColorfulSigns\obj\Release\ColorfulSigns.pdb
 C:\Repos\Tekla.Mods\ColorfulSigns\Tekla-ColorfulSigns\plugins\Newtonsoft.Json.dll
 C:\Repos\Tekla.Mods\ColorfulSigns\obj\Release\ColorfulSigns.csproj.CopyComplete
+C:\Users\manui\Repos\ValMods\ColorfulSigns\obj\Release\ColorfulSigns.csproj.AssemblyReference.cache
+C:\Users\manui\Repos\ValMods\ColorfulSigns\obj\Release\ColorfulSigns.csproj.CoreCompileInputs.cache
+C:\Users\manui\Repos\ValMods\ColorfulSigns\obj\Release\ColorfulSigns.dll
+C:\Users\manui\Repos\ValMods\ColorfulSigns\obj\Release\ColorfulSigns.pdb
+C:\Users\manui\Repos\ValMods\ColorfulSigns\Tekla-ColorfulSigns\plugins\ColorfulSigns.dll
+C:\Users\manui\Repos\ValMods\ColorfulSigns\Tekla-ColorfulSigns\plugins\ColorfulSigns.pdb
+C:\Users\manui\Repos\ValMods\ColorfulSigns\Tekla-ColorfulSigns\plugins\Newtonsoft.Json.dll
+C:\Users\manui\Repos\ValMods\ColorfulSigns\Tekla-ColorfulSigns\plugins\System.Data.dll
+C:\Users\manui\Repos\ValMods\ColorfulSigns\Tekla-ColorfulSigns\plugins\System.Runtime.Serialization.dll
+C:\Users\manui\Repos\ValMods\ColorfulSigns\obj\Release\ColorfulSigns.csproj.CopyComplete
+C:\Users\manui\Repos\ValMods\ColorfulSigns\Tekla-ColorfulSigns\plugins\MonoMod.exe
+C:\Users\manui\Repos\ValMods\ColorfulSigns\Tekla-ColorfulSigns\plugins\MonoMod.xml

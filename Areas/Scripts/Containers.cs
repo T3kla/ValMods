@@ -204,7 +204,6 @@ namespace Areas.Containers
         public bool? circulate_while_charging_flying { get; set; }
         public bool? enable_hunt_player { get; set; }
         public bool? attack_player_objects { get; set; }
-        public bool? attack_player_objects_when_alerted { get; set; }
         public float? intercept_time_max { get; set; }
         public float? intercept_time_min { get; set; }
         public float? max_chase_distance { get; set; }

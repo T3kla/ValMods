@@ -1,9 +1,9 @@
 {
   "name": "ColorfulSigns",
   "description": "Enable Unity's enriched text in signs and change default color to white.",
-  "version_number": "5.4.902",
+  "version_number": "5.4.1100",
   "website_url": "https://github.com/T3kla/ValMods",
   "dependencies": [
-    "denikson-BepInExPack_Valheim-5.4.900"
+    "denikson-BepInExPack_Valheim-5.4.1100"
   ]
 }

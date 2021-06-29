@@ -15,6 +15,8 @@ If you are installing this manually, do the following
 ![Logo64](https://user-images.githubusercontent.com/23636548/112306898-a1ac1f00-8ca0-11eb-8b3e-90e73dc7bad2.png)
 
 ## Changelog
+#### 5.4.1100
+- Updated BepInEx version
 #### 5.4.903
 - Removed centre message with last repaired item
 - Updated BepInEx version

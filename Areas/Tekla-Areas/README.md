@@ -25,6 +25,9 @@ If you are installing this manually, do the following
 ![Logo64](https://user-images.githubusercontent.com/23636548/112306898-a1ac1f00-8ca0-11eb-8b3e-90e73dc7bad2.png)
 
 ## Changelog
+#### 1.0.1
+- Jotunn 2.1.0
+- Fix: update 0.155.7 deleted field "MonsterAI.m_attackPlayerObjectsWhenAlerted"
 #### 1.0.0
 - Evolutions System
 - Variants System

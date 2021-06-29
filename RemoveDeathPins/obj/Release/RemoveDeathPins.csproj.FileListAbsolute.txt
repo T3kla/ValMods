@@ -13,3 +13,9 @@ C:\Repos\Tekla.Mods\RemoveDeathPins\obj\Release\RemoveDeathPins.csprojAssemblyRe
 C:\Repos\Tekla.Mods\RemoveDeathPins\obj\Release\RemoveDeathPins.csproj.CoreCompileInputs.cache
 C:\Repos\Tekla.Mods\RemoveDeathPins\obj\Release\RemoveDeathPins.dll
 C:\Repos\Tekla.Mods\RemoveDeathPins\obj\Release\RemoveDeathPins.pdb
+C:\Users\manui\Repos\ValMods\RemoveDeathPins\obj\Release\RemoveDeathPins.csproj.AssemblyReference.cache
+C:\Users\manui\Repos\ValMods\RemoveDeathPins\obj\Release\RemoveDeathPins.csproj.CoreCompileInputs.cache
+C:\Users\manui\Repos\ValMods\RemoveDeathPins\obj\Release\RemoveDeathPins.dll
+C:\Users\manui\Repos\ValMods\RemoveDeathPins\obj\Release\RemoveDeathPins.pdb
+C:\Users\manui\Repos\ValMods\RemoveDeathPins\Tekla-RemoveDeathPins\plugins\RemoveDeathPins.dll
+C:\Users\manui\Repos\ValMods\RemoveDeathPins\Tekla-RemoveDeathPins\plugins\RemoveDeathPins.pdb

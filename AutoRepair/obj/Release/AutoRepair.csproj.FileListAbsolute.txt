@@ -15,3 +15,9 @@ C:\Repos\Tekla.Mods\AutoRepair\Tekla-AutoRepair\AutoRepair.dll
 C:\Repos\Tekla.Mods\AutoRepair\Tekla-AutoRepair\AutoRepair.pdb
 C:\Repos\Tekla.Mods\AutoRepair\Tekla-AutoRepair\plugins\AutoRepair.dll
 C:\Repos\Tekla.Mods\AutoRepair\Tekla-AutoRepair\plugins\AutoRepair.pdb
+C:\Users\manui\Repos\ValMods\AutoRepair\Tekla-AutoRepair\plugins\AutoRepair.dll
+C:\Users\manui\Repos\ValMods\AutoRepair\Tekla-AutoRepair\plugins\AutoRepair.pdb
+C:\Users\manui\Repos\ValMods\AutoRepair\obj\Release\AutoRepair.csproj.AssemblyReference.cache
+C:\Users\manui\Repos\ValMods\AutoRepair\obj\Release\AutoRepair.csproj.CoreCompileInputs.cache
+C:\Users\manui\Repos\ValMods\AutoRepair\obj\Release\AutoRepair.dll
+C:\Users\manui\Repos\ValMods\AutoRepair\obj\Release\AutoRepair.pdb

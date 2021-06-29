@@ -12,12 +12,13 @@ namespace ColorfulSigns
         [HarmonyPatch(typeof(Sign), nameof(Sign.Awake))]
         public static bool Sing_Awake(Sign __instance)
         {
-            Color def, custom; ColorUtility.TryParseHtmlString("#ededed", out def);
+            Color _default = "#ededed".ToColor();
+            Color custom = Globals.configDefColor.Value.ToColor();
 
             __instance.m_textWidget.supportRichText = true;
             __instance.m_textWidget.material = null;
             __instance.m_characterLimit = 999;
-            __instance.m_textWidget.color = ColorUtility.TryParseHtmlString(Globals.configDefColor.Value, out custom) ? custom : def;
+            __instance.m_textWidget.color = string.IsNullOrEmpty (Globals.configDefColor.Value)? default : custom;
             __instance.m_textWidget.resizeTextMaxSize = Globals.configMaxFontSize.Value;
 
             return true;

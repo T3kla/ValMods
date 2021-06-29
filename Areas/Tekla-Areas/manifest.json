@@ -1,9 +1,9 @@
 {
     "name": "Areas",
     "description": "Finely tune the existing spawn system and create new monsters and spawners.",
-    "version_number": "1.0.0",
+    "version_number": "1.0.1",
     "website_url": "",
     "dependencies": [
-        "denikson-BepInExPack_Valheim-5.4.1100"
+        "ValheimModding-Jotunn-2.1.0"
     ]
 }

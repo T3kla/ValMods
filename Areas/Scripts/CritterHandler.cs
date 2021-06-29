@@ -27,7 +27,6 @@ namespace Areas
             CT_Holder = null;
 
             if (critter == null) return;
-            Main.GLog.LogInfo($"Processing Spawned Critter \"{critter.gameObject.GetCleanName()}\"");
 
             CreatureSpawner cs = spawner is CreatureSpawner ? spawner as CreatureSpawner : null;
             if (cs != null)
@@ -96,8 +95,6 @@ namespace Areas
 
         public static void ProcessAwakenCritter(Character critter)
         {
-
-            Main.GLog.LogInfo($"Processing Awakened Critter \"{critter.gameObject.GetCleanName()}\"");
 
             var variant = critter.GetVariant();
             if (Globals.CurrentData.VAMods.ContainsKey(variant))
@@ -220,7 +217,6 @@ namespace Areas
             ai.m_circulateWhileChargingFlying = data.circulate_while_charging_flying.HasValue ? data.circulate_while_charging_flying.Value : ai.m_circulateWhileChargingFlying;
             ai.m_enableHuntPlayer = data.enable_hunt_player.HasValue ? data.enable_hunt_player.Value : ai.m_enableHuntPlayer;
             ai.m_attackPlayerObjects = data.attack_player_objects.HasValue ? data.attack_player_objects.Value : ai.m_attackPlayerObjects;
-            ai.m_attackPlayerObjectsWhenAlerted = data.attack_player_objects_when_alerted.HasValue ? data.attack_player_objects_when_alerted.Value : ai.m_attackPlayerObjectsWhenAlerted;
             ai.m_interceptTimeMax = data.intercept_time_max.HasValue ? data.intercept_time_max.Value : ai.m_interceptTimeMax;
             ai.m_interceptTimeMin = data.intercept_time_min.HasValue ? data.intercept_time_min.Value : ai.m_interceptTimeMin;
             ai.m_maxChaseDistance = data.max_chase_distance.HasValue ? data.max_chase_distance.Value : ai.m_maxChaseDistance;
@@ -359,7 +355,7 @@ namespace Areas
             if (stage == null) return;
 
             // Declarations
-            Renderer renderer = new Renderer();
+            Renderer renderer = null;
             LevelEffects levelEffects = critter.GetComponentInChildren<LevelEffects>();
             LevelEffects.LevelSetup levelSetup = null;
             if (stage.stage.HasValue && levelEffects != null)

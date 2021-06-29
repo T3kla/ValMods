@@ -26,7 +26,7 @@ namespace Areas
 
         private const string NAME = "Areas";
         private const string GUID = "Tekla_" + NAME;
-        private const string VERSION = "1.0.0";
+        private const string VERSION = "1.1.0";
 
         public static Main Instance;
         public static ManualLogSource GLog;

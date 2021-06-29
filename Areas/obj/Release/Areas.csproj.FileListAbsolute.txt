@@ -8,3 +8,11 @@ C:\Repos\Tekla.Mods\Areas\obj\Release\Areas.pdb
 C:\Repos\Tekla.Mods\Areas\obj\Release\Areas.csprojAssemblyReference.cache
 C:\Repos\Tekla.Mods\Areas\Tekla-Areas\plugins\YamlDotNet.dll
 C:\Repos\Tekla.Mods\Areas\obj\Release\Areas.csproj.CopyComplete
+C:\Users\manui\Repos\ValMods\Areas\obj\Release\Areas.csproj.AssemblyReference.cache
+C:\Users\manui\Repos\ValMods\Areas\obj\Release\Areas.csproj.CoreCompileInputs.cache
+C:\Users\manui\Repos\ValMods\Areas\obj\Release\Areas.dll
+C:\Users\manui\Repos\ValMods\Areas\obj\Release\Areas.pdb
+C:\Users\manui\Repos\ValMods\Areas\Tekla-Areas\plugins\Areas.dll
+C:\Users\manui\Repos\ValMods\Areas\Tekla-Areas\plugins\Areas.pdb
+C:\Users\manui\Repos\ValMods\Areas\Tekla-Areas\plugins\YamlDotNet.dll
+C:\Users\manui\Repos\ValMods\Areas\obj\Release\Areas.csproj.CopyComplete
