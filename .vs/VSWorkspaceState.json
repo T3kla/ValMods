@@ -2,8 +2,10 @@
   "ExpandedNodes": [
     "",
     "\\Areas",
-    "\\Areas\\Scripts"
+    "\\Areas\\Scripts",
+    "\\BuildingUnleashed",
+    "\\BuildingUnleashed\\Scripts"
   ],
-  "SelectedNode": "\\Areas\\Scripts\\CritterHandler.cs",
+  "SelectedNode": "\\BuildingUnleashed\\Scripts\\Globals.cs",
   "PreviewInSolutionExplorer": false
 }

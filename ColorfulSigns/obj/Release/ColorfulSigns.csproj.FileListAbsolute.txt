@@ -149,5 +149,3 @@ C:\Users\manui\Repos\ValMods\ColorfulSigns\Tekla-ColorfulSigns\plugins\Newtonsof
 C:\Users\manui\Repos\ValMods\ColorfulSigns\Tekla-ColorfulSigns\plugins\System.Data.dll
 C:\Users\manui\Repos\ValMods\ColorfulSigns\Tekla-ColorfulSigns\plugins\System.Runtime.Serialization.dll
 C:\Users\manui\Repos\ValMods\ColorfulSigns\obj\Release\ColorfulSigns.csproj.CopyComplete
-C:\Users\manui\Repos\ValMods\ColorfulSigns\Tekla-ColorfulSigns\plugins\MonoMod.exe
-C:\Users\manui\Repos\ValMods\ColorfulSigns\Tekla-ColorfulSigns\plugins\MonoMod.xml
