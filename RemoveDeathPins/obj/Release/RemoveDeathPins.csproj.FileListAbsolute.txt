@@ -19,3 +19,9 @@ C:\Users\manui\Repos\ValMods\RemoveDeathPins\obj\Release\RemoveDeathPins.dll
 C:\Users\manui\Repos\ValMods\RemoveDeathPins\obj\Release\RemoveDeathPins.pdb
 C:\Users\manui\Repos\ValMods\RemoveDeathPins\Tekla-RemoveDeathPins\plugins\RemoveDeathPins.dll
 C:\Users\manui\Repos\ValMods\RemoveDeathPins\Tekla-RemoveDeathPins\plugins\RemoveDeathPins.pdb
+C:\Repos\Valheim.TeklaMods\RemoveDeathPins\Tekla-RemoveDeathPins\plugins\RemoveDeathPins.dll
+C:\Repos\Valheim.TeklaMods\RemoveDeathPins\Tekla-RemoveDeathPins\plugins\RemoveDeathPins.pdb
+C:\Repos\Valheim.TeklaMods\RemoveDeathPins\obj\Release\RemoveDeathPins.csproj.AssemblyReference.cache
+C:\Repos\Valheim.TeklaMods\RemoveDeathPins\obj\Release\RemoveDeathPins.csproj.CoreCompileInputs.cache
+C:\Repos\Valheim.TeklaMods\RemoveDeathPins\obj\Release\RemoveDeathPins.dll
+C:\Repos\Valheim.TeklaMods\RemoveDeathPins\obj\Release\RemoveDeathPins.pdb

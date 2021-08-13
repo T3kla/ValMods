@@ -383,6 +383,9 @@
     <Compile Include="Scripts\DungeonHandler.cs" />
     <Compile Include="Scripts\Extensions.cs" />
     <Compile Include="Scripts\Globals.cs" />
+    <Compile Include="Scripts\GUI\AGUI_CSButton.cs" />
+    <Compile Include="Scripts\GUI\AGUI_Main.cs" />
+    <Compile Include="Scripts\GUI\AGUI.cs" />
     <Compile Include="Scripts\Main.cs" />
     <Compile Include="Scripts\Patches.cs" />
     <Compile Include="Scripts\RPC.cs" />
@@ -399,27 +402,37 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PasteDir>C:\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Testing</PasteDir>
+    <R2M>C:\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Testing</R2M>
+    <TeklaAreasPlugins>$(ProjectDir)Tekla-Areas\plugins\*.*</TeklaAreasPlugins>
   </PropertyGroup>
   <Target Name="AfterBuild">
+  
     <Exec Command="$(SolutionDir)pdb2mdb.exe $(ProjectDir)Tekla-Areas\plugins\Areas.dll" />
-    <ItemGroup>
-      <ModFolder Include="$(ProjectDir)Tekla-Areas\**\*.*" />
-    </ItemGroup>
-    <Copy SourceFiles="@(ModFolder)" DestinationFolder="$(PasteDir)\Bepinex\plugins\$(ProjectName)\%(RecursiveDir)" />
-    <Delete Files="$(ProjectDir)Tekla-Areas\plugins\Areas.pdb" />
-    <Delete Files="$(ProjectDir)Tekla-Areas\plugins\Areas.dll.mdb" />
+
+    <!-- Copy AssetBundles from Unity Project into Tekla-Areas\plugins and clean metas -->
+    <ItemGroup> <AssetBundles Include="$(ProjectDir)Unity\Assets\AssetBundles\**\*.*" /> </ItemGroup>
+    <Copy SourceFiles="@(AssetBundles)" DestinationFolder="$(ProjectDir)Tekla-Areas\plugins" />
+    <Exec Command="del $(ProjectDir)Tekla-Areas\plugins\*.meta /F /Q" />
+
+    <!-- Copy Tekla-Areas to R2Modman Testing profile -->
+    <RemoveDir Directories="$(R2M)\Bepinex\plugins\Tekla-Areas" />
+    <ItemGroup> <Mod Include="$(ProjectDir)Tekla-Areas\**\*.*" /> </ItemGroup>
+    <Copy SourceFiles="@(Mod)" DestinationFolder="$(R2M)\Bepinex\plugins\Tekla-Areas\%(RecursiveDir)" />
+
+    <!-- Copy Assemblies into Unity -->
+    <Copy SourceFiles="$(ProjectDir)Tekla-Areas\plugins\areas.dll" DestinationFolder="$(ProjectDir)Unity\Assets\Assemblies" />
+    <Copy SourceFiles="$(ProjectDir)Tekla-Areas\plugins\YamlDotNet.dll" DestinationFolder="$(ProjectDir)Unity\Assets\Assemblies" />
+
+    <!-- Zip to __Releases -->
     <Exec Command="powershell Compress-Archive -Path $(ProjectDir)Tekla-Areas\**\ $(SolutionDir)__Releases\Tekla-Areas.zip -Force" />
-    <ItemGroup>
-      <PluginsFolderOrg Include="$(ProjectDir)Tekla-Areas\plugins\*.*" />
-    </ItemGroup>
-    <Copy SourceFiles="@(PluginsFolderOrg)" DestinationFolder="$(ProjectDir)\plugins\$(ProjectName)\%(RecursiveDir)" />
-    <ItemGroup>
-      <PluginsFolder Include="$(ProjectDir)\plugins\" />
-    </ItemGroup>
+
+    <!-- 7z Export, delete previous, create plugin folder, generate 7z, delete plugin folder -->
     <Delete Files="$(SolutionDir)__Releases\Tekla-Areas.7z" />
-    <Exec Command="7z a -t7z $(SolutionDir)__Releases\Tekla-Areas.7z @(PluginsFolder)" />
-    <RemoveDir Directories="$(ProjectDir)plugins\" />
+    <ItemGroup> <Plugins Include="$(ProjectDir)Tekla-Areas\plugins\*.*" /> </ItemGroup>
+    <Copy SourceFiles="@(Plugins)" DestinationFolder="$(ProjectDir)plugins\$(ProjectName)\%(RecursiveDir)" />
+    <Exec Command="7z a -t7z $(SolutionDir)__Releases\Tekla-Areas.7z $(ProjectDir)plugins" />
+    <RemoveDir Directories="$(ProjectDir)plugins" />
+
   </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

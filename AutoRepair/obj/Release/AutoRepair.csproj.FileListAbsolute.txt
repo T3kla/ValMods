@@ -21,3 +21,9 @@ C:\Users\manui\Repos\ValMods\AutoRepair\obj\Release\AutoRepair.csproj.AssemblyRe
 C:\Users\manui\Repos\ValMods\AutoRepair\obj\Release\AutoRepair.csproj.CoreCompileInputs.cache
 C:\Users\manui\Repos\ValMods\AutoRepair\obj\Release\AutoRepair.dll
 C:\Users\manui\Repos\ValMods\AutoRepair\obj\Release\AutoRepair.pdb
+C:\Repos\Valheim.TeklaMods\AutoRepair\Tekla-AutoRepair\plugins\AutoRepair.dll
+C:\Repos\Valheim.TeklaMods\AutoRepair\Tekla-AutoRepair\plugins\AutoRepair.pdb
+C:\Repos\Valheim.TeklaMods\AutoRepair\obj\Release\AutoRepair.csproj.AssemblyReference.cache
+C:\Repos\Valheim.TeklaMods\AutoRepair\obj\Release\AutoRepair.csproj.CoreCompileInputs.cache
+C:\Repos\Valheim.TeklaMods\AutoRepair\obj\Release\AutoRepair.dll
+C:\Repos\Valheim.TeklaMods\AutoRepair\obj\Release\AutoRepair.pdb

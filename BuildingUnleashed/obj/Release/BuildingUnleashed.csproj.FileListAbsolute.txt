@@ -10,3 +10,9 @@ C:\Users\manui\Repos\ValMods\BuildingUnleashed\obj\Release\BuildingUnleashed.csp
 C:\Users\manui\Repos\ValMods\BuildingUnleashed\obj\Release\BuildingUnleashed.csproj.CoreCompileInputs.cache
 C:\Users\manui\Repos\ValMods\BuildingUnleashed\obj\Release\BuildingUnleashed.dll
 C:\Users\manui\Repos\ValMods\BuildingUnleashed\obj\Release\BuildingUnleashed.pdb
+C:\Repos\Valheim.TeklaMods\BuildingUnleashed\Tekla-BuildingUnleashed\plugins\BuildingUnleashed.dll
+C:\Repos\Valheim.TeklaMods\BuildingUnleashed\Tekla-BuildingUnleashed\plugins\BuildingUnleashed.pdb
+C:\Repos\Valheim.TeklaMods\BuildingUnleashed\obj\Release\BuildingUnleashed.csproj.AssemblyReference.cache
+C:\Repos\Valheim.TeklaMods\BuildingUnleashed\obj\Release\BuildingUnleashed.csproj.CoreCompileInputs.cache
+C:\Repos\Valheim.TeklaMods\BuildingUnleashed\obj\Release\BuildingUnleashed.dll
+C:\Repos\Valheim.TeklaMods\BuildingUnleashed\obj\Release\BuildingUnleashed.pdb

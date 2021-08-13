@@ -16,3 +16,11 @@ C:\Users\manui\Repos\ValMods\Areas\Tekla-Areas\plugins\Areas.dll
 C:\Users\manui\Repos\ValMods\Areas\Tekla-Areas\plugins\Areas.pdb
 C:\Users\manui\Repos\ValMods\Areas\Tekla-Areas\plugins\YamlDotNet.dll
 C:\Users\manui\Repos\ValMods\Areas\obj\Release\Areas.csproj.CopyComplete
+C:\Repos\Valheim.TeklaMods\Areas\Tekla-Areas\plugins\Areas.dll
+C:\Repos\Valheim.TeklaMods\Areas\Tekla-Areas\plugins\Areas.pdb
+C:\Repos\Valheim.TeklaMods\Areas\Tekla-Areas\plugins\YamlDotNet.dll
+C:\Repos\Valheim.TeklaMods\Areas\obj\Release\Areas.csproj.AssemblyReference.cache
+C:\Repos\Valheim.TeklaMods\Areas\obj\Release\Areas.csproj.CoreCompileInputs.cache
+C:\Repos\Valheim.TeklaMods\Areas\obj\Release\Areas.csproj.CopyComplete
+C:\Repos\Valheim.TeklaMods\Areas\obj\Release\Areas.dll
+C:\Repos\Valheim.TeklaMods\Areas\obj\Release\Areas.pdb

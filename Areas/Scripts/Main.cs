@@ -1,13 +1,14 @@
-﻿using System.IO;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
-using BepInEx;
-using BepInEx.Logging;
-using BepInEx.Configuration;
-using HarmonyLib;
 using Areas.Containers;
 using Areas.TYaml;
+using BepInEx;
+using BepInEx.Configuration;
+using BepInEx.Logging;
+using HarmonyLib;
 using Jotunn.Utils;
+using UnityEngine;
 
 namespace Areas
 {
@@ -15,18 +16,17 @@ namespace Areas
     public delegate void DVoid();
     public enum EDS { Local, Remote, Current }
 
-    [BepInPlugin(GUID, NAME, VERSION)]
+    [BepInPlugin(Main.GUID, NAME, VERSION)]
     [BepInDependency(Jotunn.Main.ModGuid, BepInDependency.DependencyFlags.HardDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
     public class Main : BaseUnityPlugin
     {
+        public const string NAME = "Areas";
+        public const string GUID = "Tekla_" + NAME;
+        public const string VERSION = "1.1.0";
 
         public static DVoid OnDataLoaded;
         public static DVoid OnDataReset;
-
-        private const string NAME = "Areas";
-        private const string GUID = "Tekla_" + NAME;
-        private const string VERSION = "1.1.0";
 
         public static Main Instance;
         public static ManualLogSource GLog;
@@ -47,8 +47,10 @@ namespace Areas
 
         private void Awake()
         {
-
             Instance = this;
+
+            Configs();
+
             Globals.Path.Assembly = Path.GetDirectoryName(assembly.Location);
             LoadDataFromDisk();
 
@@ -59,64 +61,52 @@ namespace Areas
             OnDataReset += SpawnerHandler.OnDataReset;
             OnDataReset += VariantsHandler.OnDataReset;
 
-            Configs();
-
+            AGUI.Awake();
             CommandHandler.Awake();
 
-            if (Globals.Config.LoggerEnable.Value)
-                BepInEx.Logging.Logger.Sources.Add(GLog);
-
             harmony.PatchAll(assembly);
-
         }
 
-        public void Configs()
+        private void Configs()
         {
-
             Config.SaveOnConfigSet = true;
 
-            Globals.Config.LootEnable = Config.Bind("Loot Fix", "Enable", true,
-                new ConfigDescription("Enables or disables debugging logs.",
-                null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Globals.Config.AGUIKeybinding = Config.Bind("GUI", "Keybinding", KeyCode.End,
+                new ConfigDescription("Key to unleash evil with the Evil Sword", null,
+                new ConfigurationManagerAttributes { IsAdminOnly = false }));
+            Globals.Config.AGUIDefPosition = Config.Bind("GUI", "Default Position", "0:0",
+                new ConfigDescription("Default position at which Areas GUI will appear.", null,
+                new ConfigurationManagerAttributes { IsAdminOnly = false }));
+            Globals.Config.AGUIDefSize = Config.Bind("GUI", "Default Size", "1600:800",
+                new ConfigDescription("Default size at which Areas GUI will appear.", null,
+                new ConfigurationManagerAttributes { IsAdminOnly = false }));
 
-            Globals.Config.LootFix = Config.Bind("Loot Fix", "value", 10,
+            Globals.Config.LootEnable = Config.Bind("Loot Fix", "Enable", true,
+                new ConfigDescription("Enables or disables loot fixing.", null,
+                new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Globals.Config.LootFix = Config.Bind("Loot Fix", "Value", 10,
                 new ConfigDescription("Number of levels it takes to get the next vanilla level reward. Only for Lv.3+. For example \"5\" will result in: [Lv.5 monster = Lv.4 reward] [Lv.10 monster = Lv.5 reward] [Lv.15 monster = Lv.6 reward]",
                 new AcceptableValueRange<int>(1, 50),
                 new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-
-            Globals.Config.DungeonRegenEnable = Config.Bind(
-                "Dungeon Regen", "Enable", false,
-                new ConfigDescription("Enables or disables Dungeon Regeneration.",
-                null,
+            Globals.Config.DungeonRegenEnable = Config.Bind("Dungeon Regen", "Enable", false,
+                new ConfigDescription("Enables or disables Dungeon Regeneration.", null,
+                new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Globals.Config.DungeonRegenCooldown = Config.Bind("Dungeon Regen", "Cooldown", 60,
+                new ConfigDescription("Set the amount of minutes it takes each dungeon to try to regenerate.", null,
+                new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Globals.Config.DungeonRegenAllowedThemes = Config.Bind("Dungeon Regen", "Themes", "Crypt, SunkenCrypt, Cave, ForestCrypt",
+                new ConfigDescription("Set allowed dungeon themes to regen. Possible themes are: Crypt, SunkenCrypt, Cave, ForestCrypt", null,
+                new ConfigurationManagerAttributes { IsAdminOnly = true }));
+            Globals.Config.DungeonRegenPlayerProtection = Config.Bind("Dungeon Regen", "Player Protection", true,
+                new ConfigDescription("If enabled, Dungeons won't regen while players are inside.", null,
                 new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Globals.Config.DungeonRegenCooldown = Config.Bind(
-                "Dungeon Regen", "Cooldown", 60,
-                new ConfigDescription("Set the amount of minutes it takes each dungeon to try to regenerate.",
-                null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
-
-            Globals.Config.DungeonRegenAllowedThemes = Config.Bind(
-                "Dungeon Regen", "Themes", "Crypt, SunkenCrypt, Cave, ForestCrypt",
-                new ConfigDescription("Set allowed dungeon themes to regen. Possible themes are: Crypt, SunkenCrypt, Cave, ForestCrypt",
-                null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
-
-            Globals.Config.DungeonRegenPlayerProtection = Config.Bind(
-                "Dungeon Regen", "Player Protection", true,
-                new ConfigDescription("If enabled, Dungeons won't regen while players are inside.",
-                null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
-
-
-            Globals.Config.LoggerEnable = Config.Bind(
-                "Logger", "Enable", true,
-                new ConfigDescription("Enables or disables debugging logs.",
-                null,
+            Globals.Config.LoggerEnable = Config.Bind("Logger", "Enable", true,
+                new ConfigDescription("Enables or disables debugging logs.", null,
                 new ConfigurationManagerAttributes { IsAdminOnly = false }));
 
+            if (Globals.Config.LoggerEnable.Value) BepInEx.Logging.Logger.Sources.Add(GLog);
         }
 
 

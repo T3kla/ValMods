@@ -1,1 +1,8 @@
 ﻿*.cache
+Areas/Unity/.vscode
+Areas/Unity/Library
+Areas/Unity/Logs
+Areas/Unity/obj
+Areas/Unity/Packages
+Areas/Unity/*.csproj
+Areas/Unity/*.sln
