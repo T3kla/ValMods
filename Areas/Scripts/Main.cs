@@ -61,7 +61,7 @@ namespace Areas
             OnDataReset += SpawnerHandler.OnDataReset;
             OnDataReset += VariantsHandler.OnDataReset;
 
-            AGUI.Awake();
+            Areas.GUI.Awake();
             CommandHandler.Awake();
 
             harmony.PatchAll(assembly);

@@ -12,11 +12,10 @@ using UnityEngine.SceneManagement;
 
 namespace Areas
 {
-    public static class AGUI
+    public static class GUI
     {
-        public static GameObject lol;
-        public static GameObject p_areasMain;
-        public static GameObject p_btnSpawner;
+        public static GameObject panel;
+        public static GameObject btnCS;
         public static ButtonConfig ShowGUIButton;
 
         public static void Awake()
@@ -28,25 +27,21 @@ namespace Areas
 
             var bundle = AssetUtils.LoadAssetBundle(Globals.Path.AssetBundle);
             var contents = bundle.GetAllAssetNames();
-            Main.GLog.LogInfo($"Loaded AssetBundle {bundle} with assets: ");
-            foreach (var asset in contents)
-                Main.GLog.LogInfo($"    {asset}");
 
-            var reqMain = bundle.LoadAssetAsync<GameObject>("Areas Main");
-            var reqBtn = bundle.LoadAssetAsync<GameObject>("Button Spawner");
-            reqMain.completed += (ao) => { p_areasMain = reqMain.asset as GameObject; };
-            reqBtn.completed += (ao) => { p_btnSpawner = reqBtn.asset as GameObject; };
+            var reqMain = bundle.LoadAssetAsync<GameObject>("Panel");
+            var reqBtn = bundle.LoadAssetAsync<GameObject>("BtnCS");
+            reqMain.completed += (ao) => { panel = reqMain.asset as GameObject; };
+            reqBtn.completed += (ao) => { btnCS = reqBtn.asset as GameObject; };
         }
 
         private static void OnPixelFix()
         {
             var scene = SceneManager.GetActiveScene();
             if (scene.name != "main") return;
-            if (p_areasMain == null) { Main.GLog.LogError($"\"p_areasMain\" wasn't loaded correctly"); return; }
-            if (p_btnSpawner == null) { Main.GLog.LogError($"\"p_btnSpawner\" wasn't loaded correctly"); return; }
+            if (panel == null || btnCS == null) { Main.GLog.LogError($"Areas GUI assets didn't load correctly!"); return; }
 
             Transform pf = GUIManager.PixelFix.transform;
-            var x = GameObject.Instantiate(p_areasMain, pf.position, Quaternion.identity, pf);
+            var x = GameObject.Instantiate(panel, pf.position, Quaternion.identity, pf);
         }
 
     }

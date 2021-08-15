@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using Jotunn.Managers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -9,37 +10,39 @@ using UnityEngine.UI;
 namespace Areas
 {
 
-    public class AGUI_Main : MonoBehaviour
+    public class Panel : MonoBehaviour
     {
-        public static AGUI_Main Instance = null;
+        public static Panel Instance = null;
         public static bool IsOpen = false;
         public static List<CreatureSpawner> Spawners = new List<CreatureSpawner>();
 
         [SerializeField] private GameObject visual = null;
-        [SerializeField] private Transform header = null;
-        [SerializeField] private Transform spawnerListContainer = null;
-        [SerializeField] private Button refreshSpawnerListButton = null;
-        [SerializeField] private Transform resizeButton = null;
-        [SerializeField] private Button exitButton = null;
+        [SerializeField] private Transform dragger = null;
+        [SerializeField] private Transform resizer = null;
+        [SerializeField] private Transform btnRoot = null;
+        [SerializeField] private Text displayHeader = null;
+        [SerializeField] private Text displayText = null;
+        [SerializeField] private Button btnRefresh = null;
+        [SerializeField] private Button btnExit = null;
 
         private const float automaticButtonRefresh = 0.5f;
 
         private RectTransform self = null;
         private Canvas canvas = null;
-        private List<AGUI_CSButton> csButtons = new List<AGUI_CSButton>();
+        private List<BtnCS> csButtons = new List<BtnCS>();
 
         private void Awake()
         {
             if (Instance == null) Instance = this;
             else { Destroy(gameObject); return; }
 
-            Close();
+            Close(false);
             self = GetComponent<RectTransform>();
             canvas = SearchForCanvas();
 
             if (canvas == null) return;
 
-            AssignGUIMainButtons();
+            PanelButtonAssignment();
 
             // Position Window
             var defPos = Globals.Config.AGUIDefPosition.Value.Split(':');
@@ -50,8 +53,8 @@ namespace Areas
             self.sizeDelta = new Vector2(defSizeX, defSizeY);
             self.anchoredPosition = new Vector2(defPosX, defPosY);
 
-            SetPointerEvents(header, (data) => Drag(data));
-            SetPointerEvents(resizeButton, (data) => Resize(data));
+            SetPointerEvents(dragger, (data) => Drag(data));
+            SetPointerEvents(resizer, (data) => Resize(data));
         }
 
         private void SetPointerEvents(Transform obj, Action<PointerEventData> Method)
@@ -66,15 +69,15 @@ namespace Areas
         private void Update()
         {
             if (ZInput.instance == null) return;
-            if (ZInput.GetButtonDown(AGUI.ShowGUIButton.Name)) Toggle();
+            if (ZInput.GetButtonDown(GUI.ShowGUIButton.Name)) Toggle();
         }
 
-        private void AssignGUIMainButtons()
+        private void PanelButtonAssignment()
         {
-            refreshSpawnerListButton.onClick.RemoveAllListeners();
-            refreshSpawnerListButton.onClick.AddListener(FullRefresh);
-            exitButton.onClick.RemoveAllListeners();
-            exitButton.onClick.AddListener(Exit);
+            btnRefresh.onClick.RemoveAllListeners();
+            btnRefresh.onClick.AddListener(FullRefresh);
+            btnExit.onClick.RemoveAllListeners();
+            btnExit.onClick.AddListener(Exit);
         }
 
         private void Exit() => Close();
@@ -86,15 +89,18 @@ namespace Areas
             IsOpen = true;
             visual.SetActive(true);
             StartCoroutine(ButtonRefresher());
+            GUIManager.BlockInput(true);
         }
 
-        private void Close()
+        private void Close(bool savePosSize = true)
         {
             IsOpen = false;
             visual.SetActive(false);
             StopAllCoroutines();
+            Spawners.Clear();
+            GUIManager.BlockInput(false);
 
-            if (self == null) return;
+            if (!savePosSize) return;
             Globals.Config.AGUIDefPosition.Value = $"{self.anchoredPosition.x.ToString("F0")}:{self.anchoredPosition.y.ToString("F0")}";
             Globals.Config.AGUIDefSize.Value = $"{self.sizeDelta.x.ToString("F0")}:{self.sizeDelta.y.ToString("F0")}";
         }
@@ -102,25 +108,24 @@ namespace Areas
         /// <summary> Execute spawner search, assignment into csButtons, csButtons refresh and csButtons sort. </summary>
         private void FullRefresh()
         {
-            spawnerListContainer.gameObject.SetActive(false);
+            btnRoot.gameObject.SetActive(false);
 
             SearchSpawners();
-            AssignButtons();
-            UpdateButtons();
+            AssignButtons(); // Assign also update the button
             SortButtons();
 
-            spawnerListContainer.gameObject.SetActive(true);
+            btnRoot.gameObject.SetActive(true);
         }
 
         /// <summary> Execute csButtons refresh and csButtons sort. </summary>
         private void AutomaticRefresh()
         {
-            spawnerListContainer.gameObject.SetActive(false);
+            btnRoot.gameObject.SetActive(false);
 
             UpdateButtons();
             SortButtons();
 
-            spawnerListContainer.gameObject.SetActive(true);
+            btnRoot.gameObject.SetActive(true);
         }
 
         /// <summary> Search for spawners, updating the spawners list. </summary>
@@ -141,16 +146,17 @@ namespace Areas
         private void AssignButtons()
         {
             // Add buttons if more are needed
-            if (spawnerListContainer.childCount < Spawners.Count)
-                for (int i = 0; i < Spawners.Count - spawnerListContainer.childCount; i++)
+            int buttons = btnRoot.childCount, spawners = Spawners.Count;
+            if (buttons < spawners)
+                for (int i = 0; i < spawners - buttons; i++)
                 {
-                    var btn = Instantiate(AGUI.p_btnSpawner, Vector3.zero, Quaternion.identity, spawnerListContainer);
-                    csButtons.Add(btn.GetComponent<AGUI_CSButton>());
+                    var btn = Instantiate(GUI.btnCS, Vector3.zero, Quaternion.identity, btnRoot);
+                    csButtons.Add(btn.GetComponent<BtnCS>());
                 }
 
             // Assign cs to the buttons
             for (int i = 0; i < csButtons.Count; i++)
-                csButtons[i].SetCS(Spawners.Count < i ? Spawners[i] : null);
+                csButtons[i].SetCS((i < spawners) ? Spawners[i] : null);
         }
 
         /// <summary> Update text and distance in buttons. </summary>
@@ -159,15 +165,15 @@ namespace Areas
         /// <summary> Sort csButtons in the spawner list container by sorting csButtons list and calling SetAsLastSibling(). </summary>
         private void SortButtons()
         {
-            csButtons.Sort(delegate (AGUI_CSButton a, AGUI_CSButton b) { return (a.distance).CompareTo(b.distance); });
+            csButtons.Sort(BtnCS.CompareDesDistance);
             foreach (var btn in csButtons) btn.transform.SetAsLastSibling();
         }
 
         /// <summary> Display information about the clicked button corresponding CreatureSpawner. </summary>
-        public void Display(AGUI_CSButton csb) // TODO: display stuff
+        public void Display(BtnCS csb) // TODO: display stuff
         {
-            // var data = cs.GetData();
-            // Display cs info in the right panel
+            displayHeader.text = csb.text.text;
+            displayText.text = "Not much for now...";
         }
 
         /// <summary> Search for a canvas by traveling up the parent ladder. </summary>
