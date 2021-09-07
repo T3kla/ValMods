@@ -16,7 +16,7 @@ namespace RemoveDeathPins
             MODNAME = "RemoveDeathPins",
             AUTHOR = "Tekla",
             GUID = AUTHOR + "_" + MODNAME,
-            VERSION = "1.0.0.0";
+            VERSION = "5.4.1500";
 
         internal readonly ManualLogSource log;
         internal readonly Harmony harmony;

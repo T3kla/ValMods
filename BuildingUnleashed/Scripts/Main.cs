@@ -1,8 +1,8 @@
-﻿using BepInEx;
+﻿using System.IO;
+using System.Reflection;
+using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using System.IO;
-using System.Reflection;
 
 namespace BuildingUnleashed
 {
@@ -15,7 +15,7 @@ namespace BuildingUnleashed
             MODNAME = "BuildingUnleashed",
             AUTHOR = "Tekla",
             GUID = AUTHOR + "_" + MODNAME,
-            VERSION = "1.0.0.0";
+            VERSION = "5.4.1500";
 
         internal readonly ManualLogSource log;
         internal readonly Harmony harmony;

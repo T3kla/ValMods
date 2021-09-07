@@ -1,6 +1,6 @@
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Areas
@@ -11,7 +11,7 @@ namespace Areas
 
         public class CoroutineBox { public IEnumerator task; }
 
-        public static List<IEnumerator> Tasks = new List<IEnumerator>();
+        public static List<IEnumerator> Tasks = new();
 
         public static void Regenerate(DungeonGenerator dg)
         {
@@ -56,7 +56,7 @@ namespace Areas
             if (dg == null) { return "OutOfBounds"; }
             if (dg.GetRegenRemainder() > 0L) { return "AlreadyRegenerated"; }
 
-            Bounds bounds = new Bounds(dg.transform.position, dg.m_zoneSize * 2f);
+            Bounds bounds = new(dg.transform.position, dg.m_zoneSize * 2f);
             if (ZNet.instance.GetPlayerList().Any(a => bounds.Contains(a.m_position))) { return "PlayerInside"; }
 
             GameObject netSceneRoot = ZNetScene.instance.m_netSceneRoot;
@@ -102,7 +102,7 @@ namespace Areas
             string trueRemStr = string.Format("{0}:{1}", Mathf.Floor(trueRem / 60).ToString("00"), (trueRem % 60).ToString("00"));
             Main.GLog.LogInfo($"Scheduling Regen Task \"{dungeon.GetCleanName()}\" regeneration in \"{trueRemStr}\"");
 
-            CoroutineBox box = new CoroutineBox();
+            CoroutineBox box = new();
             IEnumerator task = Task(dungeon, trueRem, box);
             box.task = task;
             Tasks.Add(task);

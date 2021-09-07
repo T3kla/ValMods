@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Jotunn.Configs;
+﻿using Jotunn.Configs;
 using Jotunn.Managers;
 using Jotunn.Utils;
 using UnityEngine;
@@ -14,34 +8,43 @@ namespace Areas
 {
     public static class GUI
     {
-        public static GameObject panel;
-        public static GameObject btnCS;
-        public static ButtonConfig ShowGUIButton;
+        public static ButtonConfig TogglePanel;
+        public static ButtonConfig ToggleMouse;
 
         public static void Awake()
         {
-            GUIManager.OnPixelFixCreated += OnPixelFix;
+            GUIManager.OnCustomGUIAvailable += OnPixelFix;
 
-            ShowGUIButton = new ButtonConfig { Name = "AGUI_Keybinding", Config = Globals.Config.AGUIKeybinding };
-            InputManager.Instance.AddButton(Main.GUID, ShowGUIButton);
+            TogglePanel = new ButtonConfig { Name = "GUI_TogglePanel", Config = Globals.Config.GUI_TogglePanel, ActiveInGUI = true };
+            InputManager.Instance.AddButton(Main.GUID, TogglePanel);
+            ToggleMouse = new ButtonConfig { Name = "GUI_ToggleMouse", Config = Globals.Config.GUI_ToggleMouse, ActiveInGUI = true };
+            InputManager.Instance.AddButton(Main.GUID, ToggleMouse);
 
             var bundle = AssetUtils.LoadAssetBundle(Globals.Path.AssetBundle);
             var contents = bundle.GetAllAssetNames();
 
             var reqMain = bundle.LoadAssetAsync<GameObject>("Panel");
+            var reqMarker = bundle.LoadAssetAsync<GameObject>("Marker");
             var reqBtn = bundle.LoadAssetAsync<GameObject>("BtnCS");
-            reqMain.completed += (ao) => { panel = reqMain.asset as GameObject; };
-            reqBtn.completed += (ao) => { btnCS = reqBtn.asset as GameObject; };
+            reqMain.completed += (a) => { Panel.Prefab = reqMain.asset as GameObject; };
+            reqMarker.completed += (a) => { Marker.Prefab = reqMarker.asset as GameObject; };
+            reqBtn.completed += (a) => { BtnCS.Prefab = reqBtn.asset as GameObject; };
         }
 
         private static void OnPixelFix()
         {
             var scene = SceneManager.GetActiveScene();
-            if (scene.name != "main") return;
-            if (panel == null || btnCS == null) { Main.GLog.LogError($"Areas GUI assets didn't load correctly!"); return; }
 
-            Transform pf = GUIManager.PixelFix.transform;
-            var x = GameObject.Instantiate(panel, pf.position, Quaternion.identity, pf);
+            if (scene.name is not "main")
+                return;
+            if (Panel.Prefab is null || Marker.Prefab is null || BtnCS.Prefab is null)
+            {
+                Main.GLog.LogError($"Areas GUI assets didn't load correctly!");
+                return;
+            }
+
+            Transform pf = GUIManager.CustomGUIFront.transform;
+            GameObject.Instantiate(Panel.Prefab, pf.position, Quaternion.identity, pf);
         }
 
     }

@@ -1,11 +1,11 @@
-﻿using BepInEx;
-using BepInEx.Logging;
-using HarmonyLib;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using UnityEngine;
+using BepInEx;
+using BepInEx.Logging;
 using ColorfulSigns.TJson;
-using System.Collections.Generic;
+using HarmonyLib;
+using UnityEngine;
 
 namespace ColorfulSigns
 {
@@ -18,7 +18,7 @@ namespace ColorfulSigns
             MODNAME = "ColorfulSigns",
             AUTHOR = "Tekla",
             GUID = AUTHOR + "_" + MODNAME,
-            VERSION = "1.0.0.0";
+            VERSION = "5.4.1500";
 
         internal readonly ManualLogSource log;
         internal readonly Harmony harmony;

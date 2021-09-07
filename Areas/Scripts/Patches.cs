@@ -1,13 +1,13 @@
 using System;
-using HarmonyLib;
-using Areas.NetCode;
-using UnityEngine;
-using System.Reflection;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
-using static CharacterDrop;
-using Jotunn.Managers;
+using Areas.NetCode;
+using HarmonyLib;
 using Jotunn;
+using Jotunn.Managers;
+using UnityEngine;
+using static CharacterDrop;
 
 namespace Areas.Patches
 {
@@ -94,7 +94,7 @@ namespace Areas.Patches
 
             var type = __instance.GetInstanceType();
 
-            Main.GLog.LogInfo($"Instance is \"{type.ToString()}\"");
+            Main.GLog.LogInfo($"Instance is \"{type}\"");
 
             switch (type)
             {
@@ -160,7 +160,7 @@ namespace Areas.Patches
             if (__instance == null) return;
             if (__instance.IsPlayer()) return;
 
-            ZNetView znv = __instance.m_nview != null ? __instance.m_nview : __instance.GetComponent<ZNetView>();
+            ZNetView znv = __instance.m_nview ?? __instance.GetComponent<ZNetView>();
             if (znv == null) return;
 
             var hp = znv.GetZDO()?.GetFloat("health", __instance.m_health) ?? __instance.m_health;
@@ -214,7 +214,7 @@ namespace Areas.Patches
 
             if (!Globals.Config.LootEnable.Value) return;
 
-            List<KeyValuePair<GameObject, int>> list = new List<KeyValuePair<GameObject, int>>();
+            List<KeyValuePair<GameObject, int>> list = new();
 
             int lvlReward = 1;
 
@@ -261,8 +261,8 @@ namespace Areas.Patches
         private static IEnumerable<CodeInstruction> SpawnSystem_Spawn_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
 
-            List<CodeInstruction> ins = new List<CodeInstruction>(instructions);
-            List<CodeInstruction> codes = new List<CodeInstruction>();
+            List<CodeInstruction> ins = new(instructions);
+            List<CodeInstruction> codes = new();
 
             for (var i = 0; i < ins.Count; i++)
             {
@@ -303,8 +303,8 @@ namespace Areas.Patches
         private static IEnumerable<CodeInstruction> CreatureSpawner_Spawn_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
 
-            List<CodeInstruction> ins = new List<CodeInstruction>(instructions);
-            List<CodeInstruction> codes = new List<CodeInstruction>();
+            List<CodeInstruction> ins = new(instructions);
+            List<CodeInstruction> codes = new();
 
             for (var i = 0; i < ins.Count; i++)
             {
@@ -345,8 +345,8 @@ namespace Areas.Patches
         private static IEnumerable<CodeInstruction> SpawnArea_SpawnOne_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
 
-            List<CodeInstruction> ins = new List<CodeInstruction>(instructions);
-            List<CodeInstruction> codes = new List<CodeInstruction>();
+            List<CodeInstruction> ins = new(instructions);
+            List<CodeInstruction> codes = new();
 
             for (var i = 0; i < ins.Count; i++)
             {
@@ -380,7 +380,7 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SpawnArea), nameof(SpawnArea.SpawnOne))]
-        public static void SpawnArea_SpawnOne_Post(SpawnArea __instance) { CritterHandler.ProcessCapturedCritter(__instance); }
+        public static void SpawnArea_SpawnOne_Post(SpawnArea __instance) => CritterHandler.ProcessCapturedCritter(__instance);
 
 
         // ----------------------------------------------------------------------------------------------------------------------------------- RAGDOLL SETUP
@@ -388,7 +388,6 @@ namespace Areas.Patches
         [HarmonyPatch(typeof(Ragdoll), nameof(Ragdoll.Setup))]
         public static void Ragdoll_Setup_Post(Ragdoll __instance, CharacterDrop characterDrop)
         {
-
             if (characterDrop == null) return;
             if (characterDrop.m_character == null) return;
             if (characterDrop.m_character.IsPlayer()) return;
@@ -397,21 +396,16 @@ namespace Areas.Patches
             var renderer = levelEffects?.m_mainRender ?? characterDrop.GetComponentInChildren<SkinnedMeshRenderer>();
             if (renderer != null) __instance.m_mainModel.materials = new Material[] { renderer.material };
 
-            Transform prefab = null;
-            string variant = characterDrop.m_character.GetVariant();
             string ctName = characterDrop.m_character.gameObject.GetCleanName();
-            string originalCtName = VariantsHandler.FindOriginal(variant);
-            int level = characterDrop.m_character.GetLevel();
-
-            prefab = PrefabManager.Instance.GetPrefab(VariantsHandler.FindOriginal(ctName) ?? ctName).transform;
+            Transform prefab = PrefabManager.Instance.GetPrefab(VariantsHandler.FindOriginal(ctName) ?? ctName).transform;
             if (prefab == null) return;
 
             Vector3 rag = __instance.transform.localScale;
             Vector3 act = characterDrop.m_character.transform.localScale;
             Vector3 pref = prefab.localScale;
 
-            Vector3 ragBYact = new Vector3(rag.x * act.x, rag.y * act.y, rag.z * act.z);
-            Vector3 final = new Vector3(ragBYact.x / pref.x, ragBYact.y / pref.y, ragBYact.z / pref.z);
+            Vector3 ragBYact = new(rag.x * act.x, rag.y * act.y, rag.z * act.z);
+            Vector3 final = new(ragBYact.x / pref.x, ragBYact.y / pref.y, ragBYact.z / pref.z);
 
             __instance.transform.localScale = final;
 

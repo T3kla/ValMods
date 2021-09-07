@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Linq;
+using System.Text;
 using Jotunn.Managers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Log = System.Console;
 
 namespace Areas
 {
-
     public class Panel : MonoBehaviour
     {
         public static Panel Instance = null;
+        public static GameObject Prefab = null;
         public static bool IsOpen = false;
-        public static List<CreatureSpawner> Spawners = new List<CreatureSpawner>();
+        public static List<CreatureSpawner> Spawners = new();
 
         [SerializeField] private GameObject visual = null;
         [SerializeField] private Transform dragger = null;
@@ -22,67 +24,63 @@ namespace Areas
         [SerializeField] private Transform btnRoot = null;
         [SerializeField] private Text displayHeader = null;
         [SerializeField] private Text displayText = null;
+        [SerializeField] private Button btnAdd = null;
+        [SerializeField] private Button btnShowAll = null;
         [SerializeField] private Button btnRefresh = null;
         [SerializeField] private Button btnExit = null;
 
-        private const float automaticButtonRefresh = 0.5f;
+        private const float AUTO_REFRESH = 0.5f;
 
         private RectTransform self = null;
         private Canvas canvas = null;
-        private List<BtnCS> csButtons = new List<BtnCS>();
+        private VerticalLayoutGroup btnRootVLG = null;
+        private ContentSizeFitter btnRootCSF = null;
 
         private void Awake()
         {
-            if (Instance == null) Instance = this;
+            if (Instance is null) Instance = this;
             else { Destroy(gameObject); return; }
 
             Close(false);
             self = GetComponent<RectTransform>();
             canvas = SearchForCanvas();
+            btnRootVLG = btnRoot.GetComponent<VerticalLayoutGroup>();
+            btnRootCSF = btnRoot.GetComponent<ContentSizeFitter>();
 
-            if (canvas == null) return;
+            if (canvas is null) return;
 
-            PanelButtonAssignment();
+            Listeners();
 
             // Position Window
-            var defPos = Globals.Config.AGUIDefPosition.Value.Split(':');
-            var defSize = Globals.Config.AGUIDefSize.Value.Split(':');
-            int defPosX = 0, defPosY = 0, defSizeX = 1600, defSizeY = 800;
-            int.TryParse(defPos[0], out defPosX); int.TryParse(defPos[1], out defPosY);
-            int.TryParse(defSize[0], out defSizeX); int.TryParse(defSize[1], out defSizeY);
+            var defPos = Globals.Config.GUI_DefaultPosition.Value.Split(':');
+            var defSize = Globals.Config.GUI_DefaultSize.Value.Split(':');
+            int.TryParse(defPos[0], out int defPosX); int.TryParse(defPos[1], out int defPosY);
+            int.TryParse(defSize[0], out int defSizeX); int.TryParse(defSize[1], out int defSizeY);
             self.sizeDelta = new Vector2(defSizeX, defSizeY);
             self.anchoredPosition = new Vector2(defPosX, defPosY);
 
-            SetPointerEvents(dragger, (data) => Drag(data));
-            SetPointerEvents(resizer, (data) => Resize(data));
-        }
-
-        private void SetPointerEvents(Transform obj, Action<PointerEventData> Method)
-        {
-            var trigger = obj.GetComponent<EventTrigger>();
-            var entry = new EventTrigger.Entry();
-            entry.eventID = EventTriggerType.Drag;
-            entry.callback.AddListener((data) => { Method((PointerEventData)data); });
-            trigger.triggers.Add(entry);
+            SetDragEvents(dragger, (data) => Drag(data));
+            SetDragEvents(resizer, (data) => Resize(data));
         }
 
         private void Update()
         {
-            if (ZInput.instance == null) return;
-            if (ZInput.GetButtonDown(GUI.ShowGUIButton.Name)) Toggle();
+            if (ZInput.instance is null) return;
+            if (ZInput.GetButtonDown(GUI.TogglePanel.Name)) TogglePanel();
+            if (ZInput.GetButtonDown(GUI.ToggleMouse.Name)) ToggleMouse();
         }
 
-        private void PanelButtonAssignment()
+        private Canvas SearchForCanvas()
         {
-            btnRefresh.onClick.RemoveAllListeners();
-            btnRefresh.onClick.AddListener(FullRefresh);
-            btnExit.onClick.RemoveAllListeners();
-            btnExit.onClick.AddListener(Exit);
+            Transform t = transform;
+            while (t.parent != null)
+            {
+                t = t.parent;
+                Canvas c = t.GetComponent<Canvas>();
+                if (c != null) return c;
+            }
+            return null;
         }
-
-        private void Exit() => Close();
-
-        private void Toggle() { if (IsOpen) Close(); else Open(); }
 
         private void Open()
         {
@@ -101,106 +99,147 @@ namespace Areas
             GUIManager.BlockInput(false);
 
             if (!savePosSize) return;
-            Globals.Config.AGUIDefPosition.Value = $"{self.anchoredPosition.x.ToString("F0")}:{self.anchoredPosition.y.ToString("F0")}";
-            Globals.Config.AGUIDefSize.Value = $"{self.sizeDelta.x.ToString("F0")}:{self.sizeDelta.y.ToString("F0")}";
+            Globals.Config.GUI_DefaultPosition.Value = $"{self.anchoredPosition.x:F0}:{self.anchoredPosition.y:F0}";
+            Globals.Config.GUI_DefaultSize.Value = $"{self.sizeDelta.x:F0}:{self.sizeDelta.y:F0}";
         }
 
-        /// <summary> Execute spawner search, assignment into csButtons, csButtons refresh and csButtons sort. </summary>
-        private void FullRefresh()
-        {
-            btnRoot.gameObject.SetActive(false);
+        #region UI Events
 
-            SearchSpawners();
-            AssignButtons(); // Assign also update the button
+        private void TogglePanel() { if (IsOpen) Close(); else Open(); }
+        private void ToggleMouse() { GUIManager.BlockInput(!Cursor.visible); }
+
+        private void SetDragEvents(Transform obj, Action<PointerEventData> Method)
+        {
+            var trigger = obj.GetComponent<EventTrigger>();
+            var entry = new EventTrigger.Entry { eventID = EventTriggerType.Drag };
+            entry.callback.AddListener((data) => { Method((PointerEventData)data); });
+            trigger.triggers.Add(entry);
+        }
+
+        private void Drag(in PointerEventData ed) => self.anchoredPosition += ed.delta / canvas.scaleFactor;
+        private void Resize(in PointerEventData ed) { var f = ed.delta / canvas.scaleFactor; RPos(f); RSize(f); }
+        private void RPos(Vector2 f) => self.anchoredPosition += f / 2;
+        private void RSize(Vector2 f) => self.sizeDelta = new Vector2(self.sizeDelta.x + f.x, self.sizeDelta.y - f.y);
+
+        private void Listeners()
+        {
+            btnAdd.onClick.RemoveAllListeners();
+            btnAdd.onClick.AddListener(OnClickAddBtn);
+            btnShowAll.onClick.RemoveAllListeners();
+            btnShowAll.onClick.AddListener(OnClickShowAll);
+            btnRefresh.onClick.RemoveAllListeners();
+            btnRefresh.onClick.AddListener(OnClickRefresh);
+            btnExit.onClick.RemoveAllListeners();
+            btnExit.onClick.AddListener(OnClickExit);
+        }
+
+        private void OnClickAddBtn() // TODO: 
+        {
+            // Open panel
+            // wait for resolution of this panel
+        }
+
+        private void OnClickShowAll()
+        {
+            var val = BtnCS.Each.Any(a => !a.MarkerIsActive);
+            foreach (var item in BtnCS.Each)
+                item.SetMarkerActive(val);
+        }
+
+        public void OnClickRefresh() => Refresh(true);
+
+        private void OnClickExit() => Close();
+
+        #endregion
+
+        #region Button Pipeline
+
+        public void Refresh(bool withButtonSearch)
+        {
+            ToggleBtnRootComponents(false);
+            StopAllCoroutines();
+
+            if (withButtonSearch)
+                SetSpawnerButtons();
+            else
+                UpdateButtons();
             SortButtons();
 
-            btnRoot.gameObject.SetActive(true);
+            StartCoroutine(ButtonRefresher());
+            ToggleBtnRootComponents(true);
         }
 
-        /// <summary> Execute csButtons refresh and csButtons sort. </summary>
-        private void AutomaticRefresh()
+        private void ToggleBtnRootComponents(bool value)
         {
-            btnRoot.gameObject.SetActive(false);
-
-            UpdateButtons();
-            SortButtons();
-
-            btnRoot.gameObject.SetActive(true);
+            btnRootVLG.enabled = value;
+            btnRootCSF.enabled = value;
         }
 
-        /// <summary> Search for spawners, updating the spawners list. </summary>
-        private void SearchSpawners()
+        private void SetSpawnerButtons()
         {
             Transform root = ZNetScene.instance.m_netSceneRoot.transform;
             Spawners.Clear();
 
+            // Search for CreatureSpawners
             foreach (Transform obj in root)
             {
                 CreatureSpawner cs = obj.GetComponent<CreatureSpawner>();
-                if (cs == null) continue;
-                if (Vector3.Distance(cs.transform.position, Player.m_localPlayer.transform.position) < 100f) Spawners.Add(cs);
+                if (cs is null || Vector3.Distance(cs.transform.position, Player.m_localPlayer.transform.position) < 100f) continue;
+                Spawners.Add(cs);
             }
-        }
 
-        /// <summary> Refresh the buttons shown in the container based on the current list of detected spawners. </summary>
-        private void AssignButtons()
-        {
             // Add buttons if more are needed
             int buttons = btnRoot.childCount, spawners = Spawners.Count;
             if (buttons < spawners)
                 for (int i = 0; i < spawners - buttons; i++)
-                {
-                    var btn = Instantiate(GUI.btnCS, Vector3.zero, Quaternion.identity, btnRoot);
-                    csButtons.Add(btn.GetComponent<BtnCS>());
-                }
+                    BtnCS.Each.Add(BtnCS.Instantiate(btnRoot));
 
             // Assign cs to the buttons
-            for (int i = 0; i < csButtons.Count; i++)
-                csButtons[i].SetCS((i < spawners) ? Spawners[i] : null);
+            for (int i = 0; i < BtnCS.Each.Count; i++)
+                BtnCS.Each[i].SetCS((i < spawners) ? Spawners[i] : null);
         }
 
-        /// <summary> Update text and distance in buttons. </summary>
-        private void UpdateButtons() { foreach (var btn in csButtons) if (btn.gameObject.activeSelf) btn.UpdateText(); }
+        private void UpdateButtons()
+        {
+            foreach (var btn in BtnCS.Each)
+                if (btn.gameObject.activeSelf)
+                    btn.UpdateText();
+        }
 
-        /// <summary> Sort csButtons in the spawner list container by sorting csButtons list and calling SetAsLastSibling(). </summary>
         private void SortButtons()
         {
-            csButtons.Sort(BtnCS.CompareDesDistance);
-            foreach (var btn in csButtons) btn.transform.SetAsLastSibling();
+            BtnCS.Each.Sort(BtnCS.CompareDesDistance);
+            foreach (var btn in BtnCS.Each)
+                btn.transform.SetAsLastSibling();
         }
-
-        /// <summary> Display information about the clicked button corresponding CreatureSpawner. </summary>
-        public void Display(BtnCS csb) // TODO: display stuff
-        {
-            displayHeader.text = csb.text.text;
-            displayText.text = "Not much for now...";
-        }
-
-        /// <summary> Search for a canvas by traveling up the parent ladder. </summary>
-        private Canvas SearchForCanvas()
-        {
-            Transform t = transform;
-            while (t.parent != null)
-            {
-                t = t.parent;
-                Canvas c = t.GetComponent<Canvas>();
-                if (c != null) return c;
-            }
-            return null;
-        }
-
-        private void Drag(in PointerEventData ed) => self.anchoredPosition += ed.delta / canvas.scaleFactor;
-        private void Resize(in PointerEventData ed) { var f = ed.delta / canvas.scaleFactor; RPos(ed, f); RSize(ed, f); }
-        private void RPos(in PointerEventData ed, Vector2 f) => self.anchoredPosition += f / 2;
-        private void RSize(in PointerEventData ed, Vector2 f) => self.sizeDelta = new Vector2(self.sizeDelta.x + f.x, self.sizeDelta.y - f.y);
 
         private IEnumerator ButtonRefresher()
         {
             while (true)
             {
-                yield return new WaitForSecondsRealtime(automaticButtonRefresh);
-                AutomaticRefresh();
+                yield return new WaitForSecondsRealtime(AUTO_REFRESH);
+                Refresh(false);
             }
+        }
+
+        #endregion
+
+        public void Display(BtnCS csb) // TODO: call the csedition panel
+        {
+            displayHeader.text = csb.text.text;
+            var cs = csb.GetCS();
+
+            string str = "";
+            str += $"<b>m_respawnTimeMinuts:</b> {cs.m_respawnTimeMinuts:F0} \n";
+            str += $"<b>m_triggerDistance:</b> {cs.m_triggerDistance:F0} \n";
+            str += $"<b>m_triggerNoise:</b> {cs.m_triggerNoise:F0} \n";
+            str += $"<b>m_spawnAtDay:</b> {cs.m_spawnAtDay} \n";
+            str += $"<b>m_spawnAtNight:</b> {cs.m_spawnAtNight} \n";
+            str += $"<b>m_requireSpawnArea:</b> {cs.m_requireSpawnArea} \n";
+            str += $"<b>m_spawnInPlayerBase:</b> {cs.m_spawnInPlayerBase} \n";
+            str += $"<b>m_setPatrolSpawnPoint:</b> {cs.m_setPatrolSpawnPoint} \n";
+
+            displayText.text = str;
         }
 
     }

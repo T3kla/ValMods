@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using Jotunn;
-using UnityEngine;
 
 namespace Areas.NetCode
 {
@@ -16,7 +11,7 @@ namespace Areas.NetCode
 
             if (ZNet.instance.GetInstanceType() == ZNetExtension.ZNetInstanceType.Client) { return; }
 
-            ZPackage zpg = new ZPackage();
+            ZPackage zpg = new();
 
             ZRpc.Serialize(new object[] {
                 Globals.RawLocalData.Areas,

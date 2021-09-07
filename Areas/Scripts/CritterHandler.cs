@@ -1,10 +1,10 @@
 using System;
-using System.Reflection;
 using System.Collections.Generic;
-using UnityEngine;
-using HarmonyLib;
+using System.Reflection;
 using Areas.Containers;
+using HarmonyLib;
 using Jotunn.Managers;
+using UnityEngine;
 
 namespace Areas
 {
@@ -16,11 +16,10 @@ namespace Areas
         public static void CT_SetHolder(GameObject critter) { CT_Holder = critter; }
         public static GameObject CT_Holder = null;
 
-        public static Dictionary<string, bool> KilledBosses = new Dictionary<string, bool>();
+        public static Dictionary<string, bool> KilledBosses = new();
 
         public static void ProcessCapturedCritter<T>(T spawner)
         {
-
             string name = "";
 
             Character critter = CT_Holder.GetComponent<Character>();
@@ -53,12 +52,10 @@ namespace Areas
 
             critter.SetCfg(cfg);
             Modify(critter, data, name, cfg);
-
         }
 
         public static void ProcessSpawnCommand(Character critter, string ctName, string givenCfg)
         {
-
             string name = "";
 
             if (critter == null) return;
@@ -74,7 +71,7 @@ namespace Areas
 
             name = string.IsNullOrEmpty(name) ? critter.gameObject.GetCleanName() : name;
             string config = givenCfg;
-            CTData data = null;
+            CTData data;
 
             if (givenCfg == null || !Globals.CurrentData.CTMods.ContainsKey(givenCfg))
                 data = AreaHandler.GetCTDataFromPos(name, critter.transform.position.ToXZ(), out _, out config);
@@ -90,12 +87,10 @@ namespace Areas
 
             critter.SetCfg(config);
             Modify(critter, data, name, config);
-
         }
 
         public static void ProcessAwakenCritter(Character critter)
         {
-
             var variant = critter.GetVariant();
             if (Globals.CurrentData.VAMods.ContainsKey(variant))
             {
@@ -110,12 +105,10 @@ namespace Areas
             if (data == null) return;
 
             Modify(critter, data, critter.gameObject.GetCleanName(), cfg, true);
-
         }
 
         private static void Modify(Character critter, CTData data, string ctName, string cfg, bool keepLevel = false)
         {
-
             if (data.custom?.scale_by_boss?.Count > 0) RefreshKilledBosses();
             var prefab = PrefabManager.Instance.GetPrefab(VariantsHandler.FindOriginal(ctName) ?? ctName);
             Patch_Character(critter, data.character);
@@ -123,69 +116,68 @@ namespace Areas
             Patch_MonsterAI(critter.GetComponent<MonsterAI>(), data.monster_ai);
             Patch_Custom(prefab, critter, data, keepLevel);
             Main.GLog.LogInfo($"Modified Critter \"Lv.{critter.GetLevel()} {ctName}\" with config \"{cfg}\"");
-
         }
 
         public static void Patch_Character(Character critter, CTCharacterData data)
         {
             if (critter == null || data == null) return;
-            critter.m_crouchSpeed = data.crouch_speed.HasValue ? data.crouch_speed.Value : critter.m_crouchSpeed;
-            critter.m_walkSpeed = data.walk_speed.HasValue ? data.walk_speed.Value : critter.m_walkSpeed;
-            critter.m_speed = data.speed.HasValue ? data.speed.Value : critter.m_speed;
-            critter.m_turnSpeed = data.turn_speed.HasValue ? data.turn_speed.Value : critter.m_turnSpeed;
-            critter.m_runSpeed = data.run_speed.HasValue ? data.run_speed.Value : critter.m_runSpeed;
-            critter.m_runTurnSpeed = data.run_turn_speed.HasValue ? data.run_turn_speed.Value : critter.m_runTurnSpeed;
-            critter.m_flySlowSpeed = data.fly_slow_speed.HasValue ? data.fly_slow_speed.Value : critter.m_flySlowSpeed;
-            critter.m_flyFastSpeed = data.fly_fast_speed.HasValue ? data.fly_fast_speed.Value : critter.m_flyFastSpeed;
-            critter.m_flyTurnSpeed = data.fly_turn_speed.HasValue ? data.fly_turn_speed.Value : critter.m_flyTurnSpeed;
-            critter.m_acceleration = data.acceleration.HasValue ? data.acceleration.Value : critter.m_acceleration;
-            critter.m_jumpForce = data.jump_force.HasValue ? data.jump_force.Value : critter.m_jumpForce;
-            critter.m_jumpForceForward = data.jump_force_forward.HasValue ? data.jump_force_forward.Value : critter.m_jumpForceForward;
-            critter.m_jumpForceTiredFactor = data.jump_force_tired_factor.HasValue ? data.jump_force_tired_factor.Value : critter.m_jumpForceTiredFactor;
-            critter.m_airControl = data.air_control.HasValue ? data.air_control.Value : critter.m_airControl;
-            critter.m_canSwim = data.can_swim.HasValue ? data.can_swim.Value : critter.m_canSwim;
-            critter.m_swimDepth = data.swim_depth.HasValue ? data.swim_depth.Value : critter.m_swimDepth;
-            critter.m_swimSpeed = data.swim_speed.HasValue ? data.swim_speed.Value : critter.m_swimSpeed;
-            critter.m_swimTurnSpeed = data.swim_turn_speed.HasValue ? data.swim_turn_speed.Value : critter.m_swimTurnSpeed;
-            critter.m_swimAcceleration = data.swim_acceleration.HasValue ? data.swim_acceleration.Value : critter.m_swimAcceleration;
-            critter.m_flying = data.flying.HasValue ? data.flying.Value : critter.m_flying;
-            critter.m_jumpStaminaUsage = data.jump_stamina_usage.HasValue ? data.jump_stamina_usage.Value : critter.m_jumpStaminaUsage;
-            critter.m_tolerateWater = data.tolerate_water.HasValue ? data.tolerate_water.Value : critter.m_tolerateWater;
-            critter.m_tolerateFire = data.tolerate_fire.HasValue ? data.tolerate_fire.Value : critter.m_tolerateFire;
-            critter.m_tolerateSmoke = data.tolerate_smoke.HasValue ? data.tolerate_smoke.Value : critter.m_tolerateSmoke;
-            critter.m_health = data.health.HasValue ? data.health.Value : critter.m_health;
-            critter.m_staggerWhenBlocked = data.stagger_when_blocked.HasValue ? data.stagger_when_blocked.Value : critter.m_staggerWhenBlocked;
-            critter.m_staggerDamageFactor = data.stagger_damage_factor.HasValue ? data.stagger_damage_factor.Value : critter.m_staggerDamageFactor;
+            critter.m_crouchSpeed = data.crouch_speed ?? critter.m_crouchSpeed;
+            critter.m_walkSpeed = data.walk_speed ?? critter.m_walkSpeed;
+            critter.m_speed = data.speed ?? critter.m_speed;
+            critter.m_turnSpeed = data.turn_speed ?? critter.m_turnSpeed;
+            critter.m_runSpeed = data.run_speed ?? critter.m_runSpeed;
+            critter.m_runTurnSpeed = data.run_turn_speed ?? critter.m_runTurnSpeed;
+            critter.m_flySlowSpeed = data.fly_slow_speed ?? critter.m_flySlowSpeed;
+            critter.m_flyFastSpeed = data.fly_fast_speed ?? critter.m_flyFastSpeed;
+            critter.m_flyTurnSpeed = data.fly_turn_speed ?? critter.m_flyTurnSpeed;
+            critter.m_acceleration = data.acceleration ?? critter.m_acceleration;
+            critter.m_jumpForce = data.jump_force ?? critter.m_jumpForce;
+            critter.m_jumpForceForward = data.jump_force_forward ?? critter.m_jumpForceForward;
+            critter.m_jumpForceTiredFactor = data.jump_force_tired_factor ?? critter.m_jumpForceTiredFactor;
+            critter.m_airControl = data.air_control ?? critter.m_airControl;
+            critter.m_canSwim = data.can_swim ?? critter.m_canSwim;
+            critter.m_swimDepth = data.swim_depth ?? critter.m_swimDepth;
+            critter.m_swimSpeed = data.swim_speed ?? critter.m_swimSpeed;
+            critter.m_swimTurnSpeed = data.swim_turn_speed ?? critter.m_swimTurnSpeed;
+            critter.m_swimAcceleration = data.swim_acceleration ?? critter.m_swimAcceleration;
+            critter.m_flying = data.flying ?? critter.m_flying;
+            critter.m_jumpStaminaUsage = data.jump_stamina_usage ?? critter.m_jumpStaminaUsage;
+            critter.m_tolerateWater = data.tolerate_water ?? critter.m_tolerateWater;
+            critter.m_tolerateFire = data.tolerate_fire ?? critter.m_tolerateFire;
+            critter.m_tolerateSmoke = data.tolerate_smoke ?? critter.m_tolerateSmoke;
+            critter.m_health = data.health ?? critter.m_health;
+            critter.m_staggerWhenBlocked = data.stagger_when_blocked ?? critter.m_staggerWhenBlocked;
+            critter.m_staggerDamageFactor = data.stagger_damage_factor ?? critter.m_staggerDamageFactor;
         }
 
         public static void Patch_BaseAI(BaseAI ai, CTBaseAIData data)
         {
             if (ai == null || data == null) return;
-            ai.m_viewRange = data.view_range.HasValue ? data.view_range.Value : ai.m_viewRange;
-            ai.m_viewAngle = data.view_angle.HasValue ? data.view_angle.Value : ai.m_viewAngle;
-            ai.m_hearRange = data.hear_range.HasValue ? data.hear_range.Value : ai.m_hearRange;
-            ai.m_idleSoundInterval = data.idle_sound_interval.HasValue ? data.idle_sound_interval.Value : ai.m_idleSoundInterval;
-            ai.m_idleSoundChance = data.idle_sound_chance.HasValue ? data.idle_sound_chance.Value : ai.m_idleSoundChance;
-            ai.m_moveMinAngle = data.move_min_angle.HasValue ? data.move_min_angle.Value : ai.m_moveMinAngle;
-            ai.m_smoothMovement = data.smooth_movement.HasValue ? data.smooth_movement.Value : ai.m_smoothMovement;
-            ai.m_serpentMovement = data.serpent_movement.HasValue ? data.serpent_movement.Value : ai.m_serpentMovement;
-            ai.m_serpentTurnRadius = data.serpent_turn_radius.HasValue ? data.serpent_turn_radius.Value : ai.m_serpentTurnRadius;
-            ai.m_jumpInterval = data.jump_interval.HasValue ? data.jump_interval.Value : ai.m_jumpInterval;
-            ai.m_randomCircleInterval = data.random_circle_interval.HasValue ? data.random_circle_interval.Value : ai.m_randomCircleInterval;
-            ai.m_randomMoveInterval = data.random_move_interval.HasValue ? data.random_move_interval.Value : ai.m_randomMoveInterval;
-            ai.m_randomMoveRange = data.random_move_range.HasValue ? data.random_move_range.Value : ai.m_randomMoveRange;
-            ai.m_randomFly = data.random_fly.HasValue ? data.random_fly.Value : ai.m_randomFly;
-            ai.m_chanceToTakeoff = data.chance_to_takeoff.HasValue ? data.chance_to_takeoff.Value : ai.m_chanceToTakeoff;
-            ai.m_chanceToLand = data.chance_to_land.HasValue ? data.chance_to_land.Value : ai.m_chanceToLand;
-            ai.m_groundDuration = data.ground_duration.HasValue ? data.ground_duration.Value : ai.m_groundDuration;
-            ai.m_airDuration = data.air_duration.HasValue ? data.air_duration.Value : ai.m_airDuration;
-            ai.m_maxLandAltitude = data.max_land_altitude.HasValue ? data.max_land_altitude.Value : ai.m_maxLandAltitude;
-            ai.m_flyAltitudeMin = data.fly_altitude_min.HasValue ? data.fly_altitude_min.Value : ai.m_flyAltitudeMin;
-            ai.m_flyAltitudeMax = data.fly_altitude_max.HasValue ? data.fly_altitude_max.Value : ai.m_flyAltitudeMax;
-            ai.m_takeoffTime = data.takeoff_time.HasValue ? data.takeoff_time.Value : ai.m_takeoffTime;
-            ai.m_avoidFire = data.avoid_fire.HasValue ? data.avoid_fire.Value : ai.m_avoidFire;
-            ai.m_afraidOfFire = data.afraid_of_fire.HasValue ? data.afraid_of_fire.Value : ai.m_afraidOfFire;
-            ai.m_avoidWater = data.avoid_water.HasValue ? data.avoid_water.Value : ai.m_avoidWater;
+            ai.m_viewRange = data.view_range ?? ai.m_viewRange;
+            ai.m_viewAngle = data.view_angle ?? ai.m_viewAngle;
+            ai.m_hearRange = data.hear_range ?? ai.m_hearRange;
+            ai.m_idleSoundInterval = data.idle_sound_interval ?? ai.m_idleSoundInterval;
+            ai.m_idleSoundChance = data.idle_sound_chance ?? ai.m_idleSoundChance;
+            ai.m_moveMinAngle = data.move_min_angle ?? ai.m_moveMinAngle;
+            ai.m_smoothMovement = data.smooth_movement ?? ai.m_smoothMovement;
+            ai.m_serpentMovement = data.serpent_movement ?? ai.m_serpentMovement;
+            ai.m_serpentTurnRadius = data.serpent_turn_radius ?? ai.m_serpentTurnRadius;
+            ai.m_jumpInterval = data.jump_interval ?? ai.m_jumpInterval;
+            ai.m_randomCircleInterval = data.random_circle_interval ?? ai.m_randomCircleInterval;
+            ai.m_randomMoveInterval = data.random_move_interval ?? ai.m_randomMoveInterval;
+            ai.m_randomMoveRange = data.random_move_range ?? ai.m_randomMoveRange;
+            ai.m_randomFly = data.random_fly ?? ai.m_randomFly;
+            ai.m_chanceToTakeoff = data.chance_to_takeoff ?? ai.m_chanceToTakeoff;
+            ai.m_chanceToLand = data.chance_to_land ?? ai.m_chanceToLand;
+            ai.m_groundDuration = data.ground_duration ?? ai.m_groundDuration;
+            ai.m_airDuration = data.air_duration ?? ai.m_airDuration;
+            ai.m_maxLandAltitude = data.max_land_altitude ?? ai.m_maxLandAltitude;
+            ai.m_flyAltitudeMin = data.fly_altitude_min ?? ai.m_flyAltitudeMin;
+            ai.m_flyAltitudeMax = data.fly_altitude_max ?? ai.m_flyAltitudeMax;
+            ai.m_takeoffTime = data.takeoff_time ?? ai.m_takeoffTime;
+            ai.m_avoidFire = data.avoid_fire ?? ai.m_avoidFire;
+            ai.m_afraidOfFire = data.afraid_of_fire ?? ai.m_afraidOfFire;
+            ai.m_avoidWater = data.avoid_water ?? ai.m_avoidWater;
             ai.m_spawnMessage = data.spawn_message ?? ai.m_spawnMessage;
             ai.m_deathMessage = data.death_message ?? ai.m_deathMessage;
             if (!string.IsNullOrEmpty(data.path_agent_type))
@@ -209,35 +201,34 @@ namespace Areas
         public static void Patch_MonsterAI(MonsterAI ai, CTMonsterAIData data)
         {
             if (ai == null || data == null) return;
-            ai.m_alertRange = data.alert_range.HasValue ? data.alert_range.Value : ai.m_alertRange;
-            ai.m_fleeIfHurtWhenTargetCantBeReached = data.flee_if_hurt_when_target_cant_be_reached.HasValue ? data.flee_if_hurt_when_target_cant_be_reached.Value : ai.m_fleeIfHurtWhenTargetCantBeReached;
-            ai.m_fleeIfNotAlerted = data.flee_if_not_alerted.HasValue ? data.flee_if_not_alerted.Value : ai.m_fleeIfNotAlerted;
-            ai.m_fleeIfLowHealth = data.flee_if_low_health.HasValue ? data.flee_if_low_health.Value : ai.m_fleeIfLowHealth;
-            ai.m_circulateWhileCharging = data.circulate_while_charging.HasValue ? data.circulate_while_charging.Value : ai.m_circulateWhileCharging;
-            ai.m_circulateWhileChargingFlying = data.circulate_while_charging_flying.HasValue ? data.circulate_while_charging_flying.Value : ai.m_circulateWhileChargingFlying;
-            ai.m_enableHuntPlayer = data.enable_hunt_player.HasValue ? data.enable_hunt_player.Value : ai.m_enableHuntPlayer;
-            ai.m_attackPlayerObjects = data.attack_player_objects.HasValue ? data.attack_player_objects.Value : ai.m_attackPlayerObjects;
-            ai.m_interceptTimeMax = data.intercept_time_max.HasValue ? data.intercept_time_max.Value : ai.m_interceptTimeMax;
-            ai.m_interceptTimeMin = data.intercept_time_min.HasValue ? data.intercept_time_min.Value : ai.m_interceptTimeMin;
-            ai.m_maxChaseDistance = data.max_chase_distance.HasValue ? data.max_chase_distance.Value : ai.m_maxChaseDistance;
-            ai.m_minAttackInterval = data.min_attack_interval.HasValue ? data.min_attack_interval.Value : ai.m_minAttackInterval;
-            ai.m_circleTargetInterval = data.circle_target_interval.HasValue ? data.circle_target_interval.Value : ai.m_circleTargetInterval;
-            ai.m_circleTargetDuration = data.circle_target_duration.HasValue ? data.circle_target_duration.Value : ai.m_circleTargetDuration;
-            ai.m_circleTargetDistance = data.circle_target_distance.HasValue ? data.circle_target_distance.Value : ai.m_circleTargetDistance;
-            ai.m_sleeping = data.sleeping.HasValue ? data.sleeping.Value : ai.m_sleeping;
-            ai.m_noiseWakeup = data.noise_wakeup.HasValue ? data.noise_wakeup.Value : ai.m_noiseWakeup;
-            ai.m_noiseRangeScale = data.noise_range_scale.HasValue ? data.noise_range_scale.Value : ai.m_noiseRangeScale;
-            ai.m_wakeupRange = data.wakeup_range.HasValue ? data.wakeup_range.Value : ai.m_wakeupRange;
-            ai.m_avoidLand = data.avoid_land.HasValue ? data.avoid_land.Value : ai.m_avoidLand;
-            ai.m_consumeRange = data.consume_range.HasValue ? data.consume_range.Value : ai.m_consumeRange;
-            ai.m_consumeSearchRange = data.consume_search_range.HasValue ? data.consume_search_range.Value : ai.m_consumeSearchRange;
-            ai.m_consumeSearchInterval = data.consume_search_interval.HasValue ? data.consume_search_interval.Value : ai.m_consumeSearchInterval;
-            ai.m_consumeHeal = data.consume_heal.HasValue ? data.consume_heal.Value : ai.m_consumeHeal;
+            ai.m_alertRange = data.alert_range ?? ai.m_alertRange;
+            ai.m_fleeIfHurtWhenTargetCantBeReached = data.flee_if_hurt_when_target_cant_be_reached ?? ai.m_fleeIfHurtWhenTargetCantBeReached;
+            ai.m_fleeIfNotAlerted = data.flee_if_not_alerted ?? ai.m_fleeIfNotAlerted;
+            ai.m_fleeIfLowHealth = data.flee_if_low_health ?? ai.m_fleeIfLowHealth;
+            ai.m_circulateWhileCharging = data.circulate_while_charging ?? ai.m_circulateWhileCharging;
+            ai.m_circulateWhileChargingFlying = data.circulate_while_charging_flying ?? ai.m_circulateWhileChargingFlying;
+            ai.m_enableHuntPlayer = data.enable_hunt_player ?? ai.m_enableHuntPlayer;
+            ai.m_attackPlayerObjects = data.attack_player_objects ?? ai.m_attackPlayerObjects;
+            ai.m_interceptTimeMax = data.intercept_time_max ?? ai.m_interceptTimeMax;
+            ai.m_interceptTimeMin = data.intercept_time_min ?? ai.m_interceptTimeMin;
+            ai.m_maxChaseDistance = data.max_chase_distance ?? ai.m_maxChaseDistance;
+            ai.m_minAttackInterval = data.min_attack_interval ?? ai.m_minAttackInterval;
+            ai.m_circleTargetInterval = data.circle_target_interval ?? ai.m_circleTargetInterval;
+            ai.m_circleTargetDuration = data.circle_target_duration ?? ai.m_circleTargetDuration;
+            ai.m_circleTargetDistance = data.circle_target_distance ?? ai.m_circleTargetDistance;
+            ai.m_sleeping = data.sleeping ?? ai.m_sleeping;
+            ai.m_noiseWakeup = data.noise_wakeup ?? ai.m_noiseWakeup;
+            ai.m_noiseRangeScale = data.noise_range_scale ?? ai.m_noiseRangeScale;
+            ai.m_wakeupRange = data.wakeup_range ?? ai.m_wakeupRange;
+            ai.m_avoidLand = data.avoid_land ?? ai.m_avoidLand;
+            ai.m_consumeRange = data.consume_range ?? ai.m_consumeRange;
+            ai.m_consumeSearchRange = data.consume_search_range ?? ai.m_consumeSearchRange;
+            ai.m_consumeSearchInterval = data.consume_search_interval ?? ai.m_consumeSearchInterval;
+            ai.m_consumeHeal = data.consume_heal ?? ai.m_consumeHeal;
         }
 
         public static void Patch_Custom(GameObject prefab, Character critter, CTData data, bool keepLevel = false)
         {
-
             if (critter == null || data == null || data.custom == null) return;
             Assign_CT_Damage(critter, data.custom);
             Assign_CT_Level(critter, data.custom, keepLevel);
@@ -245,47 +236,38 @@ namespace Areas
 
             if (data.custom.evolution == null) return;
             Apply_CT_Evolution(critter, data.custom.evolution, prefab);
-
         }
 
         private static void Assign_CT_Damage(Character critter, CTCustomData data)
         {
-
-            float multi = data.damage_multi.HasValue ? data.damage_multi.Value : 1;
+            float multi = data.damage_multi ?? 1;
             multi *= ByDay(data, "damage_multi", true);
             multi *= ByBoss(data, "damage_multi", true);
 
             critter.SetDamageMulti(multi);
-
         }
 
         public static void Assign_CT_Level(Character critter, CTCustomData data, bool keepLevel = false)
         {
-
             if (keepLevel)
             {
-
                 critter.SetLevel(critter.GetLevel());
                 return;
-
             }
             else if (data.level_fixed.HasValue)
             {
-
                 int lvlFixed = data.level_fixed.Value;
 
                 lvlFixed += Mathf.FloorToInt(ByDay(data, "level_fixed"));
                 lvlFixed += Mathf.FloorToInt(ByBoss(data, "level_fixed"));
 
                 critter.SetLevel(Mathf.Clamp(lvlFixed, 0, 100));
-
             }
             else
             {
-
-                int lvlMin = data.level_min.HasValue ? data.level_min.Value : 1;
-                int lvlMax = data.level_max.HasValue ? data.level_max.Value : 3;
-                float lvlCha = data.level_chance.HasValue ? data.level_chance.Value : 15;
+                int lvlMin = data.level_min ?? 1;
+                int lvlMax = data.level_max ?? 3;
+                float lvlCha = data.level_chance ?? 15;
 
                 lvlMin += Mathf.FloorToInt(ByDay(data, "level_min"));
                 lvlMax += Mathf.FloorToInt(ByDay(data, "level_max"));
@@ -299,22 +281,18 @@ namespace Areas
 
                 while (lvlMin < lvlMax && UnityEngine.Random.Range(0f, 100f) <= lvlCha) lvlMin++;
                 critter.SetLevel(Mathf.Clamp(lvlMin, 1, 100));
-
             }
 
             critter.SetHealth(critter.GetMaxHealth());
-
         }
 
         private static void Assign_CT_Health(Character critter, CTCustomData data)
         {
-
             var percent = critter.GetCustomHealthPercentage() ?? 1f;
             var level = critter.GetLevel();
             var difficultyHealthScale = Game.instance.GetDifficultyHealthScale(critter.transform.position);
 
-            var multi = 1f;
-            multi = data.health_multi.HasValue ? data.health_multi.Value : 1f;
+            var multi = data.health_multi ?? 1f;
             multi *= ByDay(data, "health_multi", true);
             multi *= ByBoss(data, "health_multi", true);
 
@@ -323,24 +301,20 @@ namespace Areas
 
             critter.SetMaxHealth(newMax);
             critter.SetHealth(newCur);
-
         }
 
         public static void Assign_CT_Level_Vanilla(Character critter)
         {
-
             int lvlMin = 1;
             int lvlMax = 3;
             float lvlCha = 15;
 
             while (lvlMin < lvlMax && UnityEngine.Random.Range(0f, 100f) <= lvlCha) lvlMin++;
             critter.SetLevel(Mathf.Clamp(lvlMin, 1, 100));
-
         }
 
         public static void Apply_CT_Evolution(Character critter, Dictionary<int[], Stage> evoDic = null, GameObject prefab = null)
         {
-
             if (critter.name.Contains("(Evo)")) return;
             critter.name += "(Evo)";
 
@@ -355,7 +329,6 @@ namespace Areas
             if (stage == null) return;
 
             // Declarations
-            Renderer renderer = null;
             LevelEffects levelEffects = critter.GetComponentInChildren<LevelEffects>();
             LevelEffects.LevelSetup levelSetup = null;
             if (stage.stage.HasValue && levelEffects != null)
@@ -393,7 +366,7 @@ namespace Areas
             }
 
             // Find Renderer
-            renderer = levelEffects?.m_mainRender ?? critter.GetComponentInChildren<SkinnedMeshRenderer>();
+            Renderer renderer = levelEffects?.m_mainRender ?? critter.GetComponentInChildren<SkinnedMeshRenderer>();
             if (renderer == null) return;
 
             // Apply/Create Material
@@ -412,12 +385,10 @@ namespace Areas
                 LevelEffects.m_materials.Add(key, mat);
             }
             renderer.sharedMaterials = new Material[] { mat };
-
         }
 
         private static float ByDay(CTCustomData mods, string selector, bool multiply = false)
         {
-
             float result = multiply ? 1f : 0f;
 
             if (mods.scale_by_day != null)
@@ -428,12 +399,10 @@ namespace Areas
                         result *= Mathf.Clamp(Mathf.FloorToInt(EnvMan.instance.GetDay(ZNet.instance.GetTimeSeconds()) / value.days) * value.value, 1, 100);
 
             return result;
-
         }
 
         private static float ByBoss(CTCustomData mods, string selector, bool multiply = false)
         {
-
             float result = multiply ? 1f : 0f;
 
             if (mods.scale_by_boss == null) return result;
@@ -452,15 +421,14 @@ namespace Areas
                     default: break;
                 }
 
+
             resultList.ForEach(a => result = multiply ? result * a : result + a);
 
             return result;
-
         }
 
         private static void RefreshKilledBosses()
         {
-
             KilledBosses = new Dictionary<string, bool>
             {
                 {"eikthyr",ZoneSystem.instance.GetGlobalKey("defeated_eikthyr")},
@@ -469,20 +437,16 @@ namespace Areas
                 {"dragon",ZoneSystem.instance.GetGlobalKey("defeated_dragon")},
                 {"goblinking",ZoneSystem.instance.GetGlobalKey("defeated_goblinking")},
             };
-
         }
 
         public static void OnDataReset()
         {
-
             KilledBosses = new Dictionary<string, bool>();
             CT_Holder = null;
-
         }
 
         public static Character Spawn(GameObject prefab, Vector3 position, Quaternion rotation, bool patrol = false)
         {
-
             if (ZoneSystem.instance.FindFloor(position, out var height))
                 position.y = height + 0.25f;
 
@@ -498,7 +462,6 @@ namespace Areas
             zDO?.SetPGWVersion(zDO.GetPGWVersion());
 
             return character;
-
         }
 
     }

@@ -22,9 +22,10 @@ namespace Areas
 
         public static class Config
         {
-            public static ConfigEntry<KeyCode> AGUIKeybinding;
-            public static ConfigEntry<string> AGUIDefPosition;
-            public static ConfigEntry<string> AGUIDefSize;
+            public static ConfigEntry<KeyCode> GUI_TogglePanel;
+            public static ConfigEntry<KeyCode> GUI_ToggleMouse;
+            public static ConfigEntry<string> GUI_DefaultPosition;
+            public static ConfigEntry<string> GUI_DefaultSize;
 
             public static ConfigEntry<bool> LootEnable;
             public static ConfigEntry<int> LootFix;

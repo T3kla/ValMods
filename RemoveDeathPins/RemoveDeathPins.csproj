@@ -99,16 +99,16 @@
       <HintPath>..\..\..\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Testing\unstripped_corlib\Mono.Security.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MonoMod, Version=21.8.5.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoMod.21.8.5.1\lib\net40\MonoMod.exe</HintPath>
+    <Reference Include="MonoMod, Version=21.8.19.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.21.8.19.1\lib\net40\MonoMod.exe</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MonoMod.RuntimeDetour, Version=21.8.5.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoMod.RuntimeDetour.21.8.5.1\lib\net40\MonoMod.RuntimeDetour.dll</HintPath>
+    <Reference Include="MonoMod.RuntimeDetour, Version=21.8.19.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.RuntimeDetour.21.8.19.1\lib\net40\MonoMod.RuntimeDetour.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MonoMod.Utils, Version=21.8.5.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoMod.Utils.21.8.5.1\lib\net40\MonoMod.Utils.dll</HintPath>
+    <Reference Include="MonoMod.Utils, Version=21.8.19.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.Utils.21.8.19.1\lib\net40\MonoMod.Utils.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -386,8 +386,8 @@
       <ModFolder Include="$(ProjectDir)Tekla-RemoveDeathPins\**\*.*" />
     </ItemGroup>
     <Copy SourceFiles="@(ModFolder)" DestinationFolder="$(PasteDir)\Bepinex\plugins\$(ProjectName)\%(RecursiveDir)" />
-    <Delete Files="$(ProjectDir)Tekla-RemoveDeathPins\plugins\RemoveDeathPins.pdb" />
-    <Delete Files="$(ProjectDir)Tekla-RemoveDeathPins\plugins\RemoveDeathPins.dll.mdb" />
+    <!-- <Delete Files="$(ProjectDir)Tekla-RemoveDeathPins\plugins\RemoveDeathPins.pdb" />
+    <Delete Files="$(ProjectDir)Tekla-RemoveDeathPins\plugins\RemoveDeathPins.dll.mdb" /> -->
     <Exec Command="powershell Compress-Archive -Path $(ProjectDir)Tekla-RemoveDeathPins\**\ -DestinationPath $(SolutionDir)__Releases\Tekla-RemoveDeathPins.zip -Force" />
     <ItemGroup>
       <PluginsFolderOrg Include="$(ProjectDir)Tekla-RemoveDeathPins\plugins\*.*" />

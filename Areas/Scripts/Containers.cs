@@ -8,32 +8,30 @@ namespace Areas.Containers
 
     public class RawData
     {
-
         public string Areas = "";
         public string CTData = "";
         public string VAData = "";
         public string SSData = "";
         public string CSData = "";
         public string SAData = "";
-
     }
 
     public class Data
     {
 
-        public Dictionary<string, Area> Areas = new Dictionary<string, Area>();
-        public Dictionary<string, Dictionary<string, CTData>> CTMods = new Dictionary<string, Dictionary<string, CTData>>();
-        public Dictionary<string, VAData> VAMods = new Dictionary<string, VAData>();
-        public Dictionary<string, Dictionary<int, SSData>> SSMods = new Dictionary<string, Dictionary<int, SSData>>();
-        public Dictionary<string, Dictionary<string, CSData>> CSMods = new Dictionary<string, Dictionary<string, CSData>>();
-        public Dictionary<string, Dictionary<string, SAData>> SAMods = new Dictionary<string, Dictionary<string, SAData>>();
+        public Dictionary<string, Area> Areas = new();
+        public Dictionary<string, Dictionary<string, CTData>> CTMods = new();
+        public Dictionary<string, VAData> VAMods = new();
+        public Dictionary<string, Dictionary<int, SSData>> SSMods = new();
+        public Dictionary<string, Dictionary<string, CSData>> CSMods = new();
+        public Dictionary<string, Dictionary<string, SAData>> SAMods = new();
 
         public bool RetrieveVAData(string ctName, out VAData data)
         {
             data = (from a in VAMods
                     where a.Key == ctName
                     select a.Value).FirstOrDefault();
-            return data != null ? true : false;
+            return data != null;
         }
 
         public bool RetrieveSSData(string cfg, int index, out SSData data)
@@ -43,7 +41,7 @@ namespace Areas.Containers
                     from b in a.Value
                     where b.Key == index
                     select b.Value).FirstOrDefault();
-            return data != null ? true : false;
+            return data != null;
         }
 
         public bool RetrieveCSData(string cfg, string spawnerName, out CSData data)
@@ -53,7 +51,7 @@ namespace Areas.Containers
                     from b in a.Value
                     where b.Key == spawnerName
                     select b.Value).FirstOrDefault();
-            return data != null ? true : false;
+            return data != null;
         }
 
         public bool RetrieveSAData(string cfg, string spawnerName, out SAData data)
@@ -63,7 +61,7 @@ namespace Areas.Containers
                     from b in a.Value
                     where b.Key == spawnerName
                     select b.Value).FirstOrDefault();
-            return data != null ? true : false;
+            return data != null;
         }
 
     }

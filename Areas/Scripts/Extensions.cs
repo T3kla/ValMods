@@ -15,8 +15,7 @@ namespace Areas
 
         public static int ToInt(this string str)
         {
-            int y = 0;
-            int.TryParse(str, out y);
+            int.TryParse(str, out int y);
             return y;
         }
 
@@ -139,7 +138,7 @@ namespace Areas
     public static class Vector3Extensions
     {
 
-        public static Vector2 ToXZ(this Vector3 v3) => new Vector2(v3.x, v3.z);
+        public static Vector2 ToXZ(this Vector3 v3) => new(v3.x, v3.z);
 
     }
 

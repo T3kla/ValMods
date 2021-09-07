@@ -16,14 +16,14 @@ namespace Areas
     public delegate void DVoid();
     public enum EDS { Local, Remote, Current }
 
-    [BepInPlugin(Main.GUID, NAME, VERSION)]
+    [BepInPlugin(GUID, NAME, VERSION)]
     [BepInDependency(Jotunn.Main.ModGuid, BepInDependency.DependencyFlags.HardDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
     public class Main : BaseUnityPlugin
     {
         public const string NAME = "Areas";
         public const string GUID = "Tekla_" + NAME;
-        public const string VERSION = "1.1.0";
+        public const string VERSION = "1.1.1";
 
         public static DVoid OnDataLoaded;
         public static DVoid OnDataReset;
@@ -37,12 +37,10 @@ namespace Areas
 
         public Main()
         {
-
-            GLog = new ManualLogSource(NAME + ".General");
+            GLog = new ManualLogSource(NAME + ".G");
             harmony = new Harmony(GUID);
             assembly = Assembly.GetExecutingAssembly();
             modFolder = Path.GetDirectoryName(assembly.Location);
-
         }
 
         private void Awake()
@@ -54,15 +52,13 @@ namespace Areas
             Globals.Path.Assembly = Path.GetDirectoryName(assembly.Location);
             LoadDataFromDisk();
 
-            OnDataLoaded += SpawnerHandler.OnDataLoaded;
             OnDataLoaded += VariantsHandler.OnDataLoaded;
-
             OnDataReset += CritterHandler.OnDataReset;
-            OnDataReset += SpawnerHandler.OnDataReset;
             OnDataReset += VariantsHandler.OnDataReset;
 
-            Areas.GUI.Awake();
-            CommandHandler.Awake();
+            // Areas.GUI.Awake();
+            SpawnerHandler.Awake();
+            // CommandHandler.Awake();
 
             harmony.PatchAll(assembly);
         }
@@ -71,13 +67,16 @@ namespace Areas
         {
             Config.SaveOnConfigSet = true;
 
-            Globals.Config.AGUIKeybinding = Config.Bind("GUI", "Keybinding", KeyCode.End,
-                new ConfigDescription("Key to unleash evil with the Evil Sword", null,
+            Globals.Config.GUI_TogglePanel = Config.Bind("GUI", "Panel Toggle", KeyCode.PageUp,
+                new ConfigDescription("Set the key binding to open and close Areas GUI.", null,
                 new ConfigurationManagerAttributes { IsAdminOnly = false }));
-            Globals.Config.AGUIDefPosition = Config.Bind("GUI", "Default Position", "0:0",
+            Globals.Config.GUI_ToggleMouse = Config.Bind("GUI", "Mouse Toggle", KeyCode.PageDown,
+                new ConfigDescription("Set the key binding to show and hide mouse.", null,
+                new ConfigurationManagerAttributes { IsAdminOnly = false }));
+            Globals.Config.GUI_DefaultPosition = Config.Bind("GUI", "Default Position", "0:0",
                 new ConfigDescription("Default position at which Areas GUI will appear.", null,
                 new ConfigurationManagerAttributes { IsAdminOnly = false }));
-            Globals.Config.AGUIDefSize = Config.Bind("GUI", "Default Size", "1600:800",
+            Globals.Config.GUI_DefaultSize = Config.Bind("GUI", "Default Size", "1600:800",
                 new ConfigDescription("Default size at which Areas GUI will appear.", null,
                 new ConfigurationManagerAttributes { IsAdminOnly = false }));
 
@@ -125,7 +124,7 @@ namespace Areas
         {
             RawData data = source == EDS.Remote ? Globals.RawRemoteData : Globals.RawLocalData;
 
-            Main.GLog.LogInfo($"Instance is loading {source.ToString()} Data");
+            Main.GLog.LogInfo($"Instance is loading {source} Data");
             Globals.CurrentData.Areas = Serialization.Deserialize<Dictionary<string, Area>>(data.Areas);
             Globals.CurrentData.CTMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CTData>>>(data.CTData);
             Globals.CurrentData.VAMods = Serialization.Deserialize<Dictionary<string, VAData>>(data.VAData);
@@ -139,7 +138,7 @@ namespace Areas
 
         public static void ResetData(EDS source)
         {
-            Main.GLog.LogInfo($"Instance is resetting {source.ToString()} Data");
+            Main.GLog.LogInfo($"Instance is resetting {source} Data");
 
             switch (source)
             {

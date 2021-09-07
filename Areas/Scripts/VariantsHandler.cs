@@ -1,11 +1,6 @@
 using System.Collections.Generic;
-using UnityEngine;
-using Jotunn.Managers;
-using Jotunn.Configs;
-using Areas.Containers;
 using System.Linq;
-using Areas.NetCode;
-using Jotunn;
+using Areas.Containers;
 
 namespace Areas
 {
@@ -27,15 +22,8 @@ namespace Areas
 
         private static HashSet<LocBlock> LocalizationData = new HashSet<LocBlock>();
 
-        public static void OnDataLoaded()
-        {
-            GenerateVariants();
-        }
-
-        public static void OnDataReset()
-        {
-            ClearVariants();
-        }
+        public static void OnDataLoaded() => GenerateVariants();
+        public static void OnDataReset() => ClearVariants();
 
         private static void GenerateVariants()
         {
@@ -67,12 +55,7 @@ namespace Areas
 
         }
 
-        private static void ClearVariants()
-        {
-
-            PullLocalizationData(Localization.instance.GetSelectedLanguage());
-
-        }
+        private static void ClearVariants() => PullLocalizationData(Localization.instance.GetSelectedLanguage());
 
         public static void PushLocalizationData(string language)
         {
@@ -100,12 +83,7 @@ namespace Areas
 
         }
 
-        public static void OnLanguageChanged(string language)
-        {
-
-            PushLocalizationData(language);
-
-        }
+        public static void OnLanguageChanged(string language) => PushLocalizationData(language);
 
         public static string FindOriginal(string ctName)
         {
