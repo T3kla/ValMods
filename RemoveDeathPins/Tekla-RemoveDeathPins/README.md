@@ -4,10 +4,10 @@ Complete overhaul of the Death Pin system, which include it's removal.
 
 Current features are:
 
-- Allow multiple Death Pins
-- Allow Death Pin to be crossed
-- Allow Death Pin removal by right-click
-- Death Pin removal when tombstone is destroyed
+-   Allow multiple Death Pins
+-   Allow Death Pin to be crossed
+-   Allow Death Pin removal by right-click
+-   Death Pin removal when tombstone is destroyed
 
 ## Issues & Suggestions
 
@@ -25,25 +25,29 @@ If you are installing this manually, do the following
 
 ## Changelog
 
+#### 5.4.1502
+
+-   Fix: occasionally character won't die and stay at 0 hp
+
 #### 5.4.1500
 
-- BepInEx 5.4.1500
+-   BepInEx 5.4.1500
 
 #### 5.4.1100
 
-- Updated BepInEx version
+-   Updated BepInEx version
 
 #### 5.4.902
 
-- Allow multiple Death Pins
-- Allow Death Pin to be crossed
-- Death Pin will not appear if Tombstone is not created (empty inventory)
-- New Config setting to make Death Pin always appear even if Tombstone is not created
+-   Allow multiple Death Pins
+-   Allow Death Pin to be crossed
+-   Death Pin will not appear if Tombstone is not created (empty inventory)
+-   New Config setting to make Death Pin always appear even if Tombstone is not created
 
 #### 5.4.901
 
-- Death Pin will be removed when tombstone is destroyed
+-   Death Pin will be removed when tombstone is destroyed
 
 #### 5.4.900
 
-- Updated BepInEx version
+-   Updated BepInEx version

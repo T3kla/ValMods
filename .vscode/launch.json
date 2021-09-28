@@ -5,18 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch",
-            "type": "mono",
-            "request": "launch",
-            "program": "C:/Program Files (x86)/Steam/steamapps/common/Valheim/MonoBleedingEdge/EmbedRuntime/mono-2.0-bdwgc.dll",
-            "cwd": "C:/Program Files (x86)/Steam/steamapps/common/Valheim/"
-        },
-        {
             "name": "Attach",
             "type": "mono",
             "request": "attach",
             "address": "localhost",
-            "port": 55555,
+            "port": 55555
         }
     ]
 }

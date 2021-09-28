@@ -15,17 +15,18 @@ namespace Areas
         {
             GUIManager.OnCustomGUIAvailable += OnPixelFix;
 
-            TogglePanel = new ButtonConfig { Name = "GUI_TogglePanel", Config = Globals.Config.GUI_TogglePanel, ActiveInGUI = true };
+            TogglePanel = new ButtonConfig { Name = "GUI_TogglePanel", Config = Global.Config.GUI_TogglePanel, ActiveInGUI = true };
             InputManager.Instance.AddButton(Main.GUID, TogglePanel);
-            ToggleMouse = new ButtonConfig { Name = "GUI_ToggleMouse", Config = Globals.Config.GUI_ToggleMouse, ActiveInGUI = true };
+            ToggleMouse = new ButtonConfig { Name = "GUI_ToggleMouse", Config = Global.Config.GUI_ToggleMouse, ActiveInGUI = true };
             InputManager.Instance.AddButton(Main.GUID, ToggleMouse);
 
-            var bundle = AssetUtils.LoadAssetBundle(Globals.Path.AssetBundle);
+            var bundle = AssetUtils.LoadAssetBundle(Global.Path.Assets);
             var contents = bundle.GetAllAssetNames();
 
             var reqMain = bundle.LoadAssetAsync<GameObject>("Panel");
             var reqMarker = bundle.LoadAssetAsync<GameObject>("Marker");
             var reqBtn = bundle.LoadAssetAsync<GameObject>("BtnCS");
+
             reqMain.completed += (a) => { Panel.Prefab = reqMain.asset as GameObject; };
             reqMarker.completed += (a) => { Marker.Prefab = reqMarker.asset as GameObject; };
             reqBtn.completed += (a) => { BtnCS.Prefab = reqBtn.asset as GameObject; };
@@ -39,13 +40,12 @@ namespace Areas
                 return;
             if (Panel.Prefab is null || Marker.Prefab is null || BtnCS.Prefab is null)
             {
-                Main.GLog.LogError($"Areas GUI assets didn't load correctly!");
+                Main.Log.LogError($"Areas GUI assets didn't load correctly!");
                 return;
             }
 
             Transform pf = GUIManager.CustomGUIFront.transform;
             GameObject.Instantiate(Panel.Prefab, pf.position, Quaternion.identity, pf);
         }
-
     }
 }

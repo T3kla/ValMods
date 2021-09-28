@@ -1,7 +1,7 @@
 {
-  "name": "RemoveDeathPins",
-  "description": "Complete overhaul of the Death Pin system, which include it's removal.",
-  "version_number": "5.4.1500",
-  "website_url": "https://github.com/T3kla/ValMods/issues",
-  "dependencies": ["denikson-BepInExPack_Valheim-5.4.1500"]
+    "name": "RemoveDeathPins",
+    "description": "Complete overhaul of the Death Pin system, which include it's removal.",
+    "version_number": "5.4.1502",
+    "website_url": "https://github.com/T3kla/ValMods/issues",
+    "dependencies": ["denikson-BepInExPack_Valheim-5.4.1502"]
 }

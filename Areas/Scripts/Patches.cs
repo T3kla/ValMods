@@ -7,83 +7,52 @@ using HarmonyLib;
 using Jotunn;
 using Jotunn.Managers;
 using UnityEngine;
-using static CharacterDrop;
 
 namespace Areas.Patches
 {
-
     [HarmonyPatch]
     public static class Patches
     {
-
-        // ----------------------------------------------------------------------------------------------------------------------------------- LANGUAGE CHANGE
+        // ---------------------------------------------------------------------------------------------------------- LANGUAGE CHANGE
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Localization), nameof(Localization.SetupLanguage))]
         public static void Localization_SetupLanguage_Post(Localization __instance, ref string language)
         {
-
             VariantsHandler.OnLanguageChanged(language);
-
         }
 
-        // ----------------------------------------------------------------------------------------------------------------------------------- PLAYER
+        // ---------------------------------------------------------------------------------------------------------- PLAYER
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned))]
         public static void Player_OnSpawned(Player __instance)
         {
-
-            Main.GLog.LogInfo($"ZoneLookup try Start because Player.OnSpawned");
+            Main.Log.LogInfo($"ZoneLookup try Start because Player.OnSpawned");
             AreaHandler.ZoneLookup_Start();
-
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Player), nameof(Player.OnRespawn))]
         public static void Player_OnRespawn(Player __instance)
         {
-
-            Main.GLog.LogInfo($"ZoneLookup try Start because Player.OnRespawn");
+            Main.Log.LogInfo($"ZoneLookup try Start because Player.OnRespawn");
             AreaHandler.ZoneLookup_Start();
-
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Player), nameof(Player.OnDeath))]
         public static void Player_OnDeath(Player __instance)
         {
-
-            Main.GLog.LogInfo($"ZoneLookup try Stop because Player.OnDeath");
+            Main.Log.LogInfo($"ZoneLookup try Stop because Player.OnDeath");
             AreaHandler.ZoneLookup_Stop();
-
         }
 
-
-        // ----------------------------------------------------------------------------------------------------------------------------------- DUNGEONS
-        [HarmonyPostfix]
-        [HarmonyPatch(typeof(DungeonGenerator), nameof(DungeonGenerator.Awake))]
-        private static void DungeonGenerator_Awake_Post(DungeonGenerator __instance)
-        {
-
-            if (!Globals.Config.DungeonRegenEnable.Value) return;
-            if (!Globals.Config.DungeonRegenAllowedThemes.Value.Contains(__instance.m_themes.ToString())) return;
-
-            if (__instance.GetRegenRemainder() <= 0L)
-                DungeonHandler.Task_Schedule(__instance, 10L);
-            else
-                DungeonHandler.Task_Schedule(__instance);
-
-        }
-
-
-        // ----------------------------------------------------------------------------------------------------------------------------------- RCP STUFF
+        // ---------------------------------------------------------------------------------------------------------- RCP STUFF
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Game), nameof(Game.Start))]
         // Register RPC calls as soon as possible
         public static void Game_Start_Post(Game __instance)
         {
-
             ZRoutedRpc.instance.Register<ZPackage>("Areas.SetDataValues", new Action<long, ZPackage>(RPC.SetDataValues));
-
         }
 
         [HarmonyPostfix]
@@ -91,10 +60,9 @@ namespace Areas.Patches
         // When opening/entering a world, set if I should be using local or remote data
         public static void ZNet_Awake_Post(ZNet __instance)
         {
-
             var type = __instance.GetInstanceType();
 
-            Main.GLog.LogInfo($"Instance is \"{type}\"");
+            Main.Log.LogInfo($"Instance is \"{type}\"");
 
             switch (type)
             {
@@ -108,18 +76,13 @@ namespace Areas.Patches
 
                 default: break;
             }
-
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.OnDestroy))]
         public static void ZNet_OnDestroy_Post(ZNet __instance)
         {
-
             Main.ResetData(EDS.Current);
-
-            DungeonHandler.Task_UnscheduleAll();
-
         }
 
         [HarmonyPostfix]
@@ -127,14 +90,12 @@ namespace Areas.Patches
         // When receiving a client, send data
         public static void ZNet_RPCCharacterID_Post(ZNet __instance, ZRpc rpc, ZDOID characterID)
         {
-
             if (__instance.GetInstanceType() == ZNetExtension.ZNetInstanceType.Client) return;
 
             long client = __instance.GetPeer(rpc).m_uid;
 
-            Main.GLog.LogInfo($"Instance is sending Data to client \"{client}\"");
+            Main.Log.LogInfo($"Instance is sending Data to client \"{client}\"");
             RPC.SendDataToClient(client);
-
         }
 
         [HarmonyPostfix]
@@ -145,13 +106,13 @@ namespace Areas.Patches
 
             if (ZNet.instance.GetInstanceType() == ZNetExtension.ZNetInstanceType.Client) return; // Send when Server or Local
 
-            Main.GLog.LogInfo($"Instance is sending Data to client \"{peerID}\"");
+            Main.Log.LogInfo($"Instance is sending Data to client \"{peerID}\"");
             RPC.SendDataToClient(peerID);
 
         }
 
 
-        // ----------------------------------------------------------------------------------------------------------------------------------- CRITTER REGISTER
+        // ---------------------------------------------------------------------------------------------------------- CRITTER REGISTER
         [HarmonyPrefix]
         [HarmonyPatch(typeof(Character), nameof(Character.Awake))]
         public static void Character_Awake_Pre(Character __instance)
@@ -175,7 +136,7 @@ namespace Areas.Patches
         public static void Character_Awake_Post(Character __instance)
         {
 
-            if (__instance == null) return;
+            if (__instance is null) return;
             if (__instance.IsPlayer()) return;
 
             CritterHandler.ProcessAwakenCritter(__instance);
@@ -183,7 +144,7 @@ namespace Areas.Patches
         }
 
 
-        // ----------------------------------------------------------------------------------------------------------------------------------- CRITTER DAMAGE
+        // ---------------------------------------------------------------------------------------------------------- CRITTER DAMAGE
         [HarmonyPrefix]
         [HarmonyPatch(typeof(Character), nameof(Character.Damage))]
         private static void Character_Damage_Pre(Character __instance, HitData hit)
@@ -195,7 +156,7 @@ namespace Areas.Patches
         }
 
 
-        // ----------------------------------------------------------------------------------------------------------------------------------- CRITTER EVOLUTIONS
+        // ---------------------------------------------------------------------------------------------------------- CRITTER EVOLUTIONS
         [HarmonyPostfix]
         [HarmonyPatch(typeof(LevelEffects), nameof(LevelEffects.SetupLevelVisualization))]
         public static void LevelEffects_SetupLevelVisualization_Post(LevelEffects __instance, ref int level)
@@ -206,13 +167,13 @@ namespace Areas.Patches
         }
 
 
-        // ----------------------------------------------------------------------------------------------------------------------------------- CRITTER LOOT
+        // ---------------------------------------------------------------------------------------------------------- CRITTER LOOT
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CharacterDrop), nameof(CharacterDrop.GenerateDropList))]
         public static void CharacterDrop_GenerateDropList_Post(CharacterDrop __instance, ref List<KeyValuePair<GameObject, int>> __result)
         {
 
-            if (!Globals.Config.LootEnable.Value) return;
+            if (!Global.Config.LootEnable.Value) return;
 
             List<KeyValuePair<GameObject, int>> list = new();
 
@@ -226,14 +187,14 @@ namespace Areas.Patches
                     lvlReward = Mathf.FloorToInt(Mathf.Max(1, 2 * (lvl - 1)));
                 else
                 {
-                    int adjustLvl = Mathf.FloorToInt((1 / Globals.Config.LootFix.Value) * lvl + 3);
+                    int adjustLvl = Mathf.FloorToInt((1 / Global.Config.LootFix.Value) * lvl + 3);
                     lvlReward = Mathf.FloorToInt(Mathf.Max(1, 2 * (adjustLvl - 1)));
                 }
 
-                Main.GLog.LogInfo($"Calculating DropList for \"Lv.{lvl} {__instance.m_character.gameObject.GetCleanName()}\"");
+                Main.Log.LogInfo($"Calculating DropList for \"Lv.{lvl} {__instance.m_character.gameObject.GetCleanName()}\"");
             }
 
-            foreach (Drop drop in __instance.m_drops)
+            foreach (CharacterDrop.Drop drop in __instance.m_drops)
             {
                 if (drop.m_prefab == null) continue;
 
@@ -255,7 +216,7 @@ namespace Areas.Patches
         }
 
 
-        // ----------------------------------------------------------------------------------------------------------------------------------- CRITTER CAPTURE
+        // ---------------------------------------------------------------------------------------------------------- CRITTER CAPTURE
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(SpawnSystem), nameof(SpawnSystem.Spawn))]
         private static IEnumerable<CodeInstruction> SpawnSystem_Spawn_Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -383,7 +344,7 @@ namespace Areas.Patches
         public static void SpawnArea_SpawnOne_Post(SpawnArea __instance) => CritterHandler.ProcessCapturedCritter(__instance);
 
 
-        // ----------------------------------------------------------------------------------------------------------------------------------- RAGDOLL SETUP
+        // ---------------------------------------------------------------------------------------------------------- RAGDOLL SETUP
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Ragdoll), nameof(Ragdoll.Setup))]
         public static void Ragdoll_Setup_Post(Ragdoll __instance, CharacterDrop characterDrop)
@@ -412,7 +373,7 @@ namespace Areas.Patches
         }
 
 
-        // ----------------------------------------------------------------------------------------------------------------------------------- MODIFY SPAWNERS
+        // ---------------------------------------------------------------------------------------------------------- MODIFY SPAWNERS
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SpawnSystem), nameof(SpawnSystem.Awake))]
         public static void SpawnSystem_Awake_Post(SpawnSystem __instance) { SpawnerHandler.ProcessCapturedSS(__instance); }

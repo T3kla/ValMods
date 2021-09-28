@@ -11,7 +11,6 @@ namespace Areas
 
     public static class CritterHandler
     {
-
         public static MethodInfo CT_SetHolderInfo = AccessTools.Method(typeof(CritterHandler), nameof(CritterHandler.CT_SetHolder), new Type[] { typeof(GameObject) });
         public static void CT_SetHolder(GameObject critter) { CT_Holder = critter; }
         public static GameObject CT_Holder = null;
@@ -31,7 +30,7 @@ namespace Areas
             if (cs != null)
             {
                 var ctName = cs.GetCtName();
-                if (!string.IsNullOrEmpty(ctName) && Globals.CurrentData.VAMods.ContainsKey(ctName))
+                if (!string.IsNullOrEmpty(ctName) && Global.CurrentData.VAMods.ContainsKey(ctName))
                 {
                     name = ctName;
                     critter.SetVariant(ctName);
@@ -61,7 +60,7 @@ namespace Areas
             if (critter == null) return;
             if (givenCfg == "vanilla") { CritterHandler.Assign_CT_Level_Vanilla(critter); return; }
 
-            if (Globals.CurrentData.VAMods.ContainsKey(ctName))
+            if (Global.CurrentData.VAMods.ContainsKey(ctName))
             {
                 name = ctName;
                 critter.SetVariant(ctName);
@@ -73,7 +72,7 @@ namespace Areas
             string config = givenCfg;
             CTData data;
 
-            if (givenCfg == null || !Globals.CurrentData.CTMods.ContainsKey(givenCfg))
+            if (givenCfg == null || !Global.CurrentData.CTMods.ContainsKey(givenCfg))
                 data = AreaHandler.GetCTDataFromPos(name, critter.transform.position.ToXZ(), out _, out config);
             else
                 data = AreaHandler.GetCTDataFromCfg(name, config);
@@ -92,7 +91,7 @@ namespace Areas
         public static void ProcessAwakenCritter(Character critter)
         {
             var variant = critter.GetVariant();
-            if (Globals.CurrentData.VAMods.ContainsKey(variant))
+            if (Global.CurrentData.VAMods.ContainsKey(variant))
             {
                 critter.name = $"{variant}(Clone)";
                 critter.m_name = $"$enemy_{variant}";
@@ -115,7 +114,7 @@ namespace Areas
             Patch_BaseAI(critter.GetComponent<BaseAI>(), data.base_ai);
             Patch_MonsterAI(critter.GetComponent<MonsterAI>(), data.monster_ai);
             Patch_Custom(prefab, critter, data, keepLevel);
-            Main.GLog.LogInfo($"Modified Critter \"Lv.{critter.GetLevel()} {ctName}\" with config \"{cfg}\"");
+            Main.Log.LogInfo($"Modified Critter \"Lv.{critter.GetLevel()} {ctName}\" with config \"{cfg}\"");
         }
 
         public static void Patch_Character(Character critter, CTCharacterData data)
@@ -224,7 +223,6 @@ namespace Areas
             ai.m_consumeRange = data.consume_range ?? ai.m_consumeRange;
             ai.m_consumeSearchRange = data.consume_search_range ?? ai.m_consumeSearchRange;
             ai.m_consumeSearchInterval = data.consume_search_interval ?? ai.m_consumeSearchInterval;
-            ai.m_consumeHeal = data.consume_heal ?? ai.m_consumeHeal;
         }
 
         public static void Patch_Custom(GameObject prefab, Character critter, CTData data, bool keepLevel = false)
@@ -290,7 +288,8 @@ namespace Areas
         {
             var percent = critter.GetCustomHealthPercentage() ?? 1f;
             var level = critter.GetLevel();
-            var difficultyHealthScale = Game.instance.GetDifficultyHealthScale(critter.transform.position);
+            // var difficultyHealthScale = Game.instance.GetDifficultyHealthScale(critter.transform.position);
+            var difficultyHealthScale = 1f;
 
             var multi = data.health_multi ?? 1f;
             multi *= ByDay(data, "health_multi", true);

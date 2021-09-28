@@ -1,0 +1,10 @@
+{
+    "name": "DungeonReset",
+    "description": "Finely tune the existing spawn system and create new monsters and spawners.",
+    "version_number": "1.1.3",
+    "website_url": "https://github.com/T3kla/ValMods/issues",
+    "dependencies": [
+        "ValheimModding-Jotunn-2.2.9",
+        "denikson-BepInExPack_Valheim-5.4.1500"
+    ]
+}

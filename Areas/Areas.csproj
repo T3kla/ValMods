@@ -1,5 +1,5 @@
-﻿<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\JotunnLib.2.2.7\build\JotunnLib.props" Condition="Exists('..\packages\JotunnLib.2.2.7\build\JotunnLib.props')" />
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\JotunnLib.2.3.4\build\JotunnLib.props" Condition="Exists('..\packages\JotunnLib.2.3.4\build\JotunnLib.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
@@ -12,8 +12,7 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <LangVersion>latest</LangVersion>
     <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <NuGetPackageImportStamp />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -27,10 +26,32 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony, Version=2.5.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\HarmonyX.2.5.4\lib\net45\0Harmony.dll</HintPath>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <Reference Include="Jotunn, Version=2.3.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\JotunnLib.2.3.4\lib\net462\Jotunn.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="YamlDotNet">
+      <HintPath>..\YamlDotNet\Tekla-YamlDotNet\plugins\YamlDotNet.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="0Harmony, Version=2.5.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HarmonyX.2.5.5\lib\net45\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MonoMod, Version=21.9.19.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.21.9.19.1\lib\net40\MonoMod.exe</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MonoMod.RuntimeDetour, Version=21.9.19.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.RuntimeDetour.21.9.19.1\lib\net40\MonoMod.RuntimeDetour.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MonoMod.Utils, Version=21.9.19.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.Utils.21.9.19.1\lib\net40\MonoMod.Utils.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <Reference Include="assembly_guiutils_publicized">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_guiutils_publicized.dll</HintPath>
       <Private>False</Private>
@@ -75,10 +96,6 @@
       <HintPath>C:\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Testing\BepInEx\core\BepInEx.Preloader.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Jotunn, Version=2.2.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\JotunnLib.2.2.7\lib\net462\Jotunn.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Mono.Cecil, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
       <HintPath>..\packages\Mono.Cecil.0.11.4\lib\net40\Mono.Cecil.dll</HintPath>
@@ -102,18 +119,6 @@
     </Reference>
     <Reference Include="Mono.Security">
       <HintPath>..\..\..\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Testing\unstripped_corlib\Mono.Security.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MonoMod, Version=21.8.19.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoMod.21.8.19.1\lib\net40\MonoMod.exe</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MonoMod.RuntimeDetour, Version=21.8.19.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoMod.RuntimeDetour.21.8.19.1\lib\net40\MonoMod.RuntimeDetour.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MonoMod.Utils, Version=21.8.19.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoMod.Utils.21.8.19.1\lib\net40\MonoMod.Utils.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -370,9 +375,6 @@
       <HintPath>..\..\..\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Testing\unstripped_corlib\UnityEngine.XRModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="YamlDotNet">
-      <HintPath>..\__Common Dependencies\Yaml\YamlDotNet.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -382,7 +384,7 @@
     <Compile Include="Scripts\CritterHandler.cs" />
     <Compile Include="Scripts\DungeonHandler.cs" />
     <Compile Include="Scripts\Extensions.cs" />
-    <Compile Include="Scripts\Globals.cs" />
+    <Compile Include="Scripts\Global.cs" />
     <Compile Include="Scripts\GUI\BtnCS.cs" />
     <Compile Include="Scripts\GUI\Panel.cs" />
     <Compile Include="Scripts\GUI\GUI.cs" />
@@ -422,7 +424,7 @@
     <Copy SourceFiles="@(Mod)" DestinationFolder="$(R2M)\Bepinex\plugins\Tekla-Areas\%(RecursiveDir)" />
     <!-- Copy Assemblies into Unity -->
     <Copy SourceFiles="$(ProjectDir)Tekla-Areas\plugins\areas.dll" DestinationFolder="$(ProjectDir)Unity\Assets\Assemblies" />
-    <Copy SourceFiles="$(ProjectDir)Tekla-Areas\plugins\YamlDotNet.dll" DestinationFolder="$(ProjectDir)Unity\Assets\Assemblies" />
+    <Copy SourceFiles="$(SolutionDir)YamlDotNet\Tekla-YamlDotNet\plugins\YamlDotNet.dll" DestinationFolder="$(ProjectDir)Unity\Assets\Assemblies" />
     <!-- Zip to __Releases -->
     <Exec Command="powershell Compress-Archive -Path $(ProjectDir)Tekla-Areas\**\ $(SolutionDir)__Releases\Tekla-Areas.zip -Force" />
     <!-- 7z Export, delete previous, create plugin folder, generate 7z, delete plugin folder -->
@@ -438,6 +440,6 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\JotunnLib.2.2.7\build\JotunnLib.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\JotunnLib.2.2.7\build\JotunnLib.props'))" />
+    <Error Condition="!Exists('..\packages\JotunnLib.2.3.4\build\JotunnLib.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\JotunnLib.2.3.4\build\JotunnLib.props'))" />
   </Target>
 </Project>

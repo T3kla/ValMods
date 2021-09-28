@@ -151,11 +151,7 @@ C:\Users\manui\Repos\ValMods\ColorfulSigns\Tekla-ColorfulSigns\plugins\System.Ru
 C:\Users\manui\Repos\ValMods\ColorfulSigns\obj\Release\ColorfulSigns.csproj.CopyComplete
 C:\Repos\Valheim.TeklaMods\ColorfulSigns\Tekla-ColorfulSigns\plugins\ColorfulSigns.dll
 C:\Repos\Valheim.TeklaMods\ColorfulSigns\Tekla-ColorfulSigns\plugins\ColorfulSigns.pdb
-C:\Repos\Valheim.TeklaMods\ColorfulSigns\Tekla-ColorfulSigns\plugins\Newtonsoft.Json.dll
-C:\Repos\Valheim.TeklaMods\ColorfulSigns\Tekla-ColorfulSigns\plugins\System.Data.dll
-C:\Repos\Valheim.TeklaMods\ColorfulSigns\Tekla-ColorfulSigns\plugins\System.Runtime.Serialization.dll
 C:\Repos\Valheim.TeklaMods\ColorfulSigns\obj\Release\ColorfulSigns.csproj.AssemblyReference.cache
 C:\Repos\Valheim.TeklaMods\ColorfulSigns\obj\Release\ColorfulSigns.csproj.CoreCompileInputs.cache
-C:\Repos\Valheim.TeklaMods\ColorfulSigns\obj\Release\ColorfulSigns.csproj.CopyComplete
 C:\Repos\Valheim.TeklaMods\ColorfulSigns\obj\Release\ColorfulSigns.dll
 C:\Repos\Valheim.TeklaMods\ColorfulSigns\obj\Release\ColorfulSigns.pdb

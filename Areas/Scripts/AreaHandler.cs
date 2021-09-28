@@ -36,7 +36,7 @@ namespace Areas
             {
                 if (player == null)
                 {
-                    Main.GLog.LogWarning($"ZoneLookup Break because player == null");
+                    Main.Log.LogWarning($"ZoneLookup Break because player == null");
                     break;
                 }
 
@@ -48,7 +48,7 @@ namespace Areas
                     player.Message(MessageHud.MessageType.Center, msg, 0, null);
                     PlayerCurrentArea = newArea;
 
-                    Main.GLog.LogInfo($"ZoneLookup newArea: {(PlayerCurrentArea != null ? newArea.name : "None")}");
+                    Main.Log.LogInfo($"ZoneLookup newArea: {(PlayerCurrentArea != null ? newArea.name : "None")}");
                 }
 
                 yield return new WaitForSecondsRealtime(1f);
@@ -67,7 +67,7 @@ namespace Areas
         {
             static bool CheckDis(float dis, Vector2 rad) => dis > rad.x && dis < rad.y;
 
-            return from a in Globals.CurrentData.Areas
+            return from a in Global.CurrentData.Areas
                    where CheckDis(Vector2.Distance(pos, a.Value.centre.ToVector2()), a.Value.radius.ToVector2())
                    orderby a.Value.layer descending
                    select a.Value;
@@ -83,8 +83,8 @@ namespace Areas
 
             CTData data = null;
             foreach (var a in areas)
-                if (Globals.CurrentData.CTMods.ContainsKey(a.cfg))
-                    if (Globals.CurrentData.CTMods[a.cfg].TryGetValue(name, out data) || !a.passthrough)
+                if (Global.CurrentData.CTMods.ContainsKey(a.cfg))
+                    if (Global.CurrentData.CTMods[a.cfg].TryGetValue(name, out data) || !a.passthrough)
                     { area = a.name; cfg = a.cfg; break; }
 
             return data;
@@ -93,8 +93,8 @@ namespace Areas
         public static CTData GetCTDataFromCfg(string name, string cfg)
         {
             CTData data = null;
-            foreach (var a in Globals.CurrentData.CTMods)
-                if (Globals.CurrentData.CTMods[cfg]?.TryGetValue(name, out data) == true)
+            foreach (var a in Global.CurrentData.CTMods)
+                if (Global.CurrentData.CTMods[cfg]?.TryGetValue(name, out data) == true)
                     break;
             return data;
         }
@@ -103,7 +103,7 @@ namespace Areas
         {
             SSData data = null; area = ""; cfg = "";
             foreach (var a in GetAreas(pos))
-                if (Globals.CurrentData.RetrieveSSData(a.cfg, index, out data) || !a.passthrough)
+                if (Global.CurrentData.RetrieveSSData(a.cfg, index, out data) || !a.passthrough)
                 { area = a.name; cfg = a.cfg; break; }
 
             return data;
@@ -113,7 +113,7 @@ namespace Areas
         {
             CSData data = null; area = ""; cfg = "";
             foreach (var a in GetAreas(pos))
-                if (Globals.CurrentData.RetrieveCSData(a.cfg, name, out data) || !a.passthrough)
+                if (Global.CurrentData.RetrieveCSData(a.cfg, name, out data) || !a.passthrough)
                 { area = a.name; cfg = a.cfg; break; }
 
             return data;
@@ -123,7 +123,7 @@ namespace Areas
         {
             SAData data = null; area = ""; cfg = "";
             foreach (var a in GetAreas(pos))
-                if (Globals.CurrentData.RetrieveSAData(a.cfg, name, out data) || !a.passthrough)
+                if (Global.CurrentData.RetrieveSAData(a.cfg, name, out data) || !a.passthrough)
                 { area = a.name; cfg = a.cfg; break; }
 
             return data;

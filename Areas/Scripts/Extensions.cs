@@ -33,17 +33,25 @@ namespace Areas
     public static class CharacterExtensions
     {
 
-        public static void SetCfg(this Character character, string cfg) => character?.m_nview?.GetZDO()?.Set("Areas Cfg", cfg);
-        public static string GetCfg(this Character character) => character?.m_nview?.GetZDO()?.GetString("Areas Cfg");
+        public static void SetCfg(this Character character, string cfg)
+            => character?.m_nview?.GetZDO()?.Set("Areas Cfg", cfg);
+        public static string GetCfg(this Character character)
+            => character?.m_nview?.GetZDO()?.GetString("Areas Cfg");
 
-        public static void SetVariant(this Character character, string variant) => character?.m_nview?.GetZDO()?.Set("Areas Variant", variant);
-        public static string GetVariant(this Character character) => character?.m_nview?.GetZDO()?.GetString("Areas Variant");
+        public static void SetVariant(this Character character, string variant)
+            => character?.m_nview?.GetZDO()?.Set("Areas Variant", variant);
+        public static string GetVariant(this Character character)
+            => character?.m_nview?.GetZDO()?.GetString("Areas Variant");
 
-        public static void SetDamageMulti(this Character character, float damageMulti) => character?.m_nview?.GetZDO()?.Set("Areas DamageMulti", damageMulti);
-        public static float? GetDamageMulti(this Character character) => character?.m_nview?.GetZDO()?.GetFloat("Areas DamageMulti", 1f);
+        public static void SetDamageMulti(this Character character, float damageMulti)
+            => character?.m_nview?.GetZDO()?.Set("Areas DamageMulti", damageMulti);
+        public static float? GetDamageMulti(this Character character)
+            => character?.m_nview?.GetZDO()?.GetFloat("Areas DamageMulti", 1f);
 
-        public static void SetCustomHealthPercentage(this Character character, float percent) => character?.m_nview?.GetZDO()?.Set("Areas Health Percentage", percent);
-        public static float? GetCustomHealthPercentage(this Character character) => character?.m_nview?.GetZDO()?.GetFloat("Areas Health Percentage");
+        public static void SetCustomHealthPercentage(this Character character, float percent)
+            => character?.m_nview?.GetZDO()?.Set("Areas Health Percentage", percent);
+        public static float? GetCustomHealthPercentage(this Character character)
+            => character?.m_nview?.GetZDO()?.GetFloat("Areas Health Percentage");
 
         public static CTData GetCtData(this Character character)
         {
@@ -54,9 +62,9 @@ namespace Areas
             string _ctName = !string.IsNullOrEmpty(_variant) ? _variant : character?.m_nview?.gameObject.GetCleanName();
             if (string.IsNullOrEmpty(_ctName)) return null;
 
-            var data = (from a in Globals.CurrentData.CTMods
+            var data = (from a in Global.CurrentData.CTMods
                         where a.Key == cfg
-                        from b in Globals.CurrentData.CTMods[cfg]
+                        from b in Global.CurrentData.CTMods[cfg]
                         where b.Key == _ctName
                         select b.Value).FirstOrDefault();
 
@@ -73,26 +81,6 @@ namespace Areas
 
         public static void SetData(this CreatureSpawner cs, CSData data) => cs?.m_nview?.GetZDO()?.Set("Areas CustomCS Data", Serialization.Serialize(data));
         public static CSData GetData(this CreatureSpawner cs) => Serialization.Deserialize<CSData>(cs?.m_nview?.GetZDO()?.GetString("Areas CustomCS Data"));
-
-    }
-
-    public static class DungeonGeneratorExtensions
-    {
-
-        public static string GetCleanName(this DungeonGenerator dg) => dg.name.Replace("(Clone)", "").Replace("(DungeonGenerator)", "").Trim() + dg.transform.position.ToString("F0");
-
-        public static void SetRegenAtSecond(this DungeonGenerator dg, long value) => dg?.m_nview?.GetZDO()?.Set("Areas RegenAtSecond", value);
-        public static long GetRegenAtSecond(this DungeonGenerator dg)
-        {
-            long value = dg?.m_nview?.GetZDO()?.GetLong("Areas RegenAtSecond") ?? 0L;
-            return value < 0L ? 0L : value;
-        }
-
-        public static long GetRegenRemainder(this DungeonGenerator dg)
-        {
-            long remainder = dg.GetRegenAtSecond() - (long)ZNet.instance.GetTimeSeconds();
-            return remainder < 0L ? 0L : remainder;
-        }
 
     }
 
@@ -127,7 +115,7 @@ namespace Areas
             }
             catch (Exception e)
             {
-                Main.GLog.LogError($"Failed Conversion \"float[]\" to \"Vector2\"\n{e.Message}\n{e.StackTrace}");
+                Main.Log.LogError($"Failed Conversion \"float[]\" to \"Vector2\"\n{e.Message}\n{e.StackTrace}");
                 return v;
             }
 

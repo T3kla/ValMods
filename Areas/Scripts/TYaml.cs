@@ -28,7 +28,7 @@ namespace Areas.TYaml
             }
             catch (Exception e)
             {
-                Main.GLog.LogError($"Couldn't deserialize object\n{e.Message}\n{e.StackTrace}");
+                Main.Log.LogError($"Couldn't deserialize object\n{e.Message}\n{e.StackTrace}");
                 return default(T);
             }
         }
@@ -49,7 +49,7 @@ namespace Areas.TYaml
             }
             catch (Exception e)
             {
-                Main.GLog.LogError($"Couldn't serialize object \"{obj.ToString()}\"\n{e.Message}\n{e.StackTrace}");
+                Main.Log.LogError($"Couldn't serialize object \"{obj.ToString()}\"\n{e.Message}\n{e.StackTrace}");
                 return "";
             }
         }
@@ -66,12 +66,12 @@ namespace Areas.TYaml
 
                 var data = deserializer.Deserialize<T>(File.ReadAllText(path));
 
-                Main.GLog.LogInfo($"Deserialized object \"{Path.GetFileName(path)}\" from \"{path}\"");
+                Main.Log.LogInfo($"Deserialized object \"{Path.GetFileName(path)}\" from \"{path}\"");
                 return data;
             }
             catch (Exception e)
             {
-                Main.GLog.LogError($"Couldn't deserialize object \"{Path.GetFileName(path)}\" from \"{path}\"\n{e.Message}\n{e.StackTrace}");
+                Main.Log.LogError($"Couldn't deserialize object \"{Path.GetFileName(path)}\" from \"{path}\"\n{e.Message}\n{e.StackTrace}");
                 return default(T);
             }
         }
@@ -93,11 +93,11 @@ namespace Areas.TYaml
 
                 tw.Close();
 
-                Main.GLog.LogInfo($"Serialized object with name \"{fileName}\" into \"{path}\"");
+                Main.Log.LogInfo($"Serialized object with name \"{fileName}\" into \"{path}\"");
             }
             catch (Exception e)
             {
-                Main.GLog.LogError($"Couldn't serialize object \"{fileName}\"\n{e.Message}\n{e.StackTrace}");
+                Main.Log.LogError($"Couldn't serialize object \"{fileName}\"\n{e.Message}\n{e.StackTrace}");
             }
         }
 

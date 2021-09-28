@@ -30,7 +30,7 @@ namespace Areas
                 if (SS_DataDic.ContainsKey(area.cfg))
                 {
                     ss.m_spawners = SS_DataDic[area.cfg];
-                    Main.GLog.LogInfo($"Modifying SpawnSystem \"{ss.gameObject.GetCleanNamePos()}\" in area \"{area.name}\"");
+                    Main.Log.LogInfo($"Modifying SpawnSystem \"{ss.gameObject.GetCleanNamePos()}\" in area \"{area.name}\"");
                     return;
                 }
         }
@@ -52,12 +52,17 @@ namespace Areas
                 cs.m_creaturePrefab = critter;
             }
 
-            data = data ?? AreaHandler.GetCSDataFromPos(cs.gameObject.GetCleanName(), cs.transform.position.ToXZ(), out area, out cfg);
+            data ??= AreaHandler.GetCSDataFromPos(cs.gameObject.GetCleanName(), cs.transform.position.ToXZ(), out area, out cfg);
 
             if (data == null) return;
 
-            Main.GLog.LogInfo($"Modifying {(string.IsNullOrEmpty(ctName) ? "custom" : "")} CreatureSpawner \"{name}\" in area \"{area}\" with config \"{cfg}\"");
+            Main.Log.LogInfo($"Modifying {(string.IsNullOrEmpty(ctName) ? "custom" : "")} CreatureSpawner \"{name}\" in area \"{area}\" with config \"{cfg}\"");
 
+            ApplyCSData(cs, data);
+        }
+
+        public static void ApplyCSData(in CreatureSpawner cs, in CSData data)
+        {
             cs.m_respawnTimeMinuts = data.respawn_time_minutes ?? cs.m_respawnTimeMinuts;
             cs.m_triggerDistance = data.trigger_distance ?? cs.m_triggerDistance;
             cs.m_triggerNoise = data.trigger_noise ?? cs.m_triggerNoise;
@@ -75,7 +80,7 @@ namespace Areas
             SAData data = AreaHandler.GetSADataFromPos(name, sa.transform.position.ToXZ(), out var area, out var cfg);
             if (data == null) return;
 
-            Main.GLog.LogInfo($"Modifying SpawnArea \"{name}\" in area \"{area}\" with config \"{cfg}\"");
+            Main.Log.LogInfo($"Modifying SpawnArea \"{name}\" in area \"{area}\" with config \"{cfg}\"");
 
             sa.m_spawnIntervalSec = data.spawn_interval_sec ?? sa.m_spawnIntervalSec;
             sa.m_triggerDistance = data.trigger_distance ?? sa.m_triggerDistance;
@@ -90,7 +95,7 @@ namespace Areas
 
         public static void GenerateSSDataDic(SpawnSystem ss)
         {
-            List<SpawnData> ModifySSList(ref List<SpawnData> list, Dictionary<int, SSData> mods)
+            static List<SpawnData> ModifySSList(ref List<SpawnData> list, Dictionary<int, SSData> mods)
             {
                 foreach (var mod in mods)
                 {
@@ -109,7 +114,7 @@ namespace Areas
 
             if (ss == null) return;
 
-            foreach (var cfg in Globals.CurrentData.SSMods)
+            foreach (var cfg in Global.CurrentData.SSMods)
             {
                 var newList = new List<SpawnData>(ss.m_spawners);
                 ModifySSList(ref newList, cfg.Value);
@@ -118,7 +123,7 @@ namespace Areas
 
             SS_DataDicFlag = false;
 
-            Main.GLog.LogInfo($"SS_DataDic generated with count: \"{SS_DataDic.Count}\"");
+            Main.Log.LogInfo($"SS_DataDic generated with count: \"{SS_DataDic.Count}\"");
         }
 
     }

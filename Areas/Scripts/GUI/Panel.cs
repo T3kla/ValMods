@@ -6,6 +6,7 @@ using System.Text;
 using Jotunn.Managers;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Log = System.Console;
 
@@ -52,8 +53,8 @@ namespace Areas
             Listeners();
 
             // Position Window
-            var defPos = Globals.Config.GUI_DefaultPosition.Value.Split(':');
-            var defSize = Globals.Config.GUI_DefaultSize.Value.Split(':');
+            var defPos = Global.Config.GUI_DefaultPosition.Value.Split(':');
+            var defSize = Global.Config.GUI_DefaultSize.Value.Split(':');
             int.TryParse(defPos[0], out int defPosX); int.TryParse(defPos[1], out int defPosY);
             int.TryParse(defSize[0], out int defSizeX); int.TryParse(defSize[1], out int defSizeY);
             self.sizeDelta = new Vector2(defSizeX, defSizeY);
@@ -99,8 +100,8 @@ namespace Areas
             GUIManager.BlockInput(false);
 
             if (!savePosSize) return;
-            Globals.Config.GUI_DefaultPosition.Value = $"{self.anchoredPosition.x:F0}:{self.anchoredPosition.y:F0}";
-            Globals.Config.GUI_DefaultSize.Value = $"{self.sizeDelta.x:F0}:{self.sizeDelta.y:F0}";
+            Global.Config.GUI_DefaultPosition.Value = $"{self.anchoredPosition.x:F0}:{self.anchoredPosition.y:F0}";
+            Global.Config.GUI_DefaultSize.Value = $"{self.sizeDelta.x:F0}:{self.sizeDelta.y:F0}";
         }
 
         #region UI Events
@@ -177,11 +178,10 @@ namespace Areas
 
         private void SetSpawnerButtons()
         {
-            Transform root = ZNetScene.instance.m_netSceneRoot.transform;
             Spawners.Clear();
 
             // Search for CreatureSpawners
-            foreach (Transform obj in root)
+            foreach (GameObject obj in SceneManager.GetActiveScene().GetRootGameObjects())
             {
                 CreatureSpawner cs = obj.GetComponent<CreatureSpawner>();
                 if (cs is null || Vector3.Distance(cs.transform.position, Player.m_localPlayer.transform.position) < 100f) continue;

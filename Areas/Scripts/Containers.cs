@@ -194,6 +194,9 @@ namespace Areas.Containers
 
     public class CTMonsterAIData
     {
+        public float? last_despawn_in_day_check { get; set; } // TODO: new
+        public float? last_event_creature_check { get; set; } // TODO: new
+        // public Action<ItemDrop> m_onConsumedItem; // TODO: new
         public float? alert_range { get; set; }
         public bool? flee_if_hurt_when_target_cant_be_reached { get; set; }
         public bool? flee_if_not_alerted { get; set; }
@@ -219,7 +222,25 @@ namespace Areas.Containers
         public float? consume_range { get; set; }
         public float? consume_search_range { get; set; }
         public float? consume_search_interval { get; set; }
-        public float? consume_heal { get; set; }
+        // public ItemDrop consumeTarget; // TODO: new
+        public float? consume_search_timer; // TODO: new
+        public string ai_status = ""; // TODO: new
+        public bool? despawn_in_day; // TODO: new
+        public bool? event_creature; // TODO: new
+        // public Character target_creature; // TODO: new
+        public Vector3? last_known_target_pos = Vector3.zero; // TODO: new
+        public bool? been_at_last_pos; // TODO: new
+        // public StaticTarget target_static; // TODO: new
+        public float? time_since_attacking; // TODO: new
+        public float? time_since_sensed_target_creature; // TODO: new
+        public float? update_target_timer; // TODO: new
+        public float? update_weapon_timer; // TODO: new
+        public float? last_attack_time = -1000f; // TODO: new
+        public float? intercept_time; // TODO: new
+        public float? pause_timer; // TODO: new
+        public float? sleep_timer; // TODO: new
+        public float? unable_to_attack_target_timer; // TODO: new
+        // public GameObject follow; // TODO: new
     }
 
     public class SSData

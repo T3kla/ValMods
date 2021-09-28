@@ -1,0 +1,7 @@
+{
+    "name": "YamlDotNet",
+    "description": "Redistribution of YamlDotNet from Antoine Aubry under MIT license.",
+    "version_number": "11.2.1",
+    "website_url": "https://github.com/aaubry/YamlDotNet",
+    "dependencies": []
+}

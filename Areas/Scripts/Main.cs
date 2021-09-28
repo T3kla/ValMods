@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Areas.Containers;
@@ -12,8 +13,6 @@ using UnityEngine;
 
 namespace Areas
 {
-
-    public delegate void DVoid();
     public enum EDS { Local, Remote, Current }
 
     [BepInPlugin(GUID, NAME, VERSION)]
@@ -23,13 +22,13 @@ namespace Areas
     {
         public const string NAME = "Areas";
         public const string GUID = "Tekla_" + NAME;
-        public const string VERSION = "1.1.1";
+        public const string VERSION = "1.1.3";
 
-        public static DVoid OnDataLoaded;
-        public static DVoid OnDataReset;
+        public static Action OnDataLoaded;
+        public static Action OnDataReset;
 
         public static Main Instance;
-        public static ManualLogSource GLog;
+        public static ManualLogSource Log;
 
         internal readonly Harmony harmony;
         internal readonly Assembly assembly;
@@ -37,10 +36,10 @@ namespace Areas
 
         public Main()
         {
-            GLog = new ManualLogSource(NAME + ".G");
+            Log = new ManualLogSource(NAME);
             harmony = new Harmony(GUID);
             assembly = Assembly.GetExecutingAssembly();
-            modFolder = Path.GetDirectoryName(assembly.Location);
+            Global.Path.ModFolder = Path.GetDirectoryName(assembly.Location);
         }
 
         private void Awake()
@@ -48,8 +47,6 @@ namespace Areas
             Instance = this;
 
             Configs();
-
-            Globals.Path.Assembly = Path.GetDirectoryName(assembly.Location);
             LoadDataFromDisk();
 
             OnDataLoaded += VariantsHandler.OnDataLoaded;
@@ -67,96 +64,77 @@ namespace Areas
         {
             Config.SaveOnConfigSet = true;
 
-            Globals.Config.GUI_TogglePanel = Config.Bind("GUI", "Panel Toggle", KeyCode.PageUp,
+            Global.Config.GUI_TogglePanel = Config.Bind("GUI", "Panel Toggle", KeyCode.PageUp,
                 new ConfigDescription("Set the key binding to open and close Areas GUI.", null,
                 new ConfigurationManagerAttributes { IsAdminOnly = false }));
-            Globals.Config.GUI_ToggleMouse = Config.Bind("GUI", "Mouse Toggle", KeyCode.PageDown,
+            Global.Config.GUI_ToggleMouse = Config.Bind("GUI", "Mouse Toggle", KeyCode.PageDown,
                 new ConfigDescription("Set the key binding to show and hide mouse.", null,
                 new ConfigurationManagerAttributes { IsAdminOnly = false }));
-            Globals.Config.GUI_DefaultPosition = Config.Bind("GUI", "Default Position", "0:0",
+            Global.Config.GUI_DefaultPosition = Config.Bind("GUI", "Default Position", "0:0",
                 new ConfigDescription("Default position at which Areas GUI will appear.", null,
                 new ConfigurationManagerAttributes { IsAdminOnly = false }));
-            Globals.Config.GUI_DefaultSize = Config.Bind("GUI", "Default Size", "1600:800",
+            Global.Config.GUI_DefaultSize = Config.Bind("GUI", "Default Size", "1600:800",
                 new ConfigDescription("Default size at which Areas GUI will appear.", null,
                 new ConfigurationManagerAttributes { IsAdminOnly = false }));
 
-            Globals.Config.LootEnable = Config.Bind("Loot Fix", "Enable", true,
+            Global.Config.LootEnable = Config.Bind("Loot Fix", "Enable", true,
                 new ConfigDescription("Enables or disables loot fixing.", null,
                 new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Globals.Config.LootFix = Config.Bind("Loot Fix", "Value", 10,
+            Global.Config.LootFix = Config.Bind("Loot Fix", "Value", 10,
                 new ConfigDescription("Number of levels it takes to get the next vanilla level reward. Only for Lv.3+. For example \"5\" will result in: [Lv.5 monster = Lv.4 reward] [Lv.10 monster = Lv.5 reward] [Lv.15 monster = Lv.6 reward]",
                 new AcceptableValueRange<int>(1, 50),
                 new ConfigurationManagerAttributes { IsAdminOnly = true }));
 
-            Globals.Config.DungeonRegenEnable = Config.Bind("Dungeon Regen", "Enable", false,
-                new ConfigDescription("Enables or disables Dungeon Regeneration.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Globals.Config.DungeonRegenCooldown = Config.Bind("Dungeon Regen", "Cooldown", 60,
-                new ConfigDescription("Set the amount of minutes it takes each dungeon to try to regenerate.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Globals.Config.DungeonRegenAllowedThemes = Config.Bind("Dungeon Regen", "Themes", "Crypt, SunkenCrypt, Cave, ForestCrypt",
-                new ConfigDescription("Set allowed dungeon themes to regen. Possible themes are: Crypt, SunkenCrypt, Cave, ForestCrypt", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Globals.Config.DungeonRegenPlayerProtection = Config.Bind("Dungeon Regen", "Player Protection", true,
-                new ConfigDescription("If enabled, Dungeons won't regen while players are inside.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
-
-            Globals.Config.LoggerEnable = Config.Bind("Logger", "Enable", true,
+            Global.Config.LoggerEnable = Config.Bind("Logger", "Enable", true,
                 new ConfigDescription("Enables or disables debugging logs.", null,
                 new ConfigurationManagerAttributes { IsAdminOnly = false }));
-
-            if (Globals.Config.LoggerEnable.Value) BepInEx.Logging.Logger.Sources.Add(GLog);
+            if (Global.Config.LoggerEnable.Value) BepInEx.Logging.Logger.Sources.Add(Log);
         }
 
-
-        // ----------------------------------------------------------------------------------------------------------------------------------- LOCAL
         private void LoadDataFromDisk()
         {
-            if (File.Exists(Globals.Path.Areas)) Globals.RawLocalData.Areas = File.ReadAllText(Globals.Path.Areas);
-            if (File.Exists(Globals.Path.CTData)) Globals.RawLocalData.CTData = File.ReadAllText(Globals.Path.CTData);
-            if (File.Exists(Globals.Path.VAData)) Globals.RawLocalData.VAData = File.ReadAllText(Globals.Path.VAData);
-            if (File.Exists(Globals.Path.SSData)) Globals.RawLocalData.SSData = File.ReadAllText(Globals.Path.SSData);
-            if (File.Exists(Globals.Path.CSData)) Globals.RawLocalData.CSData = File.ReadAllText(Globals.Path.CSData);
-            if (File.Exists(Globals.Path.SAData)) Globals.RawLocalData.SAData = File.ReadAllText(Globals.Path.SAData);
+            if (File.Exists(Global.Path.Areas)) Global.RawLocalData.Areas = File.ReadAllText(Global.Path.Areas);
+            if (File.Exists(Global.Path.CTData)) Global.RawLocalData.CTData = File.ReadAllText(Global.Path.CTData);
+            if (File.Exists(Global.Path.VAData)) Global.RawLocalData.VAData = File.ReadAllText(Global.Path.VAData);
+            if (File.Exists(Global.Path.SSData)) Global.RawLocalData.SSData = File.ReadAllText(Global.Path.SSData);
+            if (File.Exists(Global.Path.CSData)) Global.RawLocalData.CSData = File.ReadAllText(Global.Path.CSData);
+            if (File.Exists(Global.Path.SAData)) Global.RawLocalData.SAData = File.ReadAllText(Global.Path.SAData);
         }
 
         public static void LoadData(EDS source)
         {
-            RawData data = source == EDS.Remote ? Globals.RawRemoteData : Globals.RawLocalData;
+            RawData data = source == EDS.Remote ? Global.RawRemoteData : Global.RawLocalData;
 
-            Main.GLog.LogInfo($"Instance is loading {source} Data");
-            Globals.CurrentData.Areas = Serialization.Deserialize<Dictionary<string, Area>>(data.Areas);
-            Globals.CurrentData.CTMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CTData>>>(data.CTData);
-            Globals.CurrentData.VAMods = Serialization.Deserialize<Dictionary<string, VAData>>(data.VAData);
-            Globals.CurrentData.SSMods = Serialization.Deserialize<Dictionary<string, Dictionary<int, SSData>>>(data.SSData);
-            Globals.CurrentData.CSMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CSData>>>(data.CSData);
-            Globals.CurrentData.SAMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, SAData>>>(data.SAData);
+            Main.Log.LogInfo($"Instance is loading {source} Data");
+            Global.CurrentData.Areas = Serialization.Deserialize<Dictionary<string, Area>>(data.Areas);
+            Global.CurrentData.CTMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CTData>>>(data.CTData);
+            Global.CurrentData.VAMods = Serialization.Deserialize<Dictionary<string, VAData>>(data.VAData);
+            Global.CurrentData.SSMods = Serialization.Deserialize<Dictionary<string, Dictionary<int, SSData>>>(data.SSData);
+            Global.CurrentData.CSMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CSData>>>(data.CSData);
+            Global.CurrentData.SAMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, SAData>>>(data.SAData);
 
             if (OnDataLoaded != null) OnDataLoaded.Invoke();
         }
 
-
         public static void ResetData(EDS source)
         {
-            Main.GLog.LogInfo($"Instance is resetting {source} Data");
+            Main.Log.LogInfo($"Instance is resetting {source} Data");
 
             switch (source)
             {
                 case EDS.Local:
-                    Globals.RawLocalData = new RawData();
+                    Global.RawLocalData = new RawData();
                     break;
                 case EDS.Remote:
-                    Globals.RawRemoteData = new RawData();
+                    Global.RawRemoteData = new RawData();
                     break;
                 case EDS.Current:
-                    Globals.CurrentData = new Data();
+                    Global.CurrentData = new Data();
                     if (OnDataReset != null) OnDataReset.Invoke();
                     break;
                 default:
                     break;
             }
         }
-
     }
-
 }

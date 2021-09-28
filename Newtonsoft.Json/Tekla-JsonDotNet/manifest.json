@@ -1,0 +1,7 @@
+{
+    "name": "JsonDotNet",
+    "description": "Redistribution of Json.Net from Newtonsoft under MIT license.",
+    "version_number": "13.0.1",
+    "website_url": "https://github.com/JamesNK/Newtonsoft.Json",
+    "dependencies": []
+}

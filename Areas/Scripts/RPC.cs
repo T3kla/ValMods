@@ -14,12 +14,12 @@ namespace Areas.NetCode
             ZPackage zpg = new();
 
             ZRpc.Serialize(new object[] {
-                Globals.RawLocalData.Areas,
-                Globals.RawLocalData.CTData,
-                Globals.RawLocalData.VAData,
-                Globals.RawLocalData.SSData,
-                Globals.RawLocalData.CSData,
-                Globals.RawLocalData.SAData,
+                Global.RawLocalData.Areas,
+                Global.RawLocalData.CTData,
+                Global.RawLocalData.VAData,
+                Global.RawLocalData.SSData,
+                Global.RawLocalData.CSData,
+                Global.RawLocalData.SAData,
             }, ref zpg);
 
             zpg.SetPos(0);
@@ -35,19 +35,19 @@ namespace Areas.NetCode
             if (type == ZNetExtension.ZNetInstanceType.Server) { return; }
             if (type == ZNetExtension.ZNetInstanceType.Local) { return; }
 
-            Globals.RawRemoteData.Areas = zpg.ReadString();
-            Globals.RawRemoteData.CTData = zpg.ReadString();
-            Globals.RawRemoteData.VAData = zpg.ReadString();
-            Globals.RawRemoteData.SSData = zpg.ReadString();
-            Globals.RawRemoteData.CSData = zpg.ReadString();
-            Globals.RawRemoteData.SAData = zpg.ReadString();
+            Global.RawRemoteData.Areas = zpg.ReadString();
+            Global.RawRemoteData.CTData = zpg.ReadString();
+            Global.RawRemoteData.VAData = zpg.ReadString();
+            Global.RawRemoteData.SSData = zpg.ReadString();
+            Global.RawRemoteData.CSData = zpg.ReadString();
+            Global.RawRemoteData.SAData = zpg.ReadString();
 
-            Main.GLog.LogInfo($"Received data as Areas count is \"{Globals.RawRemoteData.Areas.Length}\"");
-            Main.GLog.LogInfo($"Received data as CTData count is \"{Globals.RawRemoteData.CTData.Length}\"");
-            Main.GLog.LogInfo($"Received data as VAData count is \"{Globals.RawRemoteData.VAData.Length}\"");
-            Main.GLog.LogInfo($"Received data as SSData count is \"{Globals.RawRemoteData.SSData.Length}\"");
-            Main.GLog.LogInfo($"Received data as CSData count is \"{Globals.RawRemoteData.CSData.Length}\"");
-            Main.GLog.LogInfo($"Received data as SAData count is \"{Globals.RawRemoteData.SAData.Length}\"");
+            Main.Log.LogInfo($"Received data as Areas count is \"{Global.RawRemoteData.Areas.Length}\"");
+            Main.Log.LogInfo($"Received data as CTData count is \"{Global.RawRemoteData.CTData.Length}\"");
+            Main.Log.LogInfo($"Received data as VAData count is \"{Global.RawRemoteData.VAData.Length}\"");
+            Main.Log.LogInfo($"Received data as SSData count is \"{Global.RawRemoteData.SSData.Length}\"");
+            Main.Log.LogInfo($"Received data as CSData count is \"{Global.RawRemoteData.CSData.Length}\"");
+            Main.Log.LogInfo($"Received data as SAData count is \"{Global.RawRemoteData.SAData.Length}\"");
 
             Main.LoadData(EDS.Remote);
 

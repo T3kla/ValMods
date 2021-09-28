@@ -19,27 +19,31 @@ If you are installing this manually, do the following
 
 ## Changelog
 
+#### 5.4.1502
+
+-   Fix: blind fix for H&H
+
 #### 5.4.1500
 
-- BepInEx 5.4.1500
+-   BepInEx 5.4.1500
 
 #### 5.4.1100
 
-- Updated BepInEx version
+-   Updated BepInEx version
 
 #### 5.4.903
 
-- Removed centre message with last repaired item
-- Updated BepInEx version
+-   Removed centre message with last repaired item
+-   Updated BepInEx version
 
 #### 5.4.902
 
-- Changed mod Icon
+-   Changed mod Icon
 
 #### 5.4.901
 
-- Changed message "Repaired n objects!" for the awesome and less intrusive repair sound
+-   Changed message "Repaired n objects!" for the awesome and less intrusive repair sound
 
 #### 5.4.900
 
-- Updated BepInEx version
+-   Updated BepInEx version

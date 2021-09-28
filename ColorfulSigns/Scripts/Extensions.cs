@@ -3,10 +3,8 @@ using UnityEngine;
 
 namespace ColorfulSigns
 {
-
     public static class Extensions
     {
-
         public static Color ToColor(this string color)
         {
             if (color.StartsWith("#", StringComparison.InvariantCulture))
@@ -23,7 +21,5 @@ namespace ColorfulSigns
 
             return new Color(r, g, b, a);
         }
-
     }
-
 }

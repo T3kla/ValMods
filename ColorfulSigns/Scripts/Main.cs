@@ -79,6 +79,5 @@ namespace ColorfulSigns
                     Debug.Log($"[ColorfulSigns] Couldn't load colorLibrary");
             }
         }
-
     }
 }
