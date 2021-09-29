@@ -1,13 +1,15 @@
 ﻿using System.IO;
 using System.Reflection;
 using BepInEx;
-using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using Jotunn.Utils;
 
 namespace DungeonReset
 {
     [BepInPlugin(GUID, NAME, VERSION)]
+    [BepInDependency(Jotunn.Main.ModGuid, BepInDependency.DependencyFlags.HardDependency)]
+    [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
     public class Main : BaseUnityPlugin
     {
         #region[Declarations]
@@ -15,7 +17,7 @@ namespace DungeonReset
             NAME = "DungeonReset",
             AUTHOR = "Tekla",
             GUID = AUTHOR + "_" + NAME,
-            VERSION = "5.4.1502";
+            VERSION = "5.4.1603";
 
         internal readonly Harmony Harmony;
         internal readonly Assembly Assembly;
@@ -36,34 +38,15 @@ namespace DungeonReset
 
         public void Awake()
         {
-            InitConfigs();
+            Configs.Awake(this);
+            Commands.Awake();
 
-            if (Global.Config.DungeonResetEnable.Value)
-                Harmony.PatchAll(Assembly);
-        }
+            if (!Configs.Enable.Value)
+                return;
+            if (Configs.LoggerEnable.Value)
+                BepInEx.Logging.Logger.Sources.Add(Log);
 
-        public void InitConfigs()
-        {
-            Global.Config.DungeonResetEnable = Config.Bind("Dungeon Reset", "Enable", true,
-                new ConfigDescription("Enables or disables dungeon regeneration.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Global.Config.DungeonResetInterval = Config.Bind("Dungeon Reset", "Interval", 82800f,
-                new ConfigDescription("Set the amount of seconds it takes each dungeon to try to regenerate.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Global.Config.DungeonResetAllowedThemes = Config.Bind("Dungeon Reset", "Themes", "Crypt, SunkenCrypt, Cave, ForestCrypt",
-                new ConfigDescription("Set allowed dungeon themes to reset. Possible themes are: Crypt, SunkenCrypt, Cave, ForestCrypt, GoblinCamp, MeadowsVillage, MeadowsFarm", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Global.Config.DungeonResetPlayerProtection = Config.Bind("Dungeon Reset", "Player Protection", true,
-                new ConfigDescription("If enabled, dungeons won't reset while players are inside.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Global.Config.DungeonResetPlayerProtectionInterval = Config.Bind("Dungeon Reset", "Player Protection Interval", 600f,
-                new ConfigDescription("Time it takes to retry a reset on a dungeon that wasn't reset due to Player Protection.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
-
-            Global.Config.LoggerEnable = Config.Bind("Logger", "Enable", true,
-                new ConfigDescription("Enables or disables debugging logs.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = false }));
-            if (Global.Config.LoggerEnable.Value) BepInEx.Logging.Logger.Sources.Add(Log);
+            Harmony.PatchAll(Assembly);
         }
     }
 }

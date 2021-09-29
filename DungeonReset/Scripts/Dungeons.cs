@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,94 +7,42 @@ namespace DungeonReset
 {
     public static class Dungeons
     {
-        private class Timer
-        {
-            public static readonly List<Timer> Each = new();
-
-            public DungeonGenerator dungeon;
-            public float delay;
-            public float interval;
-            private Coroutine task = null;
-
-            private void Create()
-            {
-                task = Main.Instance.StartCoroutine(Cycle(this));
-                Each.Find(ctx => ctx.dungeon == this.dungeon)?.Destroy();
-                Each.Add(this);
-            }
-
-            public void Destroy()
-            {
-                Main.Instance.StopCoroutine(task);
-                Each.Remove(this);
-            }
-
-            public Timer(DungeonGenerator dungeon, float delay, float interval)
-            {
-                this.dungeon = dungeon;
-                this.delay = delay;
-                this.interval = interval;
-                Create();
-            }
-        }
+        private static float interval => Configs.Interval.Value;
+        private static float playerProtectionInterval => Configs.PlayerProtectionInterval.Value;
 
         public static void OnDungeonLoad(DungeonGenerator dungeon)
         {
-            Main.Log.LogInfo($"Dungeon '{dungeon.GetCleanName()}' was captured!");
+            Main.Log.LogInfo($"Dungeon '{dungeon.GetCleanName()}' was captured!\n");
+            UnscheduleOutOfBound();
             Schedule(dungeon);
         }
 
-        private static void Schedule(DungeonGenerator dungeon, float delay = 0f)
+        public static void Schedule(DungeonGenerator dungeon, float delay = 0f)
         {
             var rand = UnityEngine.Random.Range(1f, 5f);
             var remaining = dungeon.Remaining();
-            new Timer(dungeon, delay + remaining + rand, Global.Config.DungeonResetInterval.Value);
+            var finalDelay = delay + remaining + rand;
+            new Timer(dungeon, finalDelay, interval);
+            Main.Log.LogInfo($"Dungeon '{dungeon.GetCleanName()}' was scheduled for reset in {finalDelay:F0} seconds!\n");
         }
 
-        private static IEnumerator Cycle(Timer timer)
+        public static void UnscheduleOutOfBound()
         {
-            yield return new WaitForSeconds(timer.delay);
-            while (true)
-            {
-                if (ValidateReset(timer))
-                    Reset(timer.dungeon);
-                yield return null;
-                yield return new WaitForSeconds(timer.interval);
-            }
+            var copy = new List<Timer>(Timer.Each);
+            foreach (var timer in copy)
+                if (timer.dungeon == null)
+                    timer.Destroy();
         }
 
-        private static bool ValidateReset(Timer timer)
+        public static void UnscheduleAll()
         {
-            if (timer.dungeon == null)
-            {
-                Main.Log.LogWarning($"Dungeon 'null' couldn't regenerate because it was out of bounds!");
+            var copy = new List<Timer>(Timer.Each);
+            foreach (var timer in copy)
                 timer.Destroy();
-                return false;
-            }
-
-            if (!timer.dungeon.IsOverdue())
-            {
-                Main.Log.LogWarning($"Dungeon '{timer.dungeon.GetCleanName()}' has already been reset!");
-                Schedule(timer.dungeon);
-                return false;
-            }
-
-            var pp = ZNet.instance.GetPlayerList();
-            var pl = Player.GetAllPlayers();
-
-            if (Global.Config.DungeonResetPlayerProtection.Value)
-            {
-                Bounds bounds = new(timer.dungeon.transform.position, timer.dungeon.m_zoneSize * 2f);
-                if (pp.Any(a => bounds.Contains(a.m_position)) && pl.Any(a => bounds.Contains(a.transform.position)))
-                {
-                    Main.Log.LogWarning($"Dungeon '{timer.dungeon.GetCleanName()}' couldn't regenerate because a player was found inside!");
-                    Schedule(timer.dungeon, Global.Config.DungeonResetPlayerProtectionInterval.Value);
-                    return false;
-                }
-            }
-
-            return true;
         }
+
+        public static bool Validate(Timer timer)
+            => ValidateOutOfRange(timer) && ValidateTooSoon(timer) && ValidateOverdue(timer) && ValidatePlayerProtection(timer);
 
         public static void Reset(DungeonGenerator dungeon, Bounds? bounds = null)
         {
@@ -129,15 +75,58 @@ namespace DungeonReset
 
             dungeon.Generate(ZoneSystem.SpawnMode.Full);
             dungeon.SetLastReset(DateTimeOffset.Now);
-            Main.Log.LogInfo($"Dungeon '{dungeon.GetCleanName()}' was regenerated successfully!");
+            Main.Log.LogInfo($"Dungeon '{dungeon.GetCleanName()}' was regenerated successfully!\n");
         }
 
-        public static void ClearTimers()
+        #region Validators
+
+        private static bool ValidateOutOfRange(Timer timer)
         {
-            var copy = new List<Timer>(Timer.Each);
-            foreach (var timer in copy)
-                timer.Destroy();
-            copy.Clear();
+            if (timer.dungeon != null)
+                return true;
+
+            Main.Log.LogWarning($"Dungeon 'null' couldn't regenerate because it was out of bounds!\n");
+            timer.Destroy();
+            return false;
         }
+
+        private static bool ValidateTooSoon(Timer timer)
+        {
+            if (Player.m_localPlayer != null)
+                return true;
+
+            Main.Log.LogWarning($"Dungeon '{timer.dungeon.GetCleanName()}' wanted to reset too early!\n");
+            Schedule(timer.dungeon, 10f);
+            return false;
+        }
+
+        private static bool ValidateOverdue(Timer timer)
+        {
+            if (timer.dungeon.IsOverdue())
+                return true;
+
+            Main.Log.LogWarning($"Dungeon '{timer.dungeon.GetCleanName()}' has already been reset!\n");
+            Schedule(timer.dungeon);
+            return false;
+        }
+
+        private static bool ValidatePlayerProtection(Timer timer)
+        {
+            if (!Configs.PlayerProtection.Value)
+                return true;
+
+            Bounds bounds = new(timer.dungeon.transform.position, timer.dungeon.m_zoneSize * 2f);
+            foreach (var player in Player.GetAllPlayers())
+                if (bounds.Contains(player.transform.position))
+                {
+                    Main.Log.LogWarning($"Dungeon '{timer.dungeon.GetCleanName()}' couldn't regenerate because a player was found inside!\n");
+                    Schedule(timer.dungeon, playerProtectionInterval);
+                    return false;
+                }
+
+            return true;
+        }
+
+        #endregion
     }
 }

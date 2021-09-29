@@ -7,9 +7,7 @@
             "label": "Debug Areas",
             "command": "C:/Program Files (x86)/Steam/steamapps/common/Valheim/valheim.exe",
             "problemMatcher": [],
-            "dependsOn": [
-                "Build Areas"
-            ]
+            "dependsOn": ["Build Areas"]
         },
         {
             "label": "Build Solution",

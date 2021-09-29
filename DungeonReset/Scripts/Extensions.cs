@@ -17,7 +17,7 @@ namespace DungeonReset
         public static float Remaining(this DungeonGenerator dungeon)
         {
             var since = (float)(DateTimeOffset.Now - dungeon.GetLastReset()).TotalSeconds;
-            var interval = Global.Config.DungeonResetInterval.Value;
+            var interval = Configs.Interval.Value;
             return since > interval ? 0f : interval - since;
         }
 

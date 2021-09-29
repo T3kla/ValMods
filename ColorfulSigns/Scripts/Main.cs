@@ -18,7 +18,7 @@ namespace ColorfulSigns
             MODNAME = "ColorfulSigns",
             AUTHOR = "Tekla",
             GUID = AUTHOR + "_" + MODNAME,
-            VERSION = "5.4.1500";
+            VERSION = "5.4.1600";
 
         internal readonly ManualLogSource log;
         internal readonly Harmony harmony;

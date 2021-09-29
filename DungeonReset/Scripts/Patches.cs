@@ -9,7 +9,7 @@ namespace DungeonReset
         [HarmonyPatch(typeof(DungeonGenerator), nameof(DungeonGenerator.Load))]
         public static void DungeonGenerator_Load_Post(DungeonGenerator __instance)
         {
-            if (!Global.Config.DungeonResetAllowedThemes.Value.Contains(__instance.m_themes.ToString()))
+            if (!Configs.AllowedThemes.Value.Contains(__instance.m_themes.ToString()))
                 return;
 
             Dungeons.OnDungeonLoad(__instance);
@@ -18,6 +18,6 @@ namespace DungeonReset
         [HarmonyPostfix]
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.OnDestroy))]
         public static void ZNet_OnDestroy_Post()
-            => Dungeons.ClearTimers();
+            => Dungeons.UnscheduleAll();
     }
 }

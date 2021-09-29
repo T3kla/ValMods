@@ -1,10 +1,10 @@
 {
     "name": "DungeonReset",
-    "description": "Finely tune the existing spawn system and create new monsters and spawners.",
-    "version_number": "1.1.3",
+    "description": "Allows manual and automatic reset of dungeons.",
+    "version_number": "5.4.1603",
     "website_url": "https://github.com/T3kla/ValMods/issues",
     "dependencies": [
-        "ValheimModding-Jotunn-2.2.9",
-        "denikson-BepInExPack_Valheim-5.4.1500"
+        "denikson-BepInExPack_Valheim-5.4.1600",
+        "ValheimModding-Jotunn-2.3.5"
     ]
 }

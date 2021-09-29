@@ -1,11 +1,16 @@
+‎<p align="center">[![Logo64](https://user-images.githubusercontent.com/23636548/135311233-240e15b7-73b1-4d2e-b37c-b0b527338504.png)](https://ko-fi.com/tekla)</p>
+
 # AutoRepair
 
 Interacting with a workbench will repair all items it can from your inventory. Checks for repairing have not been modified, which means that lower level workbenches shouldn't repair higher gear.
 
-## Issues & Suggestions
+## Stuff
 
-Please report issues and suggestions [here](https://github.com/T3kla/ValMods/issues) or tag me as `@Tekla` in [Valheim Modding](https://discord.gg/RBq2mzeu4z) Discord server.
-(use the correct channel or Jessica will get mad)
+-   **Bugs?** Report them [here](https://github.com/T3kla/ValMods/issues).
+
+-   **Features?** Propose them [here](https://github.com/T3kla/ValMods/issues).
+
+-   **Contact?** Discord: Tekla#1012 or tag me as @Tekla in [Valheim Modding](https://discord.gg/RBq2mzeu4z)
 
 ## Installation (manual)
 
@@ -15,9 +20,12 @@ If you are installing this manually, do the following
 2. Move the contents of `plugins` folder into `<GameDirectory>\Bepinex\plugins`.
 3. Run the game.
 
-![Logo64](https://user-images.githubusercontent.com/23636548/112306898-a1ac1f00-8ca0-11eb-8b3e-90e73dc7bad2.png)
-
 ## Changelog
+
+#### 5.4.1600
+
+-   Updated BepInEx version
+-   Updated README.md
 
 #### 5.4.1502
 

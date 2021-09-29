@@ -1,3 +1,5 @@
+‎<p align="center">[![Logo64](https://user-images.githubusercontent.com/23636548/135311233-240e15b7-73b1-4d2e-b37c-b0b527338504.png)](https://ko-fi.com/tekla)</p>
+
 # Areas
 
 With this mod you will be able to:
@@ -10,13 +12,11 @@ This mod uses multiple yaml files to function. Check the [Wiki](https://github.c
 
 ## Stuff
 
-**Bugs?** Report them [here](https://github.com/T3kla/ValMods/issues).
+-   **Bugs?** Report them [here](https://github.com/T3kla/ValMods/issues).
 
-**Features?** Propose them [here](https://github.com/T3kla/ValMods/issues).
+-   **Features?** Propose them [here](https://github.com/T3kla/ValMods/issues).
 
-**Questions?** The nicest way would be [Nexus](https://www.nexusmods.com/valheim/mods/944?tab=posts) posts.
-
-**Contact?** Discord: Tekla#1012 or tag me as @Tekla in [Valheim Modding](https://discord.gg/RBq2mzeu4z)
+-   **Contact?** Discord: Tekla#1012 or tag me as @Tekla in [Valheim Modding](https://discord.gg/RBq2mzeu4z)
 
 ## Installation (manual)
 
@@ -25,8 +25,6 @@ If you are installing this manually, do the following
 1. Extract the archive into a folder. **Do not extract into the game folder.**
 2. Move the contents of `plugins` folder into `<GameDirectory>\Bepinex\plugins`.
 3. Run the game.
-
-![Logo64](https://user-images.githubusercontent.com/23636548/112306898-a1ac1f00-8ca0-11eb-8b3e-90e73dc7bad2.png)
 
 ## Changelog
 

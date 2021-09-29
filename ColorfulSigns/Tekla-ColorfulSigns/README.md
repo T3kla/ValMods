@@ -1,3 +1,5 @@
+‎<p align="center">[![Logo64](https://user-images.githubusercontent.com/23636548/135311233-240e15b7-73b1-4d2e-b37c-b0b527338504.png)](https://ko-fi.com/tekla)</p>
+
 # ColorfulSigns
 
 Enable Unity's enriched text in signs and change default color to white.
@@ -18,8 +20,8 @@ Inside the plugin folder there is now a file called "color_library.json". You wi
 
 ```json
 {
-  "red": "#a12d2d",
-  "blue": "#292fcf"
+    "red": "#a12d2d",
+    "blue": "#292fcf"
 }
 ```
 
@@ -27,12 +29,16 @@ This will turn "<color=red>" to "<color=#a12d2d>" when inputting a sign
 
 When editing the Json:
 
-- Remember that the last element doesn't have a comma at the end
-- Don't use special characters, try to stick to alphanumerical values.
+-   Remember that the last element doesn't have a comma at the end
+-   Don't use special characters, try to stick to alphanumerical values.
 
-## Issues & Suggestions
+## Stuff
 
-Please report issues and suggestions [here](https://github.com/T3kla/ValMods/issues) or tag me as `@Tekla` in [Valheim Modding](https://discord.gg/RBq2mzeu4z) Discord server. (use the correct channel or Jessica will get mad)
+-   **Bugs?** Report them [here](https://github.com/T3kla/ValMods/issues).
+
+-   **Features?** Propose them [here](https://github.com/T3kla/ValMods/issues).
+
+-   **Contact?** Discord: Tekla#1012 or tag me as @Tekla in [Valheim Modding](https://discord.gg/RBq2mzeu4z)
 
 ## Installation (manual)
 
@@ -42,37 +48,40 @@ If you are installing this manually, do the following
 2. Move the contents of `plugins` folder into `<GameDirectory>\Bepinex\plugins`.
 3. Run the game.
 
-![Logo64](https://user-images.githubusercontent.com/23636548/112306898-a1ac1f00-8ca0-11eb-8b3e-90e73dc7bad2.png)
-
 ## Changelog
+
+#### 5.4.1600
+
+-   Updated BepInEx version
+-   Updated README.md
 
 #### 5.4.1500
 
-- BepInEx 5.4.1500
+-   Updated BepInEx version
 
 #### 5.4.1100
 
-- Updated BepInEx version
+-   Updated BepInEx version
 
 #### 5.4.902
 
-- Changed mod Icon
+-   Changed mod Icon
 
 #### 5.4.901
 
-- Dumping dependencies into plugin folder because having separate folders break the mod for some users
+-   Dumping dependencies into plugin folder because having separate folders break the mod for some users
 
 #### 5.4.900
 
-- Updated Bepinex version
+-   Updated BepInEx version
 
 #### 5.4.801
 
-- New Config setting to set default color
-- New Config setting to enable or disable Color Library
-- New Config setting to stablish max font size
-- Color Library functionality
+-   New Config setting to set default color
+-   New Config setting to enable or disable Color Library
+-   New Config setting to stablish max font size
+-   Color Library functionality
 
 #### 5.4.800
 
-- Stuff works
+-   Stuff works

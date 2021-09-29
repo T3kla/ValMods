@@ -1,7 +1,7 @@
 {
     "name": "AutoRepair",
     "description": "Interacting with a workbench will repair all items it can from your inventory.",
-    "version_number": "5.4.1502",
+    "version_number": "5.4.1602",
     "website_url": "https://github.com/T3kla/ValMods/issues",
-    "dependencies": ["denikson-BepInExPack_Valheim-5.4.1502"]
+    "dependencies": ["denikson-BepInExPack_Valheim-5.4.1600"]
 }
