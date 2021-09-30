@@ -42,7 +42,7 @@ namespace DungeonReset
         }
 
         public static bool Validate(Timer timer)
-            => ValidateOutOfRange(timer) && ValidateTooSoon(timer) && ValidateOverdue(timer) && ValidatePlayerProtection(timer);
+            => ValidateOutOfRange(timer) && ValidateTooEarly(timer) && ValidateOverdue(timer) && ValidatePlayerProtection(timer);
 
         public static void Reset(DungeonGenerator dungeon, Bounds? bounds = null)
         {
@@ -90,7 +90,7 @@ namespace DungeonReset
             return false;
         }
 
-        private static bool ValidateTooSoon(Timer timer)
+        private static bool ValidateTooEarly(Timer timer)
         {
             if (Player.m_localPlayer != null)
                 return true;

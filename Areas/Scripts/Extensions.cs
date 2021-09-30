@@ -115,7 +115,7 @@ namespace Areas
             }
             catch (Exception e)
             {
-                Main.Log.LogError($"Failed Conversion \"float[]\" to \"Vector2\"\n{e.Message}\n{e.StackTrace}");
+                Main.Log.LogError($"Failed Conversion \"float[]\" to \"Vector2\"\n{e.Message}\n{e.StackTrace}\n");
                 return v;
             }
 

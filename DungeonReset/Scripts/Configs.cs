@@ -10,6 +10,8 @@ namespace DungeonReset
         public static ConfigEntry<bool> PlayerProtection;
         public static ConfigEntry<float> PlayerProtectionInterval;
 
+        public static ConfigEntry<bool> CommandsEnable;
+
         public static ConfigEntry<bool> LoggerEnable;
 
         public static void Awake(BepInEx.BaseUnityPlugin Plugin)
@@ -29,6 +31,10 @@ namespace DungeonReset
             PlayerProtectionInterval = Plugin.Config.Bind("Dungeon Reset", "Player Protection Interval", 600f,
                 new ConfigDescription("Time it takes to retry a reset on a dungeon that wasn't reset due to Player Protection.", null,
                 new ConfigurationManagerAttributes { IsAdminOnly = true }));
+
+            CommandsEnable = Plugin.Config.Bind("Commands", "Enable", true,
+                new ConfigDescription("Enables or disables commands.", null,
+                new ConfigurationManagerAttributes { IsAdminOnly = false }));
 
             LoggerEnable = Plugin.Config.Bind("Logger", "Enable", true,
                 new ConfigDescription("Enables or disables debugging logs.", null,

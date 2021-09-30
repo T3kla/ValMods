@@ -8,3 +8,7 @@ Areas/Unity/Packages
 Areas/Unity/*.csproj
 Areas/Unity/*.sln
 packages
+__Releases
+.vs
+*/obj
+*/Tekla-*/plugins

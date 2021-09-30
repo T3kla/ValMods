@@ -20,13 +20,13 @@ namespace DungeonReset
             this.interval = interval;
 
             Each.Find(ctx => ctx.dungeon == this.dungeon)?.Destroy();
-            task = Main.Instance.StartCoroutine(Cycle());
+            task = Main.Instance?.StartCoroutine(Cycle());
             Each.Add(this);
         }
 
         public void Destroy()
         {
-            Main.Instance.StopCoroutine(task);
+            Main.Instance?.StopCoroutine(task);
             task = null;
             Each.Remove(this);
         }

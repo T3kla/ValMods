@@ -1,6 +1,0 @@
-C:\Repos\Valheim.TeklaMods\DungeonReset\obj\Release\DungeonReset.csproj.AssemblyReference.cache
-C:\Repos\Valheim.TeklaMods\DungeonReset\obj\Release\DungeonReset.csproj.CoreCompileInputs.cache
-C:\Repos\Valheim.TeklaMods\DungeonReset\Tekla-DungeonReset\plugins\DungeonReset.dll
-C:\Repos\Valheim.TeklaMods\DungeonReset\Tekla-DungeonReset\plugins\DungeonReset.pdb
-C:\Repos\Valheim.TeklaMods\DungeonReset\obj\Release\DungeonReset.dll
-C:\Repos\Valheim.TeklaMods\DungeonReset\obj\Release\DungeonReset.pdb

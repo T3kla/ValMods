@@ -42,12 +42,12 @@ namespace Areas.NetCode
             Global.RawRemoteData.CSData = zpg.ReadString();
             Global.RawRemoteData.SAData = zpg.ReadString();
 
-            Main.Log.LogInfo($"Received data as Areas count is \"{Global.RawRemoteData.Areas.Length}\"");
-            Main.Log.LogInfo($"Received data as CTData count is \"{Global.RawRemoteData.CTData.Length}\"");
-            Main.Log.LogInfo($"Received data as VAData count is \"{Global.RawRemoteData.VAData.Length}\"");
-            Main.Log.LogInfo($"Received data as SSData count is \"{Global.RawRemoteData.SSData.Length}\"");
-            Main.Log.LogInfo($"Received data as CSData count is \"{Global.RawRemoteData.CSData.Length}\"");
-            Main.Log.LogInfo($"Received data as SAData count is \"{Global.RawRemoteData.SAData.Length}\"");
+            Main.Log.LogInfo($"Received data as Areas count is \"{Global.RawRemoteData.Areas.Length}\"\n");
+            Main.Log.LogInfo($"Received data as CTData count is \"{Global.RawRemoteData.CTData.Length}\"\n");
+            Main.Log.LogInfo($"Received data as VAData count is \"{Global.RawRemoteData.VAData.Length}\"\n");
+            Main.Log.LogInfo($"Received data as SSData count is \"{Global.RawRemoteData.SSData.Length}\"\n");
+            Main.Log.LogInfo($"Received data as CSData count is \"{Global.RawRemoteData.CSData.Length}\"\n");
+            Main.Log.LogInfo($"Received data as SAData count is \"{Global.RawRemoteData.SAData.Length}\"\n");
 
             Main.LoadData(EDS.Remote);
 

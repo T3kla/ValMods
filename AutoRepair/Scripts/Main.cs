@@ -6,14 +6,14 @@ using HarmonyLib;
 
 namespace AutoRepair
 {
-    [BepInPlugin(GUID, MODNAME, VERSION)]
+    [BepInPlugin(GUID, NAME, VERSION)]
     public class Main : BaseUnityPlugin
     {
         #region[Declarations]
         public const string
-            MODNAME = "AutoRepair",
+            NAME = "AutoRepair",
             AUTHOR = "Tekla",
-            GUID = AUTHOR + "_" + MODNAME,
+            GUID = AUTHOR + "_" + NAME,
             VERSION = "5.4.1600";
 
         internal readonly ManualLogSource log;
@@ -22,9 +22,11 @@ namespace AutoRepair
         public readonly string modFolder;
         #endregion
 
+        internal static ManualLogSource Log;
+
         public Main()
         {
-            log = Logger;
+            Log = new ManualLogSource(NAME);
             harmony = new Harmony(GUID);
             assembly = Assembly.GetExecutingAssembly();
             modFolder = Path.GetDirectoryName(assembly.Location);
@@ -32,6 +34,7 @@ namespace AutoRepair
 
         public void Start()
         {
+            BepInEx.Logging.Logger.Sources.Add(Log);
             harmony.PatchAll(assembly);
         }
     }

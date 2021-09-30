@@ -18,7 +18,7 @@ namespace Areas.Patches
         [HarmonyPatch(typeof(Localization), nameof(Localization.SetupLanguage))]
         public static void Localization_SetupLanguage_Post(Localization __instance, ref string language)
         {
-            VariantsHandler.OnLanguageChanged(language);
+            Variants.OnLanguageChanged(language);
         }
 
         // ---------------------------------------------------------------------------------------------------------- PLAYER
@@ -26,24 +26,24 @@ namespace Areas.Patches
         [HarmonyPatch(typeof(Player), nameof(Player.OnSpawned))]
         public static void Player_OnSpawned(Player __instance)
         {
-            Main.Log.LogInfo($"ZoneLookup try Start because Player.OnSpawned");
-            AreaHandler.ZoneLookup_Start();
+            Main.Log.LogInfo($"ZoneLookup try Start because Player.OnSpawned\n");
+            Areas.ZoneLookup_Start();
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Player), nameof(Player.OnRespawn))]
         public static void Player_OnRespawn(Player __instance)
         {
-            Main.Log.LogInfo($"ZoneLookup try Start because Player.OnRespawn");
-            AreaHandler.ZoneLookup_Start();
+            Main.Log.LogInfo($"ZoneLookup try Start because Player.OnRespawn\n");
+            Areas.ZoneLookup_Start();
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Player), nameof(Player.OnDeath))]
         public static void Player_OnDeath(Player __instance)
         {
-            Main.Log.LogInfo($"ZoneLookup try Stop because Player.OnDeath");
-            AreaHandler.ZoneLookup_Stop();
+            Main.Log.LogInfo($"ZoneLookup try Stop because Player.OnDeath\n");
+            Areas.ZoneLookup_Stop();
         }
 
         // ---------------------------------------------------------------------------------------------------------- RCP STUFF
@@ -62,7 +62,7 @@ namespace Areas.Patches
         {
             var type = __instance.GetInstanceType();
 
-            Main.Log.LogInfo($"Instance is \"{type}\"");
+            Main.Log.LogInfo($"Instance is \"{type}\"\n");
 
             switch (type)
             {
@@ -94,7 +94,7 @@ namespace Areas.Patches
 
             long client = __instance.GetPeer(rpc).m_uid;
 
-            Main.Log.LogInfo($"Instance is sending Data to client \"{client}\"");
+            Main.Log.LogInfo($"Instance is sending Data to client \"{client}\"\n");
             RPC.SendDataToClient(client);
         }
 
@@ -106,7 +106,7 @@ namespace Areas.Patches
 
             if (ZNet.instance.GetInstanceType() == ZNetExtension.ZNetInstanceType.Client) return; // Send when Server or Local
 
-            Main.Log.LogInfo($"Instance is sending Data to client \"{peerID}\"");
+            Main.Log.LogInfo($"Instance is sending Data to client \"{peerID}\"\n");
             RPC.SendDataToClient(peerID);
 
         }
@@ -139,7 +139,7 @@ namespace Areas.Patches
             if (__instance is null) return;
             if (__instance.IsPlayer()) return;
 
-            CritterHandler.ProcessAwakenCritter(__instance);
+            Critters.ProcessAwakenCritter(__instance);
 
         }
 
@@ -162,7 +162,7 @@ namespace Areas.Patches
         public static void LevelEffects_SetupLevelVisualization_Post(LevelEffects __instance, ref int level)
         {
 
-            CritterHandler.Apply_CT_Evolution(__instance.m_character);
+            Critters.Apply_CT_Evolution(__instance.m_character);
 
         }
 
@@ -173,7 +173,7 @@ namespace Areas.Patches
         public static void CharacterDrop_GenerateDropList_Post(CharacterDrop __instance, ref List<KeyValuePair<GameObject, int>> __result)
         {
 
-            if (!Global.Config.LootEnable.Value) return;
+            if (!Configs.LootEnable.Value) return;
 
             List<KeyValuePair<GameObject, int>> list = new();
 
@@ -187,11 +187,11 @@ namespace Areas.Patches
                     lvlReward = Mathf.FloorToInt(Mathf.Max(1, 2 * (lvl - 1)));
                 else
                 {
-                    int adjustLvl = Mathf.FloorToInt((1 / Global.Config.LootFix.Value) * lvl + 3);
+                    int adjustLvl = Mathf.FloorToInt((1 / Configs.LootFix.Value) * lvl + 3);
                     lvlReward = Mathf.FloorToInt(Mathf.Max(1, 2 * (adjustLvl - 1)));
                 }
 
-                Main.Log.LogInfo($"Calculating DropList for \"Lv.{lvl} {__instance.m_character.gameObject.GetCleanName()}\"");
+                Main.Log.LogInfo($"Calculating DropList for \"Lv.{lvl} {__instance.m_character.gameObject.GetCleanName()}\"\n");
             }
 
             foreach (CharacterDrop.Drop drop in __instance.m_drops)
@@ -239,7 +239,7 @@ namespace Areas.Patches
                     // i+2 = ldloc.0 loads from stloc.0 which should be the gameobject
                     codes.Add(new CodeInstruction(OpCodes.Ldloc_0));
                     // i+3 = call the modify critter info where the first arg is ldloc.0
-                    codes.Add(new CodeInstruction(OpCodes.Call, CritterHandler.CT_SetHolderInfo));
+                    codes.Add(new CodeInstruction(OpCodes.Call, Critters.CT_SetHolderInfo));
 
                     // this jumps i+1 because i'm already adding it
                     i++;
@@ -257,7 +257,7 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SpawnSystem), nameof(SpawnSystem.Spawn))]
-        public static void SpawnSystem_Spawn_Post(SpawnSystem __instance) { CritterHandler.ProcessCapturedCritter(__instance); }
+        public static void SpawnSystem_Spawn_Post(SpawnSystem __instance) { Critters.ProcessCapturedCritter(__instance); }
 
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(CreatureSpawner), nameof(CreatureSpawner.Spawn))]
@@ -281,7 +281,7 @@ namespace Areas.Patches
                     // i+2 = ldloc.3 loads from stloc.3 which should be the gameobject
                     codes.Add(new CodeInstruction(OpCodes.Ldloc_3));
                     // i+3 = call the modify critter info where the first arg is ldloc.3
-                    codes.Add(new CodeInstruction(OpCodes.Call, CritterHandler.CT_SetHolderInfo));
+                    codes.Add(new CodeInstruction(OpCodes.Call, Critters.CT_SetHolderInfo));
 
                     // this jumps i+1 because i'm already adding it
                     i++;
@@ -299,7 +299,7 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CreatureSpawner), nameof(CreatureSpawner.Spawn))]
-        public static void CreatureSpawner_Spawn_Post(CreatureSpawner __instance) { CritterHandler.ProcessCapturedCritter(__instance); }
+        public static void CreatureSpawner_Spawn_Post(CreatureSpawner __instance) { Critters.ProcessCapturedCritter(__instance); }
 
         [HarmonyTranspiler]
         [HarmonyPatch(typeof(SpawnArea), nameof(SpawnArea.SpawnOne))]
@@ -323,7 +323,7 @@ namespace Areas.Patches
                     // i+2 = ldloc.s V_4 loads from stloc.s V_4 which should be the gameobject
                     codes.Add(new CodeInstruction(OpCodes.Ldloc_S, 4));
                     // i+3 = call the modify critter info where the first arg is ldloc.s V_4
-                    codes.Add(new CodeInstruction(OpCodes.Call, CritterHandler.CT_SetHolderInfo));
+                    codes.Add(new CodeInstruction(OpCodes.Call, Critters.CT_SetHolderInfo));
 
                     // this jumps i+1 because i'm already adding it
                     i++;
@@ -341,7 +341,7 @@ namespace Areas.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SpawnArea), nameof(SpawnArea.SpawnOne))]
-        public static void SpawnArea_SpawnOne_Post(SpawnArea __instance) => CritterHandler.ProcessCapturedCritter(__instance);
+        public static void SpawnArea_SpawnOne_Post(SpawnArea __instance) => Critters.ProcessCapturedCritter(__instance);
 
 
         // ---------------------------------------------------------------------------------------------------------- RAGDOLL SETUP
@@ -358,7 +358,7 @@ namespace Areas.Patches
             if (renderer != null) __instance.m_mainModel.materials = new Material[] { renderer.material };
 
             string ctName = characterDrop.m_character.gameObject.GetCleanName();
-            Transform prefab = PrefabManager.Instance.GetPrefab(VariantsHandler.FindOriginal(ctName) ?? ctName).transform;
+            Transform prefab = PrefabManager.Instance.GetPrefab(Variants.FindOriginal(ctName) ?? ctName).transform;
             if (prefab == null) return;
 
             Vector3 rag = __instance.transform.localScale;
@@ -376,15 +376,15 @@ namespace Areas.Patches
         // ---------------------------------------------------------------------------------------------------------- MODIFY SPAWNERS
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SpawnSystem), nameof(SpawnSystem.Awake))]
-        public static void SpawnSystem_Awake_Post(SpawnSystem __instance) { SpawnerHandler.ProcessCapturedSS(__instance); }
+        public static void SpawnSystem_Awake_Post(SpawnSystem __instance) { Spawners.ProcessCapturedSS(__instance); }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CreatureSpawner), nameof(CreatureSpawner.Awake))]
-        public static void CreatureSpawner_Awake_Post(CreatureSpawner __instance) { SpawnerHandler.ProcessCapturedCS(__instance); }
+        public static void CreatureSpawner_Awake_Post(CreatureSpawner __instance) { Spawners.ProcessCapturedCS(__instance); }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(SpawnArea), nameof(SpawnArea.Awake))]
-        public static void SpawnArea_Awake_Post(SpawnArea __instance) { SpawnerHandler.ProcessCapturedSA(__instance); }
+        public static void SpawnArea_Awake_Post(SpawnArea __instance) { Spawners.ProcessCapturedSA(__instance); }
 
     }
 

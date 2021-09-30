@@ -47,6 +47,10 @@ If you are installing this manually, do the following
 
 ## Changelog
 
+#### 5.4.1604
+
+-   Fix: NullReferenceException when exiting game from play scene
+
 #### 5.4.1603
 
 -   Updated README.md

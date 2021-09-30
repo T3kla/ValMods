@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using UnityEngine;
 
 namespace AutoRepair.Patches
 {
@@ -22,7 +21,7 @@ namespace AutoRepair.Patches
             if (count > 0)
             {
                 Player.m_localPlayer.Message(MessageHud.MessageType.Center, " ", 0, null);
-                Debug.Log($"[AutoRepair] Repaired {count} objects!");
+                Main.Log.LogInfo($"[AutoRepair] Repaired {count} objects!\n");
             }
         }
     }

@@ -5,13 +5,9 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace Areas.TYaml
 {
-
     public sealed class Serialization
     {
-
-        /// <summary> Deserialize any object into the specified type. </summary>
-        /// <return> If deserialization fails, default type will be returned. </return>
-        public static T Deserialize<T>(string value)
+        public static T Deserialize<T>(string str)
         {
             try
             {
@@ -20,87 +16,49 @@ namespace Areas.TYaml
                     .IgnoreUnmatchedProperties()
                     .Build();
 
-                var reader = new StringReader(value);
-                var data = deserializer.Deserialize<T>(reader);
-                reader.Close();
-
-                return (T)data;
+                using var reader = new StringReader(str);
+                return deserializer.Deserialize<T>(reader);
             }
-            catch (Exception e)
-            {
-                Main.Log.LogError($"Couldn't deserialize object\n{e.Message}\n{e.StackTrace}");
-                return default(T);
-            }
+            catch (Exception) { throw; }
         }
 
-        /// <summary> Serialize any object found in the given path into a string. </summary>
-        /// <return> If serialization fails, empty string "" will be returned. </return>
         public static string Serialize(object obj)
         {
             try
             {
-                if (obj == null) return "";
-
-                var serializer = new SerializerBuilder()
+                return new SerializerBuilder()
                     .WithNamingConvention(UnderscoredNamingConvention.Instance)
-                    .Build();
-
-                return serializer.Serialize(obj); ;
+                    .Build()
+                    .Serialize(obj);
             }
-            catch (Exception e)
-            {
-                Main.Log.LogError($"Couldn't serialize object \"{obj.ToString()}\"\n{e.Message}\n{e.StackTrace}");
-                return "";
-            }
+            catch (Exception) { throw; }
         }
 
-        /// <summary> Deserialize any object found in the given path into the specified type. </summary>
         public static T DeserializeFile<T>(string path)
         {
             try
             {
-                var deserializer = new DeserializerBuilder()
+                return new DeserializerBuilder()
                     .WithNamingConvention(UnderscoredNamingConvention.Instance)
                     .IgnoreUnmatchedProperties()
-                    .Build();
-
-                var data = deserializer.Deserialize<T>(File.ReadAllText(path));
-
-                Main.Log.LogInfo($"Deserialized object \"{Path.GetFileName(path)}\" from \"{path}\"");
-                return data;
+                    .Build()
+                    .Deserialize<T>(File.ReadAllText(path));
             }
-            catch (Exception e)
-            {
-                Main.Log.LogError($"Couldn't deserialize object \"{Path.GetFileName(path)}\" from \"{path}\"\n{e.Message}\n{e.StackTrace}");
-                return default(T);
-            }
+            catch (Exception) { throw; }
         }
 
-        /// <summary> Serialize any object found in the given path into a string. </summary>
-        /// <return> If serialization fails, empty string "" will be returned. </return>
         public static void SerializeFile(object obj, string fileName, string path)
         {
             try
             {
-                if (obj == null) return;
-
                 var serializer = new SerializerBuilder()
                     .WithNamingConvention(UnderscoredNamingConvention.Instance)
                     .Build();
 
-                TextWriter tw = File.CreateText(path + fileName);
-                serializer.Serialize(tw, obj);
-
-                tw.Close();
-
-                Main.Log.LogInfo($"Serialized object with name \"{fileName}\" into \"{path}\"");
+                using var sw = File.CreateText(path + fileName);
+                serializer.Serialize(sw, obj);
             }
-            catch (Exception e)
-            {
-                Main.Log.LogError($"Couldn't serialize object \"{fileName}\"\n{e.Message}\n{e.StackTrace}");
-            }
+            catch (Exception) { throw; }
         }
-
     }
-
 }

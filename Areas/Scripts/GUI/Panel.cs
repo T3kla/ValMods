@@ -53,8 +53,8 @@ namespace Areas
             Listeners();
 
             // Position Window
-            var defPos = Global.Config.GUI_DefaultPosition.Value.Split(':');
-            var defSize = Global.Config.GUI_DefaultSize.Value.Split(':');
+            var defPos = Configs.GUI_DefaultPosition.Value.Split(':');
+            var defSize = Configs.GUI_DefaultSize.Value.Split(':');
             int.TryParse(defPos[0], out int defPosX); int.TryParse(defPos[1], out int defPosY);
             int.TryParse(defSize[0], out int defSizeX); int.TryParse(defSize[1], out int defSizeY);
             self.sizeDelta = new Vector2(defSizeX, defSizeY);
@@ -100,8 +100,8 @@ namespace Areas
             GUIManager.BlockInput(false);
 
             if (!savePosSize) return;
-            Global.Config.GUI_DefaultPosition.Value = $"{self.anchoredPosition.x:F0}:{self.anchoredPosition.y:F0}";
-            Global.Config.GUI_DefaultSize.Value = $"{self.sizeDelta.x:F0}:{self.sizeDelta.y:F0}";
+            Configs.GUI_DefaultPosition.Value = $"{self.anchoredPosition.x:F0}:{self.anchoredPosition.y:F0}";
+            Configs.GUI_DefaultSize.Value = $"{self.sizeDelta.x:F0}:{self.sizeDelta.y:F0}";
         }
 
         #region UI Events

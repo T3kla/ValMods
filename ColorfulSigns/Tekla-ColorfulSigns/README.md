@@ -50,10 +50,15 @@ If you are installing this manually, do the following
 
 ## Changelog
 
+#### 5.4.1601
+
+-   Optimisations
+
 #### 5.4.1600
 
 -   Updated BepInEx version
 -   Updated README.md
+-   Removed color_library.json so it doesn't cause accidental overrides. Now it gets generated if no library is found.
 
 #### 5.4.1500
 

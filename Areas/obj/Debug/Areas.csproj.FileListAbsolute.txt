@@ -1,6 +1,0 @@
-C:\Repos\Tekla.Mods\Areas\bin\Debug\Areas.dll
-C:\Repos\Tekla.Mods\Areas\bin\Debug\Areas.pdb
-C:\Repos\Tekla.Mods\Areas\obj\Debug\Areas.csprojAssemblyReference.cache
-C:\Repos\Tekla.Mods\Areas\obj\Debug\Areas.csproj.CoreCompileInputs.cache
-C:\Repos\Tekla.Mods\Areas\obj\Debug\Areas.dll
-C:\Repos\Tekla.Mods\Areas\obj\Debug\Areas.pdb

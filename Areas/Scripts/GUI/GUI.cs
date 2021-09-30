@@ -15,9 +15,9 @@ namespace Areas
         {
             GUIManager.OnCustomGUIAvailable += OnPixelFix;
 
-            TogglePanel = new ButtonConfig { Name = "GUI_TogglePanel", Config = Global.Config.GUI_TogglePanel, ActiveInGUI = true };
+            TogglePanel = new ButtonConfig { Name = "GUI_TogglePanel", Config = Configs.GUI_TogglePanel, ActiveInGUI = true };
             InputManager.Instance.AddButton(Main.GUID, TogglePanel);
-            ToggleMouse = new ButtonConfig { Name = "GUI_ToggleMouse", Config = Global.Config.GUI_ToggleMouse, ActiveInGUI = true };
+            ToggleMouse = new ButtonConfig { Name = "GUI_ToggleMouse", Config = Configs.GUI_ToggleMouse, ActiveInGUI = true };
             InputManager.Instance.AddButton(Main.GUID, ToggleMouse);
 
             var bundle = AssetUtils.LoadAssetBundle(Global.Path.Assets);
@@ -40,7 +40,7 @@ namespace Areas
                 return;
             if (Panel.Prefab is null || Marker.Prefab is null || BtnCS.Prefab is null)
             {
-                Main.Log.LogError($"Areas GUI assets didn't load correctly!");
+                Main.Log.LogError($"Areas GUI assets didn't load correctly!\n");
                 return;
             }
 

@@ -17,7 +17,7 @@ namespace DungeonReset
             NAME = "DungeonReset",
             AUTHOR = "Tekla",
             GUID = AUTHOR + "_" + NAME,
-            VERSION = "5.4.1603";
+            VERSION = "5.4.1604";
 
         internal readonly Harmony Harmony;
         internal readonly Assembly Assembly;
@@ -39,14 +39,17 @@ namespace DungeonReset
         public void Awake()
         {
             Configs.Awake(this);
-            Commands.Awake();
 
-            if (!Configs.Enable.Value)
-                return;
+
+            if (!Configs.CommandsEnable.Value)
+                Commands.Awake();
+
             if (Configs.LoggerEnable.Value)
                 BepInEx.Logging.Logger.Sources.Add(Log);
 
-            Harmony.PatchAll(Assembly);
+            Log.LogInfo($"<color=#FBC02D> lmao <color>");
+            if (Configs.Enable.Value)
+                Harmony.PatchAll(Assembly);
         }
     }
 }

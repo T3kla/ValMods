@@ -30,65 +30,35 @@ namespace Areas
         public static Main Instance;
         public static ManualLogSource Log;
 
-        internal readonly Harmony harmony;
-        internal readonly Assembly assembly;
-        public readonly string modFolder;
+        internal readonly Harmony Harmony;
+        internal readonly Assembly Assembly;
+        internal readonly string Folder;
 
         public Main()
         {
             Log = new ManualLogSource(NAME);
-            harmony = new Harmony(GUID);
-            assembly = Assembly.GetExecutingAssembly();
-            Global.Path.ModFolder = Path.GetDirectoryName(assembly.Location);
+            Harmony = new Harmony(GUID);
+            Assembly = Assembly.GetExecutingAssembly();
+            Folder = Path.GetDirectoryName(Assembly.Location);
+            Instance = this;
         }
 
         private void Awake()
         {
-            Instance = this;
 
-            Configs();
+            Configs.Awake(this);
+
             LoadDataFromDisk();
 
-            OnDataLoaded += VariantsHandler.OnDataLoaded;
-            OnDataReset += CritterHandler.OnDataReset;
-            OnDataReset += VariantsHandler.OnDataReset;
+            OnDataLoaded += Variants.OnDataLoaded;
+            OnDataReset += Critters.OnDataReset;
+            OnDataReset += Variants.OnDataReset;
 
             // Areas.GUI.Awake();
-            SpawnerHandler.Awake();
+            Spawners.Awake();
             // CommandHandler.Awake();
 
-            harmony.PatchAll(assembly);
-        }
-
-        private void Configs()
-        {
-            Config.SaveOnConfigSet = true;
-
-            Global.Config.GUI_TogglePanel = Config.Bind("GUI", "Panel Toggle", KeyCode.PageUp,
-                new ConfigDescription("Set the key binding to open and close Areas GUI.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = false }));
-            Global.Config.GUI_ToggleMouse = Config.Bind("GUI", "Mouse Toggle", KeyCode.PageDown,
-                new ConfigDescription("Set the key binding to show and hide mouse.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = false }));
-            Global.Config.GUI_DefaultPosition = Config.Bind("GUI", "Default Position", "0:0",
-                new ConfigDescription("Default position at which Areas GUI will appear.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = false }));
-            Global.Config.GUI_DefaultSize = Config.Bind("GUI", "Default Size", "1600:800",
-                new ConfigDescription("Default size at which Areas GUI will appear.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = false }));
-
-            Global.Config.LootEnable = Config.Bind("Loot Fix", "Enable", true,
-                new ConfigDescription("Enables or disables loot fixing.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Global.Config.LootFix = Config.Bind("Loot Fix", "Value", 10,
-                new ConfigDescription("Number of levels it takes to get the next vanilla level reward. Only for Lv.3+. For example \"5\" will result in: [Lv.5 monster = Lv.4 reward] [Lv.10 monster = Lv.5 reward] [Lv.15 monster = Lv.6 reward]",
-                new AcceptableValueRange<int>(1, 50),
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
-
-            Global.Config.LoggerEnable = Config.Bind("Logger", "Enable", true,
-                new ConfigDescription("Enables or disables debugging logs.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = false }));
-            if (Global.Config.LoggerEnable.Value) BepInEx.Logging.Logger.Sources.Add(Log);
+            Harmony.PatchAll(Assembly);
         }
 
         private void LoadDataFromDisk()
@@ -105,7 +75,7 @@ namespace Areas
         {
             RawData data = source == EDS.Remote ? Global.RawRemoteData : Global.RawLocalData;
 
-            Main.Log.LogInfo($"Instance is loading {source} Data");
+            Main.Log.LogInfo($"Instance is loading {source} Data\n");
             Global.CurrentData.Areas = Serialization.Deserialize<Dictionary<string, Area>>(data.Areas);
             Global.CurrentData.CTMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CTData>>>(data.CTData);
             Global.CurrentData.VAMods = Serialization.Deserialize<Dictionary<string, VAData>>(data.VAData);
@@ -118,7 +88,7 @@ namespace Areas
 
         public static void ResetData(EDS source)
         {
-            Main.Log.LogInfo($"Instance is resetting {source} Data");
+            Main.Log.LogInfo($"Instance is resetting {source} Data\n");
 
             switch (source)
             {

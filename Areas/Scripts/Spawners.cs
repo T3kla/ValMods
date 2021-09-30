@@ -7,7 +7,7 @@ using SpawnData = SpawnSystem.SpawnData;
 namespace Areas
 {
 
-    public static class SpawnerHandler
+    public static class Spawners
     {
 
         private static bool SS_DataDicFlag = false;

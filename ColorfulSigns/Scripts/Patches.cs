@@ -10,14 +10,17 @@ namespace ColorfulSigns
         [HarmonyPatch(typeof(Sign), nameof(Sign.Awake))]
         public static bool Sing_Awake(Sign __instance)
         {
-            Color _default = "#ededed".ToColor();
-            Color custom = Globals.configDefColor.Value.ToColor();
+            Color mDef = "#ededed".ToColor();
+            Color cDef = Configs.DefaultColor.Value.ToColor();
+
+            if (__instance == null)
+                return true;
 
             __instance.m_textWidget.supportRichText = true;
             __instance.m_textWidget.material = null;
             __instance.m_characterLimit = 999;
-            __instance.m_textWidget.color = string.IsNullOrEmpty(Globals.configDefColor.Value) ? default : custom;
-            __instance.m_textWidget.resizeTextMaxSize = Globals.configMaxFontSize.Value;
+            __instance.m_textWidget.color = string.IsNullOrEmpty(Configs.DefaultColor.Value) ? mDef : cDef;
+            __instance.m_textWidget.resizeTextMaxSize = Configs.MaxFontSize.Value;
 
             return true;
         }
@@ -26,13 +29,20 @@ namespace ColorfulSigns
         [HarmonyPatch(typeof(Sign), nameof(Sign.SetText))]
         public static bool Sing_SetText(Sign __instance, ref string text)
         {
-            if (Globals.configEnableColorLibrary.Value)
-                foreach (var item in Globals.colorLibrary.Keys)
-                    if (text.Contains($"<color={item}>"))
-                    {
-                        string newStr = text.Replace($"<color={item}>", $"<color={Globals.colorLibrary[item]}>");
-                        text = newStr;
-                    }
+            if (__instance == null)
+                return true;
+
+            var str = text;
+
+            if (string.IsNullOrEmpty(str))
+                str = "";
+
+            if (Configs.EnableColorLibrary.Value)
+                foreach (var item in ColorfulSigns.Library.Keys)
+                    if (str.Contains($"<color={item}>"))
+                        str = str.Replace($"<color={item}>", $"<color={ColorfulSigns.Library[item]}>");
+
+            text = str;
 
             return true;
         }
