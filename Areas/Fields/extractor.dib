@@ -1,0 +1,117 @@
+#!csharp
+
+#r "C:\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll"
+#r "C:\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Testing\unstripped_corlib\UnityEngine.CoreModule.dll"
+#r "C:\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Testing\unstripped_corlib\UnityEngine.PhysicsModule.dll"
+#r "C:\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Testing\unstripped_corlib\UnityEngine.AnimationModule.dll"
+
+using System.Reflection;
+using System.IO;
+
+var PATHCRIT = @"..\Fields\Critters\";
+var PATHSPWN = @"..\Fields\Spawners\";
+
+var SB = new StringBuilder(2048);
+
+static bool ValidateField(FieldInfo field)
+    => !field.IsStatic
+    && (field.FieldType.Name == "String"
+    || field.FieldType.Name == "Boolean"
+    || field.FieldType.Name == "Single"
+    || field.FieldType.Name == "Int32"
+    || field.FieldType.Name == "Vector2"
+    || field.FieldType.Name == "Vector3"
+    || field.FieldType.Name == "AgentType"
+    || field.FieldType.Name == "GroundTiltType"
+    || field.FieldType.Name == "Faction");
+
+static void AppendFields(this StringBuilder sb, FieldInfo[] fields)
+{
+    sb.AppendLine($"| Field Name | Type |");
+    sb.AppendLine($"| :- | :- |");
+    foreach(var field in fields)
+        if (ValidateField(field))
+            sb.AppendLine($"| {field.Name} | {field.FieldType.Name.Replace("Single","Float")} |");
+}
+
+static void AppendEnum<T>(this StringBuilder sb) where T : Enum
+{
+    var values = Enum.GetValues(typeof(T));
+    sb.AppendLine($"## {typeof(T).Name} Values");
+    foreach(var field in values)
+            sb.Append($"`{field}` ");
+    sb.AppendLine();
+}
+
+#!markdown
+
+# Character Field Extraction
+
+#!csharp
+
+SB.AppendLine("# Character Fields:\n");
+SB.AppendFields(typeof(Character).GetFields());
+SB.AppendLine();
+SB.AppendEnum<Character.Faction>();
+SB.AppendLine();
+SB.AppendEnum<Character.GroundTiltType>();
+File.WriteAllText(PATHCRIT + "fields_char.md",SB.ToString());
+SB.Clear();
+
+#!markdown
+
+# BaseAI Field Extraction
+
+#!csharp
+
+SB.AppendLine("# BaseAI Fields:\n");
+SB.AppendFields(typeof(BaseAI).GetFields());
+SB.AppendLine();
+SB.AppendEnum<Pathfinding.AgentType>();
+File.WriteAllText(PATHCRIT + "fields_base.md",SB.ToString());
+SB.Clear();
+
+#!markdown
+
+# MonsterAI Field Extraction
+
+#!csharp
+
+SB.AppendLine("# MonsterAI Fields:\n");
+SB.AppendFields(typeof(MonsterAI).GetFields());
+File.WriteAllText(PATHCRIT + "fields_mons.md",SB.ToString());
+SB.Clear();
+
+#!markdown
+
+---
+# CreatureSpawner Field Extraction
+
+#!csharp
+
+SB.AppendLine("# CreatureSpawner Fields:\n");
+SB.AppendFields(typeof(CreatureSpawner).GetFields());
+File.WriteAllText(PATHSPWN + "fields_cs.md",SB.ToString());
+SB.Clear();
+
+#!markdown
+
+# SpawnSystem Field Extraction
+
+#!csharp
+
+SB.AppendLine("# SpawnSystem Fields:\n");
+SB.AppendFields(typeof(SpawnSystem.SpawnData).GetFields());
+File.WriteAllText(PATHSPWN + "fields_ss.md",SB.ToString());
+SB.Clear();
+
+#!markdown
+
+# SpawnerArea Field Extraction
+
+#!csharp
+
+SB.AppendLine("# SpawnArea Fields:\n");
+SB.AppendFields(typeof(SpawnArea).GetFields());
+File.WriteAllText(PATHSPWN + "fields_sa.md",SB.ToString());
+SB.Clear();
