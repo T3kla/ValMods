@@ -11,7 +11,7 @@ namespace QoLPins
     {
         #region Declarations
         public const string
-            NAME = "RemoveDeathPins",
+            NAME = "QoLPins",
             AUTHOR = "Tekla",
             GUID = AUTHOR + "_" + NAME,
             VERSION = "5.4.1600";

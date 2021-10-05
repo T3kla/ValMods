@@ -16,25 +16,19 @@ All time calculations are done with real time, not game time.
 ## Commands
 
 -   **dungeonresetclosest**: reset closest dungeon
-
 -   **dungeonresetloaded**: reset all loaded dungeons
 
 ## Configs
 
 -   **Interval**: reset cooldown, defaults to 23h
-
 -   **AllowedThemes**: types of dungeon that are allowed to be reset
-
 -   **PlayerProtection**: interrupts reset if players are inside the dungeon
-
 -   **PlayerProtectionInterval**: reset cooldown when reset was interrupted via PlayerProtection, defaults to 10m
 
 ## Stuff
 
 -   **Bugs?** Report them [here](https://github.com/T3kla/ValMods/issues).
-
 -   **Features?** Propose them [here](https://github.com/T3kla/ValMods/issues).
-
 -   **Contact?** Discord: Tekla#1012 or tag me as @Tekla in [Valheim Modding](https://discord.gg/RBq2mzeu4z)
 
 ## Installation (manual)

@@ -1,6 +1,7 @@
 #!csharp
 
 #r "C:\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\publicized_assemblies\assembly_valheim_publicized.dll"
+#r "C:\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Testing\unstripped_corlib\UnityEngine.dll"
 #r "C:\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Testing\unstripped_corlib\UnityEngine.CoreModule.dll"
 #r "C:\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Testing\unstripped_corlib\UnityEngine.PhysicsModule.dll"
 #r "C:\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Testing\unstripped_corlib\UnityEngine.AnimationModule.dll"

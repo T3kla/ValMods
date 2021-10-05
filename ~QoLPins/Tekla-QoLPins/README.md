@@ -1,8 +1,12 @@
 ‎<p align="center">[![Logo64](https://user-images.githubusercontent.com/23636548/135311233-240e15b7-73b1-4d2e-b37c-b0b527338504.png)](https://ko-fi.com/tekla)</p>
 
-# AutoRepair
+# QoL Pins
 
-Interacting with a workbench will repair all items it can from your inventory. Checks for repairing have not been modified, which means that lower level workbenches shouldn't repair higher gear.
+Features:
+
+-   Automatic removal off death pins when retrieving Tombstone
+-   Not generating death pin when dying with an empty inventory
+-   Configurable pin colors
 
 ## Stuff
 
@@ -22,34 +26,6 @@ If you are installing this manually, do the following
 
 #### 5.4.1600
 
--   Updated BepInEx version
--   Updated README.md
-
-#### 5.4.1502
-
--   Fix: blind fix for H&H
-
-#### 5.4.1500
-
--   BepInEx 5.4.1500
-
-#### 5.4.1100
-
--   Updated BepInEx version
-
-#### 5.4.903
-
--   Removed centre message with last repaired item
--   Updated BepInEx version
-
-#### 5.4.902
-
--   Changed mod Icon
-
-#### 5.4.901
-
--   Changed message "Repaired n objects!" for the awesome and less intrusive repair sound
-
-#### 5.4.900
-
--   Updated BepInEx version
+-   Automatic removal off death pins when retrieving Tombstone
+-   Not generating death pin when dying with an empty inventory
+-   Configurable pin colors

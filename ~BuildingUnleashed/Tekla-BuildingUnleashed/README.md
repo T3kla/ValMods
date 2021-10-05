@@ -17,9 +17,7 @@ Good game design is very important. Please hire game designers!
 ## Stuff
 
 -   **Bugs?** Report them [here](https://github.com/T3kla/ValMods/issues).
-
 -   **Features?** Propose them [here](https://github.com/T3kla/ValMods/issues).
-
 -   **Contact?** Discord: Tekla#1012 or tag me as @Tekla in [Valheim Modding](https://discord.gg/RBq2mzeu4z)
 
 ## Installation (manual)

@@ -7,8 +7,8 @@
     <ProjectGuid>{025E211A-86B6-4449-9F94-FA7C24A8A3D7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RemoveDeathPins</RootNamespace>
-    <AssemblyName>RemoveDeathPins</AssemblyName>
+    <RootNamespace>QoLPins</RootNamespace>
+    <AssemblyName>QoLPins</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <LangVersion>latest</LangVersion>
     <FileAlignment>512</FileAlignment>
@@ -388,23 +388,23 @@
     <PasteDir>C:\Users\manui\AppData\Roaming\r2modmanPlus-local\Valheim\profiles\Testing</PasteDir>
   </PropertyGroup>
   <Target Name="AfterBuild">
-    <Exec Command="$(SolutionDir)pdb2mdb.exe $(ProjectDir)Tekla-RemoveDeathPins\plugins\RemoveDeathPins.dll" />
+    <Exec Command="$(SolutionDir)pdb2mdb.exe $(ProjectDir)Tekla-QoLPins\plugins\QoLPins.dll" />
     <ItemGroup>
-      <ModFolder Include="$(ProjectDir)Tekla-RemoveDeathPins\**\*.*" />
+      <ModFolder Include="$(ProjectDir)Tekla-QoLPins\**\*.*" />
     </ItemGroup>
     <Copy SourceFiles="@(ModFolder)" DestinationFolder="$(PasteDir)\Bepinex\plugins\$(ProjectName)\%(RecursiveDir)" />
-    <!-- <Delete Files="$(ProjectDir)Tekla-RemoveDeathPins\plugins\RemoveDeathPins.pdb" />
-    <Delete Files="$(ProjectDir)Tekla-RemoveDeathPins\plugins\RemoveDeathPins.dll.mdb" /> -->
-    <Exec Command="powershell Compress-Archive -Path $(ProjectDir)Tekla-RemoveDeathPins\**\ -DestinationPath $(SolutionDir)__Releases\Tekla-RemoveDeathPins.zip -Force" />
+    <!-- <Delete Files="$(ProjectDir)Tekla-QoLPins\plugins\QoLPins.pdb" />
+    <Delete Files="$(ProjectDir)Tekla-QoLPins\plugins\QoLPins.dll.mdb" /> -->
+    <Exec Command="powershell Compress-Archive -Path $(ProjectDir)Tekla-QoLPins\**\ -DestinationPath $(SolutionDir)__Releases\Tekla-RemoveDeathPins.zip -Force" />
     <ItemGroup>
-      <PluginsFolderOrg Include="$(ProjectDir)Tekla-RemoveDeathPins\plugins\*.*" />
+      <PluginsFolderOrg Include="$(ProjectDir)Tekla-QoLPins\plugins\*.*" />
     </ItemGroup>
     <Copy SourceFiles="@(PluginsFolderOrg)" DestinationFolder="$(ProjectDir)\plugins\$(ProjectName)\%(RecursiveDir)" />
     <ItemGroup>
       <PluginsFolder Include="$(ProjectDir)\plugins\" />
     </ItemGroup>
-    <Delete Files="$(SolutionDir)__Releases\Tekla-RemoveDeathPins.7z" />
-    <Exec Command="7z a -t7z $(SolutionDir)__Releases\Tekla-RemoveDeathPins.7z @(PluginsFolder)" />
+    <Delete Files="$(SolutionDir)__Releases\Tekla-QoLPins.7z" />
+    <Exec Command="7z a -t7z $(SolutionDir)__Releases\Tekla-QoLPins.7z @(PluginsFolder)" />
     <RemoveDir Directories="$(ProjectDir)plugins\" />
   </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
