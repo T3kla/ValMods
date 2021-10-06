@@ -103,12 +103,10 @@
 //         // When receiving a client, send data
 //         public static void ZoneSystem_OnNewPeer_Post(ZoneSystem __instance, ref long peerID)
 //         {
-
 //             if (ZNet.instance.GetInstanceType() == ZNetExtension.ZNetInstanceType.Client) return; // Send when Server or Local
 
 //             Main.Log.LogInfo($"Instance is sending Data to client \"{peerID}\"\n");
 //             RPC.SendDataToClient(peerID);
-
 //         }
 
 

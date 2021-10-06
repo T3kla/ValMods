@@ -9,10 +9,10 @@ namespace DungeonReset
         [HarmonyPatch(typeof(DungeonGenerator), nameof(DungeonGenerator.Load))]
         public static void DungeonGenerator_Load_Post(DungeonGenerator __instance)
         {
-            if (!Configs.AllowedThemes.Value.Contains(__instance.m_themes.ToString()))
-                return;
+            Main.Log.LogInfo($"Loaded dungeon '{__instance.GetCleanName()}' with theme {__instance.m_themes}\n");
 
-            Dungeons.OnDungeonLoad(__instance);
+            if (Configs.AllowedThemes.Value.Contains(__instance.m_themes.ToString()))
+                Dungeons.OnDungeonLoad(__instance);
         }
 
         [HarmonyPostfix]

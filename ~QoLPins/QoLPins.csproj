@@ -395,7 +395,7 @@
     <Copy SourceFiles="@(ModFolder)" DestinationFolder="$(PasteDir)\Bepinex\plugins\$(ProjectName)\%(RecursiveDir)" />
     <!-- <Delete Files="$(ProjectDir)Tekla-QoLPins\plugins\QoLPins.pdb" />
     <Delete Files="$(ProjectDir)Tekla-QoLPins\plugins\QoLPins.dll.mdb" /> -->
-    <Exec Command="powershell Compress-Archive -Path $(ProjectDir)Tekla-QoLPins\**\ -DestinationPath $(SolutionDir)__Releases\Tekla-RemoveDeathPins.zip -Force" />
+    <Exec Command="powershell Compress-Archive -Path $(ProjectDir)Tekla-QoLPins\**\ -DestinationPath $(SolutionDir)__Releases\Tekla-QoLPins.zip -Force" />
     <ItemGroup>
       <PluginsFolderOrg Include="$(ProjectDir)Tekla-QoLPins\plugins\*.*" />
     </ItemGroup>

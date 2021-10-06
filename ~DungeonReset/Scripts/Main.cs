@@ -51,3 +51,11 @@ namespace DungeonReset
         }
     }
 }
+
+// MeadowsFarm          => abandoned farm in meadows that spawns greyling and boar
+// ForestCrypt          => black forest skeleton dungeon
+// SunkenCrypt          => swamp draugr dungeon
+// GoblinCamp           => plains funling camps
+// Crypt                => 
+// Cave                 => 
+// MeadowsVillage       => 

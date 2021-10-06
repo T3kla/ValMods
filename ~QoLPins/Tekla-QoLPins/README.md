@@ -2,10 +2,12 @@
 
 # QoL Pins
 
+Automations and colorization of minimap pins.
+
 Features:
 
 -   Automatic removal off death pins when retrieving Tombstone
--   Not generating death pin when dying with an empty inventory
+-   Non generation of death pin when dying with an empty inventory
 -   Configurable pin colors
 
 ## Stuff

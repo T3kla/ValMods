@@ -6,7 +6,7 @@ namespace DungeonReset
     public static class DungeonExtensions
     {
         public static string GetCleanName(this DungeonGenerator dg)
-            => $"{dg.name.Replace("(Clone)", "").Replace("(DungeonGenerator)", "").Trim()} {dg.transform.position:F0}";
+            => $"{dg.name.Replace("(Clone)", "").Replace("(DungeonGenerator)", "").Trim()} {dg.transform.position.ToString("F0")}";
 
         public static void SetLastReset(this DungeonGenerator dg, DateTimeOffset dt)
             => dg?.m_nview?.GetZDO()?.Set("Areas LastReset", dt.ToUnixTimeSeconds());
