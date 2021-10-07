@@ -21,7 +21,7 @@ namespace DungeonReset
         {
             if (!SynchronizationManager.Instance.PlayerIsAdmin)
             {
-                Console.instance.Print($"You are not an admin!\n");
+                Console.instance.Print($"You are not an admin!");
                 return;
             }
 
@@ -29,11 +29,11 @@ namespace DungeonReset
 
             if (closest == null)
             {
-                Console.instance.Print($"No dungeon found!\n");
+                Console.instance.Print($"No dungeon found!");
                 return;
             }
 
-            Console.instance.Print($"Forcing regeneration of Dungeon '{closest.GetCleanName()}', resetting now!\n");
+            Console.instance.Print($"Forcing regeneration of Dungeon '{closest.GetCleanName()}', resetting now!");
             Dungeons.Reset(closest);
         }
 
@@ -68,7 +68,7 @@ namespace DungeonReset
         {
             if (!SynchronizationManager.Instance.PlayerIsAdmin)
             {
-                Console.instance.Print($"You are not an admin!\n");
+                Console.instance.Print($"You are not an admin!");
                 return;
             }
 
@@ -79,14 +79,14 @@ namespace DungeonReset
                     continue;
 
                 ++count;
-                Console.instance.Print($"Forcing regeneration of Dungeon '{timer.dungeon.GetCleanName()}', resetting now!\n");
+                Console.instance.Print($"Forcing regeneration of Dungeon '{timer.dungeon.GetCleanName()}', resetting now!");
                 Dungeons.Reset(timer.dungeon);
             }
 
             if (count < 1)
-                Console.instance.Print($"Could't find loaded dungeons!\n");
+                Console.instance.Print($"Could't find loaded dungeons!");
             else
-                Console.instance.Print($"Forced a total of {count} dungeons to reset!\n");
+                Console.instance.Print($"Forced a total of {count} dungeons to reset!");
         }
     }
 }

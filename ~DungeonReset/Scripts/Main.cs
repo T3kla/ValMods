@@ -40,7 +40,7 @@ namespace DungeonReset
         {
             Configs.Awake(this);
 
-            if (!Configs.CommandsEnable.Value)
+            if (Configs.CommandsEnable.Value)
                 Commands.Awake();
 
             if (Configs.LoggerEnable.Value)

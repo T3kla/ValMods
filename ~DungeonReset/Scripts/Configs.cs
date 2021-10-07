@@ -39,6 +39,8 @@ namespace DungeonReset
             LoggerEnable = Plugin.Config.Bind("Logger", "Enable", true,
                 new ConfigDescription("Enables or disables debugging logs.", null,
                 new ConfigurationManagerAttributes { IsAdminOnly = false }));
+
+            Plugin.Config.SaveOnConfigSet = true;
         }
     }
 }
