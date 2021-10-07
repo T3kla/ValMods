@@ -1,4 +1,5 @@
 using BepInEx.Configuration;
+using UnityEngine;
 
 namespace DungeonReset
 {
@@ -14,31 +15,33 @@ namespace DungeonReset
 
         public static ConfigEntry<bool> LoggerEnable;
 
+        public static Color Lit = new Color(0.96f, 0.33f, 0.23f, 1f);
+
         public static void Awake(BepInEx.BaseUnityPlugin Plugin)
         {
-            Enable = Plugin.Config.Bind("Dungeon Reset", "Enable", true,
+            Enable = Plugin.Config.Bind("1. General", "Enable", true,
                 new ConfigDescription("Enables or disables dungeon regeneration.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            Interval = Plugin.Config.Bind("Dungeon Reset", "Interval", 82800f,
+                new ConfigurationManagerAttributes { Order = 0, IsAdminOnly = true, EntryColor = Lit }));
+            Interval = Plugin.Config.Bind("1. General", "Interval", 82800f,
                 new ConfigDescription("Set the amount of seconds it takes each dungeon to try to regenerate.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            AllowedThemes = Plugin.Config.Bind("Dungeon Reset", "Themes", "Crypt, SunkenCrypt, Cave, ForestCrypt",
+                new ConfigurationManagerAttributes { Order = 1, IsAdminOnly = true }));
+            AllowedThemes = Plugin.Config.Bind("1. General", "Themes", "Crypt, SunkenCrypt, Cave, ForestCrypt",
                 new ConfigDescription("Set allowed dungeon themes to reset. Possible themes are: Crypt, SunkenCrypt, Cave, ForestCrypt, GoblinCamp, MeadowsVillage, MeadowsFarm", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            PlayerProtection = Plugin.Config.Bind("Dungeon Reset", "Player Protection", true,
+                new ConfigurationManagerAttributes { Order = 2, IsAdminOnly = true }));
+            PlayerProtection = Plugin.Config.Bind("1. General", "Player Protection", true,
                 new ConfigDescription("If enabled, dungeons won't reset while players are inside.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
-            PlayerProtectionInterval = Plugin.Config.Bind("Dungeon Reset", "Player Protection Interval", 600f,
+                new ConfigurationManagerAttributes { Order = 3, IsAdminOnly = true }));
+            PlayerProtectionInterval = Plugin.Config.Bind("1. General", "Player Protection Interval", 600f,
                 new ConfigDescription("Time it takes to retry a reset on a dungeon that wasn't reset due to Player Protection.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = true }));
+                new ConfigurationManagerAttributes { Order = 4, IsAdminOnly = true }));
 
-            CommandsEnable = Plugin.Config.Bind("Commands", "Enable", true,
+            CommandsEnable = Plugin.Config.Bind("2. Commands", "Enable", true,
                 new ConfigDescription("Enables or disables commands.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = false }));
+                new ConfigurationManagerAttributes { Order = 5, IsAdminOnly = false, EntryColor = Lit }));
 
-            LoggerEnable = Plugin.Config.Bind("Logger", "Enable", true,
+            LoggerEnable = Plugin.Config.Bind("3. Logger", "Enable", true,
                 new ConfigDescription("Enables or disables debugging logs.", null,
-                new ConfigurationManagerAttributes { IsAdminOnly = false }));
+                new ConfigurationManagerAttributes { Order = 6, IsAdminOnly = false, EntryColor = Lit }));
 
             Plugin.Config.SaveOnConfigSet = true;
         }
