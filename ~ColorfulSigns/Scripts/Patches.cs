@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using UnityEngine;
 
 namespace ColorfulSigns
 {
@@ -8,43 +7,29 @@ namespace ColorfulSigns
     {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(Sign), nameof(Sign.Awake))]
-        public static bool Sing_Awake(Sign __instance)
+        public static void Sing_Awake(Sign __instance)
         {
-            Color mDef = "#ededed".ToColor();
-            Color cDef = Configs.DefaultColor.Value.ToColor();
-
-            if (__instance == null)
-                return true;
+            var def = Configs.DefaultTextColor.Value;
+            var color = (string.IsNullOrEmpty(def) ? "#ededed" : def).ToColor();
 
             __instance.m_textWidget.supportRichText = true;
             __instance.m_textWidget.material = null;
             __instance.m_characterLimit = 999;
-            __instance.m_textWidget.color = string.IsNullOrEmpty(Configs.DefaultColor.Value) ? mDef : cDef;
+            __instance.m_textWidget.color = color;
             __instance.m_textWidget.resizeTextMaxSize = Configs.MaxFontSize.Value;
-
-            return true;
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(Sign), nameof(Sign.SetText))]
-        public static bool Sing_SetText(Sign __instance, ref string text)
+        public static void Sing_SetText(Sign __instance, ref string text)
         {
-            if (__instance == null)
-                return true;
+            if (string.IsNullOrEmpty(text)
+            || !Configs.UseLibrary.Value)
+                return;
 
-            var str = text;
-
-            if (string.IsNullOrEmpty(str))
-                str = "";
-
-            if (Configs.EnableColorLibrary.Value)
-                foreach (var item in ColorfulSigns.Library.Keys)
-                    if (str.Contains($"<color={item}>"))
-                        str = str.Replace($"<color={item}>", $"<color={ColorfulSigns.Library[item]}>");
-
-            text = str;
-
-            return true;
+            foreach (var item in ColorfulSigns.Library.Keys)
+                if (text.Contains($"<color={item}>"))
+                    text = text.Replace($"<color={item}>", $"<color={ColorfulSigns.Library[item]}>");
         }
     }
 }

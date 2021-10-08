@@ -1,10 +1,11 @@
 {
     "name": "ColorfulSigns",
-    "description": "Enable Unity's enriched text in signs and change default color to white.",
-    "version_number": "5.4.1601",
+    "description": "Allow colors in signs and set default color to white.",
+    "version_number": "5.4.1602",
     "website_url": "https://github.com/T3kla/ValMods/issues",
     "dependencies": [
         "denikson-BepInExPack_Valheim-5.4.1600",
+        "ValheimModding-Jotunn-2.3.7",
         "Tekla-JsonDotNet-13.0.1"
     ]
 }

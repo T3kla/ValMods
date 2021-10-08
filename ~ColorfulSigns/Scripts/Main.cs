@@ -3,10 +3,13 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using Jotunn.Utils;
 
 namespace ColorfulSigns
 {
     [BepInPlugin(GUID, NAME, VERSION)]
+    [BepInDependency(Jotunn.Main.ModGuid, BepInDependency.DependencyFlags.HardDependency)]
+    [NetworkCompatibility(CompatibilityLevel.NotEnforced, VersionStrictness.None)]
     public class Main : BaseUnityPlugin
     {
         #region[Declarations]
@@ -14,7 +17,7 @@ namespace ColorfulSigns
             NAME = "ColorfulSigns",
             AUTHOR = "Tekla",
             GUID = AUTHOR + "_" + NAME,
-            VERSION = "5.4.1601";
+            VERSION = "5.4.1602";
 
         internal readonly Harmony harmony;
         internal readonly Assembly assembly;
@@ -31,13 +34,17 @@ namespace ColorfulSigns
             modFolder = Path.GetDirectoryName(assembly.Location);
         }
 
-        public void Start()
+        public void Awake()
         {
             Configs.Awake(this);
 
             if (Configs.LoggerEnable.Value)
                 BepInEx.Logging.Logger.Sources.Add(Log);
-            if (Configs.EnableColorLibrary.Value)
+
+            if (!Configs.Enable.Value)
+                return;
+
+            if (Configs.UseLibrary.Value)
                 ColorfulSigns.Awake(assembly);
 
             harmony.PatchAll(assembly);

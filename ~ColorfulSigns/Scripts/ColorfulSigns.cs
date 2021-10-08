@@ -11,7 +11,8 @@ namespace ColorfulSigns
 
         public static void Awake(Assembly assembly)
         {
-            string filePath = $@"{Path.GetDirectoryName(assembly.Location)}\color_library.json";
+            var filePath = Path.Combine(Path.GetDirectoryName(assembly.Location), "color_library.json");
+            Main.Log.LogInfo($"Searching for colors in path: '{filePath}'");
 
             if (!File.Exists(filePath))
             {

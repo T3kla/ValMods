@@ -2,16 +2,25 @@
 
 # ColorfulSigns
 
-Enable Unity's enriched text in signs and change default color to white.
+Allow colors in signs and set default color to white.
 
-| Tag                        | Effect |
-| -------------------------- | ------ |
-| <b>b</b>                   | Bold   |
-| <i>i</i>                   | Italic |
-| <size=50>s</size>          | Size   |
-| <color=#ff0000ff>c</color> | Color  |
+This mod allows you yo use the Unity Enriched Text functionality, which works with the following tags:
+
+|                          Tag | Effect |
+| ---------------------------: | :----- |
+|                   \<b>b\</b> | Bold   |
+|                   \<i>i\</i> | Italic |
+|          \<size=50>s\</size> | Size   |
+| \<color=#ff0000ff>c\</color> | Color  |
 
 [Source](https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/StyledText.html)
+
+Try writing this lines in any sign:
+
+```
+<color=#ff0000><b>Hello</b> <i>World!</i></color>
+<color=#ff0000>Colorful</color> <size=2.6>indeed!</size>
+```
 
 ## Color Library
 
@@ -47,6 +56,12 @@ If you are installing this manually, do the following
 3. Run the game.
 
 ## Changelog
+
+#### 5.4.1602
+
+-   Fix: path to color_library.json for linux systems
+-   Jotunn implementation to allow in-game config changes
+-   Added clarifications on how to use
 
 #### 5.4.1601
 
