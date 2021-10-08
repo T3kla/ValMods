@@ -17,7 +17,7 @@ namespace DungeonReset
             NAME = "DungeonReset",
             AUTHOR = "Tekla",
             GUID = AUTHOR + "_" + NAME,
-            VERSION = "5.4.1604";
+            VERSION = "5.4.1605";
 
         internal readonly Harmony Harmony;
         internal readonly Assembly Assembly;

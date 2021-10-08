@@ -41,6 +41,11 @@ If you are installing this manually, do the following
 
 ## Changelog
 
+#### 5.4.1605
+
+-   Fix: commands config toggle was reverted
+-   Configs order and color
+
 #### 5.4.1604
 
 -   Fix: NullReferenceException when exiting game from play scene
