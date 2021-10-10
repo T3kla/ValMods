@@ -28,5 +28,8 @@ namespace QoLPins
 
             return new Color(r, g, b, a);
         }
+
+        public static bool Contains(this string orig, string value, StringComparison comparisonType)
+            => orig.IndexOf(value, comparisonType) > -1;
     }
 }

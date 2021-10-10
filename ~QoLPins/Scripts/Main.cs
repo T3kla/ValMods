@@ -3,10 +3,13 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using Jotunn.Utils;
 
 namespace QoLPins
 {
     [BepInPlugin(GUID, NAME, VERSION)]
+    [BepInDependency(Jotunn.Main.ModGuid, BepInDependency.DependencyFlags.HardDependency)]
+    [NetworkCompatibility(CompatibilityLevel.NotEnforced, VersionStrictness.None)]
     public class Main : BaseUnityPlugin
     {
         #region Declarations
@@ -14,7 +17,7 @@ namespace QoLPins
             NAME = "QoLPins",
             AUTHOR = "Tekla",
             GUID = AUTHOR + "_" + NAME,
-            VERSION = "5.4.1600";
+            VERSION = "5.4.1603";
 
         internal static ManualLogSource Log { get; private set; }
         internal readonly Harmony Harmony;
@@ -38,7 +41,11 @@ namespace QoLPins
                 BepInEx.Logging.Logger.Sources.Add(Log);
 
             if (Configs.Enable.Value)
+            {
                 Harmony.PatchAll(Assembly);
+                PinColor.UpdateColorLib();
+                PinAuto.UpdateAutoPinData();
+            }
         }
     }
 }

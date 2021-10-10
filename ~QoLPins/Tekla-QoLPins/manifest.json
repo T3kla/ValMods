@@ -1,7 +1,10 @@
 {
     "name": "QoLPins",
-    "description": "Automations and colorization of minimap pins.",
-    "version_number": "5.4.1600",
+    "description": "Automations, colorization and automatic placement of minimap pins.",
+    "version_number": "5.4.1603",
     "website_url": "https://github.com/T3kla/ValMods/issues",
-    "dependencies": ["denikson-BepInExPack_Valheim-5.4.1600"]
+    "dependencies": [
+        "denikson-BepInExPack_Valheim-5.4.1600",
+        "ValheimModding-Jotunn-2.3.7"
+    ]
 }
