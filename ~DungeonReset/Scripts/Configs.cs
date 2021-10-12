@@ -37,7 +37,7 @@ namespace DungeonReset
 
             CommandsEnable = Plugin.Config.Bind("2. Commands", "Enable", true,
                 new ConfigDescription("Enables or disables commands.", null,
-                new ConfigurationManagerAttributes { Order = 5, IsAdminOnly = false, EntryColor = Lit }));
+                new ConfigurationManagerAttributes { Order = 5, IsAdminOnly = true, EntryColor = Lit }));
 
             LoggerEnable = Plugin.Config.Bind("3. Logger", "Enable", true,
                 new ConfigDescription("Enables or disables debugging logs.", null,
