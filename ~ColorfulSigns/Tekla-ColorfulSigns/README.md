@@ -57,6 +57,10 @@ If you are installing this manually, do the following
 
 ## Changelog
 
+#### 5.4.1603
+
+-   Outlines with configurable color and size
+
 #### 5.4.1602
 
 -   Fix: path to color_library.json for linux systems

@@ -13,25 +13,23 @@ namespace ColorfulSigns
     public class Main : BaseUnityPlugin
     {
         #region[Declarations]
-        public const string
-            NAME = "ColorfulSigns",
-            AUTHOR = "Tekla",
-            GUID = AUTHOR + "_" + NAME,
-            VERSION = "5.4.1602";
+        public const string NAME = "ColorfulSigns";
+        public const string AUTHOR = "Tekla";
+        public const string GUID = AUTHOR + "_" + NAME;
+        public const string VERSION = "5.4.1603";
 
-        internal readonly Harmony harmony;
-        internal readonly Assembly assembly;
-        public readonly string modFolder;
+        internal static Harmony harmony { get; private set; }
+        internal static string folder { get; private set; }
+        internal static Assembly assembly { get; private set; }
+        internal static ManualLogSource Log { get; private set; }
         #endregion
-
-        internal static ManualLogSource Log;
 
         public Main()
         {
             Log = new ManualLogSource(NAME);
             harmony = new Harmony(GUID);
             assembly = Assembly.GetExecutingAssembly();
-            modFolder = Path.GetDirectoryName(assembly.Location);
+            folder = Path.GetDirectoryName(assembly.Location);
         }
 
         public void Awake()
@@ -44,9 +42,7 @@ namespace ColorfulSigns
             if (!Configs.Enable.Value)
                 return;
 
-            if (Configs.UseLibrary.Value)
-                ColorfulSigns.Awake(assembly);
-
+            ColorfulSigns.UpdateColorLib();
             harmony.PatchAll(assembly);
         }
     }

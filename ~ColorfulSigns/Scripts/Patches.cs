@@ -1,4 +1,6 @@
 ﻿using HarmonyLib;
+using Jotunn;
+using UnityEngine.UI;
 
 namespace ColorfulSigns
 {
@@ -17,6 +19,13 @@ namespace ColorfulSigns
             __instance.m_characterLimit = 999;
             __instance.m_textWidget.color = color;
             __instance.m_textWidget.resizeTextMaxSize = Configs.MaxFontSize.Value;
+
+            if (!Configs.EnableOutline.Value)
+                return;
+
+            var o = __instance.m_textWidget.gameObject.GetOrAddComponent<Outline>();
+            o.effectColor = Configs.OutlineColor.Value.ToColor();
+            o.effectDistance = new UnityEngine.Vector2(Configs.OutlineSize.Value, Configs.OutlineSize.Value);
         }
 
         [HarmonyPrefix]
