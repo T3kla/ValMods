@@ -22,28 +22,34 @@ This colors will only be visible to you.
 In the third section of the configurations you can find the fields corresponding to the default pin type and text that will be shown when certain automated pin is triggered. It works like this:
 
 ```
-PinType:Message (For this example, assume this is the Tin field)
----------------
-'Ball:Tin'  => Place Ball pin with the text 'Tin'
-'Ball:T'    => Place Ball pin with the text 'T'
-'Hammer:'   => Place Hammer pin with no text
-'Hammer'    => Deactivate Tin automated pin placement
-':Tin'      => Deactivate Tin automated pin placement
-':'         => Deactivate Tin automated pin placement
-''          => Deactivate Tin automated pin placement
-```
-
 Pin types available: `Fireplace` `House` `Hammer` `Ball` `Cave`
 
-<!-- 35e644 green - e03f3f red - e6c035 yellow -->
+------------------------------------------------------------------------------------
+PinType:Message (Example: Tin field)
+    'Ball:Tin'  => Place Ball pin with the text 'Tin'
+    'Ball:T'    => Place Ball pin with the text 'T'
+    'Hammer:'   => Place Hammer pin with no text
+    'Hammer'    => Deactivate Tin automated pin placement
+    ':Tin'      => Deactivate Tin automated pin placement
+    ':'         => Deactivate Tin automated pin placement
+    ''          => Deactivate Tin automated pin placement
 
-|   Group   |                       Availability                       |     Add Pin      |     Remove Pin     |
-| :-------: | :------------------------------------------------------: | :--------------: | :----------------: |
-|   Ores    | <span style="color:#35e644"> Tin, Copper, Silver </span> | Ore takes damage | Ore gets destroyed |
-| Dungeons  |        <span style="color:#e03f3f">**---**</span>        |                  |                    |
-| Locations |        <span style="color:#e03f3f">**---**</span>        |                  |                    |
-| Leviathan |        <span style="color:#e03f3f">**---**</span>        |                  |                    |
-| Spawners  |        <span style="color:#e03f3f">**---**</span>        |                  |                    |
+------------------------------------------------------------------------------------
+PinType:Message (Example: Dungeon field)
+    'Cave:'         => Place Cave pin with automatic naming of the dungeon
+    'Cave:Dungeon'  => Place Cave pin with the text 'Dungeon' for every dungeon type
+```
+
+<!-- 35e644 green - e03f3f red - e6c035 yellow -->
+<!-- <span style="color:??????">**---**</span>   -->
+
+|   Group   |            Availability             |        Add Pin         |     Remove Pin     |
+| :-------: | :---------------------------------: | :--------------------: | :----------------: |
+|   Ores    |         Tin, Copper, Silver         |    Ore takes damage    | Ore gets destroyed |
+| Dungeons  | ForestCrypt, SunkenCrypt, TrollCave | Interact with entrance |        None        |
+| Locations |               **---**               |                        |                    |
+| Leviathan |               **---**               |                        |                    |
+| Spawners  |               **---**               |                        |                    |
 
 ## Stuff
 
@@ -60,6 +66,10 @@ If you are installing this manually, do the following
 3. Run the game.
 
 ## Changelog
+
+#### 5.4.1604
+
+-   Automatic Pin Placement for dungeons: ForestCrypt, SunkenCrypt, TrollCave
 
 #### 5.4.1603
 

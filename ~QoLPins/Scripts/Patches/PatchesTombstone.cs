@@ -1,5 +1,4 @@
 using HarmonyLib;
-using static Minimap;
 
 namespace QoLPins.Patches
 {
@@ -15,7 +14,7 @@ namespace QoLPins.Patches
             || __instance.m_container.GetInventory().NrOfItems() > 0)
                 return;
 
-            PinAuto.RemovePin(__instance.transform.position, PinType.Death);
+            PinAuto.RemovePin(__instance.transform.position, Minimap.PinType.Death);
         }
     }
 }

@@ -30,6 +30,7 @@ namespace QoLPins
         public static ConfigEntry<string> AutoTin { get; private set; }
         public static ConfigEntry<string> AutoCopper { get; private set; }
         public static ConfigEntry<string> AutoSilver { get; private set; }
+        public static ConfigEntry<string> AutoDungeon { get; private set; }
 
         public static ConfigEntry<bool> LoggerEnable { get; private set; }
 
@@ -104,14 +105,17 @@ namespace QoLPins
                 new ConfigurationManagerAttributes { Order = 17, EntryColor = Lit }));
 
             AutoTin = Plugin.Config.Bind("3. AutoPin", "Autopin Tin ore", "Hammer:Tin",
-                new ConfigDescription("Pins tin when hit with something. Type of pin at the left, pin name at the right.", null,
+                new ConfigDescription("Pin tin when hit with something. Type of pin at the left, pin name at the right.", null,
                 new ConfigurationManagerAttributes { Order = 18, DefaultValue = "Hammer:Tin" }));
             AutoCopper = Plugin.Config.Bind("3. AutoPin", "Autopin Copper ore", "Hammer:Copper",
-                new ConfigDescription("Pins copper when hit with something. Type of pin at the left, pin name at the right.", null,
+                new ConfigDescription("Pin copper when hit with something. Type of pin at the left, pin name at the right.", null,
                 new ConfigurationManagerAttributes { Order = 19, DefaultValue = "Hammer:Copper" }));
             AutoSilver = Plugin.Config.Bind("3. AutoPin", "Autopin Silver ore", "Hammer:Silver",
-                new ConfigDescription("Pins silver when hit with something. Type of pin at the left, pin name at the right.", null,
+                new ConfigDescription("Pin silver when hit with something. Type of pin at the left, pin name at the right.", null,
                 new ConfigurationManagerAttributes { Order = 20, DefaultValue = "Hammer:Silver" }));
+            AutoDungeon = Plugin.Config.Bind("3. AutoPin", "Autopin Dungeons", "Cave:",
+                new ConfigDescription("Pin dungeons when interacting with their entrance. Leave right side unassigned for automatic naming.", null,
+                new ConfigurationManagerAttributes { Order = 21, DefaultValue = "Cave:" }));
             #endregion
 
             #region 4. Logger

@@ -13,24 +13,25 @@ namespace QoLPins
     public class Main : BaseUnityPlugin
     {
         #region Declarations
-        public const string
-            NAME = "QoLPins",
-            AUTHOR = "Tekla",
-            GUID = AUTHOR + "_" + NAME,
-            VERSION = "5.4.1603";
-
-        internal static ManualLogSource Log { get; private set; }
-        internal readonly Harmony Harmony;
-        internal readonly Assembly Assembly;
-        public readonly string ModFolder;
+        public const string NAME = "QoLPins";
+        public const string AUTHOR = "Tekla";
+        public const string GUID = AUTHOR + "_" + NAME;
+        public const string VERSION = "5.4.1604";
         #endregion
+
+        internal static Main Instance;
+        internal static ManualLogSource Log { get; private set; }
+        internal static Harmony Harmony { get; private set; }
+        internal static Assembly Assembly { get; private set; }
+        internal static string Folder { get; private set; }
 
         public Main()
         {
             Log = new ManualLogSource(NAME);
             Harmony = new Harmony(GUID);
             Assembly = Assembly.GetExecutingAssembly();
-            ModFolder = Path.GetDirectoryName(Assembly.Location);
+            Folder = Path.GetDirectoryName(Assembly.Location);
+            Instance = this;
         }
 
         public void Awake()

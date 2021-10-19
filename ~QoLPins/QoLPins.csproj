@@ -387,6 +387,9 @@
     <Compile Include="Scripts\Patches\PatchesMinimap.cs" />
     <Compile Include="Scripts\Patches\PatchesTombstone.cs" />
     <Compile Include="Scripts\PinColor.cs" />
+    <Compile Include="Scripts\Patches\PatchesTeleport.cs" />
+    <Compile Include="Scripts\Patches\PatchesDungeonGenerator.cs" />
+    <Compile Include="Scripts\Patches\PatchesLocation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

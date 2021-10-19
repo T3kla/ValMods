@@ -15,14 +15,14 @@ namespace QoLPins.Patches
 
             if (__instance.name.Contains("Copper", StringComparison.OrdinalIgnoreCase))
             {
-                if (PinAuto.AddPin(__instance.transform.position, PinAuto.CopData))
+                if (PinAuto.AddSafe(__instance.transform.position, PinAuto.CopData))
                     Main.Log.LogInfo($"Creating Copper pin at '{__instance.transform.position.ToString("F0")}'\n");
                 return;
             }
 
             if (__instance.name.Contains("Silver", StringComparison.OrdinalIgnoreCase))
             {
-                if (PinAuto.AddPin(__instance.transform.position, PinAuto.SilData))
+                if (PinAuto.AddSafe(__instance.transform.position, PinAuto.SilData))
                     Main.Log.LogInfo($"Creating Silver pin at '{__instance.transform.position.ToString("F0")}'\n");
                 return;
             }
