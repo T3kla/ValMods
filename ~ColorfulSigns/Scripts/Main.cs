@@ -16,7 +16,7 @@ namespace ColorfulSigns
         public const string NAME = "ColorfulSigns";
         public const string AUTHOR = "Tekla";
         public const string GUID = AUTHOR + "_" + NAME;
-        public const string VERSION = "5.4.1603";
+        public const string VERSION = "5.4.1604";
 
         internal static Harmony harmony { get; private set; }
         internal static string folder { get; private set; }

@@ -37,10 +37,11 @@ namespace ColorfulSigns
                 new ConfigDescription("Enable the outlining of text in signs.", null,
                 new ConfigurationManagerAttributes { Order = 4, EntryColor = Lit }));
             OutlineColor = Plugin.Config.Bind("2. Outline", "Color", "#272830",
-                new ConfigDescription("Set max size for the sign font.", null,
+                new ConfigDescription("Changes the default outline color of signs.", null,
                 new ConfigurationManagerAttributes { Order = 5, DefaultValue = "#272830" }));
             OutlineSize = Plugin.Config.Bind("2. Outline", "Size", 0.15f,
-                new ConfigDescription("Set max size for the sign font.", null,
+                new ConfigDescription("Set size of the outline effect.",
+                new AcceptableValueRange<float>(0f, 0.2f),
                 new ConfigurationManagerAttributes { Order = 6, DefaultValue = 0.15f }));
 
             LoggerEnable = Plugin.Config.Bind("3. Logger", "Enable", true,

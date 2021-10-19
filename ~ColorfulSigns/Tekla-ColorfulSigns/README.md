@@ -57,6 +57,10 @@ If you are installing this manually, do the following
 
 ## Changelog
 
+#### 5.4.1604
+
+-   Established range for outline size values because big values causes duplicated text and confusion among users
+
 #### 5.4.1603
 
 -   Outlines with configurable color and size
