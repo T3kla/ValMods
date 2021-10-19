@@ -9,23 +9,21 @@ namespace DungeonReset
 {
     [BepInPlugin(GUID, NAME, VERSION)]
     [BepInDependency(Jotunn.Main.ModGuid, BepInDependency.DependencyFlags.HardDependency)]
-    [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
+    [NetworkCompatibility(CompatibilityLevel.ServerMustHaveMod, VersionStrictness.Minor)]
     public class Main : BaseUnityPlugin
     {
         #region[Declarations]
-        public const string
-            NAME = "DungeonReset",
-            AUTHOR = "Tekla",
-            GUID = AUTHOR + "_" + NAME,
-            VERSION = "5.4.1605";
-
-        internal readonly Harmony Harmony;
-        internal readonly Assembly Assembly;
-        internal readonly string Folder;
+        public const string NAME = "DungeonReset";
+        public const string AUTHOR = "Tekla";
+        public const string GUID = AUTHOR + "_" + NAME;
+        public const string VERSION = "5.4.1606";
         #endregion
 
         internal static Main Instance;
-        internal static ManualLogSource Log;
+        internal static ManualLogSource Log { get; private set; }
+        internal static Harmony Harmony { get; private set; }
+        internal static Assembly Assembly { get; private set; }
+        internal static string Folder { get; private set; }
 
         public Main()
         {
@@ -57,5 +55,5 @@ namespace DungeonReset
 // SunkenCrypt          => swamp draugr dungeon
 // GoblinCamp           => plains funling camps
 // Crypt                => 
-// Cave                 => 
+// Cave                 => ! caves are handled by locations
 // MeadowsVillage       => 

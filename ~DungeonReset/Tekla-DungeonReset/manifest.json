@@ -1,7 +1,7 @@
 {
     "name": "DungeonReset",
     "description": "Allows manual and automatic reset of dungeons.",
-    "version_number": "5.4.1605",
+    "version_number": "5.4.1606",
     "website_url": "https://github.com/T3kla/ValMods/issues",
     "dependencies": [
         "denikson-BepInExPack_Valheim-5.4.1600",

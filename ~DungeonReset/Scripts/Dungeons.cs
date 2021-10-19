@@ -13,7 +13,7 @@ namespace DungeonReset
         public static void OnDungeonLoad(DungeonGenerator dungeon)
         {
             Main.Log.LogInfo($"Dungeon '{dungeon.GetCleanName()}' was captured!\n");
-            UnscheduleOutOfBound();
+            UnscheduleAllNotLoaded();
             Schedule(dungeon);
         }
 
@@ -26,7 +26,7 @@ namespace DungeonReset
             Main.Log.LogInfo($"Dungeon '{dungeon.GetCleanName()}' was scheduled for reset in {finalDelay:F0} seconds!\n");
         }
 
-        public static void UnscheduleOutOfBound()
+        public static void UnscheduleAllNotLoaded()
         {
             var copy = new List<Timer>(Timer.Each);
             foreach (var timer in copy)
@@ -42,7 +42,10 @@ namespace DungeonReset
         }
 
         public static bool Validate(Timer timer)
-            => ValidateOutOfRange(timer) && ValidateTooEarly(timer) && ValidateOverdue(timer) && ValidatePlayerProtection(timer);
+            => ValidateOutOfRange(timer)
+            && ValidateTooEarly(timer)
+            && ValidateOverdue(timer)
+            && ValidatePlayerProtection(timer);
 
         public static void Reset(DungeonGenerator dungeon, Bounds? bounds = null)
         {
@@ -72,14 +75,12 @@ namespace DungeonReset
                     ZNetScene.instance.Destroy(go);
                 }
             }
-
             dungeon.Generate(ZoneSystem.SpawnMode.Full);
             dungeon.SetLastReset(DateTimeOffset.Now);
             Main.Log.LogInfo($"Dungeon '{dungeon.GetCleanName()}' was regenerated successfully!\n");
         }
 
         #region Validators
-
         private static bool ValidateOutOfRange(Timer timer)
         {
             if (timer.dungeon != null)
@@ -126,7 +127,6 @@ namespace DungeonReset
 
             return true;
         }
-
         #endregion
     }
 }
