@@ -2,17 +2,29 @@ namespace Areas.Containers
 {
     public static class RawData
     {
-        public class Wrap
+        public readonly struct Box
         {
-            public string Areas = "";
-            public string CTData = "";
-            public string VAData = "";
-            public string SSData = "";
-            public string CSData = "";
-            public string SAData = "";
+            public readonly string Areas = "";
+            public readonly string CTData = "";
+            public readonly string VAData = "";
+            public readonly string SSData = "";
+            public readonly string CSData = "";
+            public readonly string SAData = "";
+
+            public Box(string areas = "", string cTData = "", string vAData = "", string sSData = "", string cSData = "", string sAData = "")
+                => (Areas, CTData, VAData, SSData, CSData, SAData)
+                = (areas, cTData, vAData, sSData, cSData, sAData);
         }
 
-        public static Wrap Local = new();
-        public static Wrap Remote = new();
+        public static Box Loc = new();
+        public static Box Rem = new();
+
+        public static ref Box Get(EDS type)
+        {
+            if (type == EDS.Remote)
+                return ref Rem;
+            else
+                return ref Loc;
+        }
     }
 }

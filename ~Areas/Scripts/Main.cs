@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using Areas.Containers;
 using Areas.TYaml;
 using BepInEx;
-using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using Jotunn.Utils;
-using UnityEngine;
+using static Areas.Containers.RawData;
 
 namespace Areas
 {
@@ -22,83 +19,65 @@ namespace Areas
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
     public class Main : BaseUnityPlugin
     {
-        public const string NAME = "Areas";
-        public const string GUID = "Tekla_" + NAME;
-        public const string VERSION = "1.1.3";
+        #region[Declarations]
+        public const string NAME = "DungeonReset";
+        public const string AUTHOR = "Tekla";
+        public const string GUID = AUTHOR + "_" + NAME;
+        public const string VERSION = "5.4.1600";
+        #endregion
+
+        internal static Main Instance { get; private set; }
+        internal static ManualLogSource Log = new ManualLogSource(NAME);
+        internal static Harmony Harmony = new Harmony(GUID);
+        internal static Assembly Assembly = Assembly.GetExecutingAssembly();
+        internal static string Folder = Path.GetDirectoryName(Assembly.Location);
 
         public static Action OnDataLoaded;
         public static Action OnDataReset;
 
-        public static Main Instance;
-        public static ManualLogSource Log;
-
-        internal readonly Harmony Harmony;
-        internal readonly Assembly Assembly;
-        internal readonly string Folder;
-
-        public Main()
-        {
-            Log = new ManualLogSource(NAME);
-            Harmony = new Harmony(GUID);
-            Assembly = Assembly.GetExecutingAssembly();
-            Folder = Path.GetDirectoryName(Assembly.Location);
-            Instance = this;
-        }
+        public Main() => Instance = this;
 
         private void Awake()
         {
             Configs.Awake(this);
-            Dictionary<string, object> FromARandomYaml = new Dictionary<string, object>();
 
-            var instance = new SpawnArea();
-            var type = typeof(CreatureSpawner);
-            var fields = type.GetFields();
-
-            foreach (var field in fields)
-                if (FromARandomYaml.TryGetValue(field.Name, out var value))
-                {
-                    field.GetValue(default(Character));
-                    field.SetValue(instance, value, BindingFlags.Default, null, CultureInfo.InvariantCulture);
-                    object def = field.GetRawConstantValue();
-                }
-
-            // LoadDataFromDisk();
+            LoadDataFromDisk();
 
             // OnDataLoaded += Variants.OnDataLoaded;
             // OnDataReset += Critters.OnDataReset;
             // OnDataReset += Variants.OnDataReset;
 
-            // // Areas.GUI.Awake();
+            // Areas.GUI.Awake();
             // Spawners.Awake();
-            // // CommandHandler.Awake();
+            // CommandHandler.Awake();
 
             Harmony.PatchAll(Assembly);
         }
 
-        // private void LoadDataFromDisk()
-        // {
-        //     if (File.Exists(Global.Path.Areas)) Global.RawLocalData.Areas = File.ReadAllText(Global.Path.Areas);
-        //     if (File.Exists(Global.Path.CTData)) Global.RawLocalData.CTData = File.ReadAllText(Global.Path.CTData);
-        //     if (File.Exists(Global.Path.VAData)) Global.RawLocalData.VAData = File.ReadAllText(Global.Path.VAData);
-        //     if (File.Exists(Global.Path.SSData)) Global.RawLocalData.SSData = File.ReadAllText(Global.Path.SSData);
-        //     if (File.Exists(Global.Path.CSData)) Global.RawLocalData.CSData = File.ReadAllText(Global.Path.CSData);
-        //     if (File.Exists(Global.Path.SAData)) Global.RawLocalData.SAData = File.ReadAllText(Global.Path.SAData);
-        // }
+        private static void LoadDataFromDisk()
+            => RawData.Loc = new(
+                areas: File.Exists(Global.Path.Areas) ? File.ReadAllText(Global.Path.Areas) : "",
+                cTData: File.Exists(Global.Path.CTData) ? File.ReadAllText(Global.Path.CTData) : "",
+                vAData: File.Exists(Global.Path.VAData) ? File.ReadAllText(Global.Path.VAData) : "",
+                sSData: File.Exists(Global.Path.SSData) ? File.ReadAllText(Global.Path.SSData) : "",
+                cSData: File.Exists(Global.Path.CSData) ? File.ReadAllText(Global.Path.CSData) : "",
+                sAData: File.Exists(Global.Path.SAData) ? File.ReadAllText(Global.Path.SAData) : ""
+            );
 
-        // public static void LoadData(EDS source)
-        // {
-        //     RawData data = source == EDS.Remote ? Global.RawRemoteData : Global.RawLocalData;
+        public static void LoadData(EDS type)
+        {
+            ref readonly var raw = ref RawData.Get(type);
 
-        //     Main.Log.LogInfo($"Instance is loading {source} Data\n");
-        //     Global.CurrentData.Areas = Serialization.Deserialize<Dictionary<string, Area>>(data.Areas);
-        //     Global.CurrentData.CTMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, DataCritter>>>(data.CTData);
-        //     Global.CurrentData.VAMods = Serialization.Deserialize<Dictionary<string, DataVariant>>(data.VAData);
-        //     Global.CurrentData.SSMods = Serialization.Deserialize<Dictionary<string, Dictionary<int, DataSS>>>(data.SSData);
-        //     Global.CurrentData.CSMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CSData>>>(data.CSData);
-        //     Global.CurrentData.SAMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, SAData>>>(data.SAData);
+            Main.Log.LogInfo($"Instance is loading {type} Data\n");
+            Global.CurrentData.Areas = Serialization.Deserialize<Dictionary<string, Area>>(raw.Areas);
+            Global.CurrentData.CTMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, DataCritter>>>(raw.CTData);
+            Global.CurrentData.VAMods = Serialization.Deserialize<Dictionary<string, DataVariant>>(raw.VAData);
+            Global.CurrentData.SSMods = Serialization.Deserialize<Dictionary<string, Dictionary<int, DataSS>>>(raw.SSData);
+            Global.CurrentData.CSMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, CSData>>>(raw.CSData);
+            Global.CurrentData.SAMods = Serialization.Deserialize<Dictionary<string, Dictionary<string, SAData>>>(raw.SAData);
 
-        //     if (OnDataLoaded != null) OnDataLoaded.Invoke();
-        // }
+            if (OnDataLoaded != null) OnDataLoaded.Invoke();
+        }
 
         // public static void ResetData(EDS source)
         // {

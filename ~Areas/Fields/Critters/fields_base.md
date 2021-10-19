@@ -66,4 +66,15 @@
 | m_lastFindPathResult | Boolean |
 
 ## AgentType Values
-`Humanoid` `TrollSize` `HugeSize` `HorseSize` `HumanoidNoSwim` `HumanoidAvoidWater` `Fish` `Wolf` `BigFish` `GoblinBruteSize` `HumanoidBigNoSwim` 
+
+-   `Humanoid`
+-   `TrollSize`
+-   `HugeSize`
+-   `HorseSize`
+-   `HumanoidNoSwim`
+-   `HumanoidAvoidWater`
+-   `Fish`
+-   `Wolf`
+-   `BigFish`
+-   `GoblinBruteSize`
+-   `HumanoidBigNoSwim`

@@ -83,7 +83,21 @@
 | m_smokeCheckTimer | Float |
 
 ## Faction Values
-`Players` `AnimalsVeg` `ForestMonsters` `Undead` `Demon` `MountainMonsters` `SeaMonsters` `PlainsMonsters` `Boss` 
+
+-   `Players`
+-   `AnimalsVeg`
+-   `ForestMonsters`
+-   `Undead`
+-   `Demon`
+-   `MountainMonsters`
+-   `SeaMonsters`
+-   `PlainsMonsters`
+-   `Boss`
 
 ## GroundTiltType Values
-`None` `Pitch` `Full` `PitchRaycast` `FullRaycast` 
+
+-   `None`
+-   `Pitch`
+-   `Full`
+-   `PitchRaycast`
+-   `FullRaycast`

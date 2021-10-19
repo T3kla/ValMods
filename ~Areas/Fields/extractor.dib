@@ -38,10 +38,9 @@ static void AppendFields(this StringBuilder sb, FieldInfo[] fields)
 static void AppendEnum<T>(this StringBuilder sb) where T : Enum
 {
     var values = Enum.GetValues(typeof(T));
-    sb.AppendLine($"## {typeof(T).Name} Values");
+    sb.AppendLine($"## {typeof(T).Name} Values\n");
     foreach(var field in values)
-            sb.Append($"`{field}` ");
-    sb.AppendLine();
+            sb.Append($"-   `{field}`\n");
 }
 
 #!markdown
